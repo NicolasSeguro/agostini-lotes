@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
@@ -75,7 +75,7 @@ function EstadoBadge({ estado }: { estado: string }) {
 
 const PAGE_SIZE = 20;
 
-export default function AjustesListadoPage() {
+function AjustesListadoPageContent() {
   const sp = useSearchParams();
   const tenant = sp.get("t") || "jacaranda";
 
@@ -355,5 +355,13 @@ export default function AjustesListadoPage() {
         )}
       </div>
     </AppShell>
+  );
+}
+
+export default function AjustesListadoPage() {
+  return (
+    <Suspense fallback={null}>
+      <AjustesListadoPageContent />
+    </Suspense>
   );
 }

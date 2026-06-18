@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
       console.error("[generar-boleto] No se pudo registrar emisiÃ³n:", err.message);
     }
 
-    return new NextResponse(outputBuffer, {
+    return new NextResponse(new Uint8Array(outputBuffer), {
       status: 200,
       headers: {
         "Content-Type": contentType,

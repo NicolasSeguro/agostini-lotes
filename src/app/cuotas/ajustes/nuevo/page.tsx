@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
@@ -54,7 +54,7 @@ function periodoAYYYYMMDD(mesAnio: string): string {
   return mesAnio + "-01";
 }
 
-export default function NuevoAjustePage() {
+function NuevoAjustePageContent() {
   const sp = useSearchParams();
   const router = useRouter();
   const tenant = sp.get("t") || "jacaranda";
@@ -494,5 +494,13 @@ export default function NuevoAjustePage() {
         )}
       </div>
     </AppShell>
+  );
+}
+
+export default function NuevoAjustePage() {
+  return (
+    <Suspense fallback={null}>
+      <NuevoAjustePageContent />
+    </Suspense>
   );
 }

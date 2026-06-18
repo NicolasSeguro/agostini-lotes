@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
@@ -62,7 +62,7 @@ function mesQueAjusta(periodoStr: string, indice: string): string {
   return formatPeriodo(d.toISOString());
 }
 
-export default function IndicesPage() {
+function IndicesPageContent() {
   const sp = useSearchParams();
   const tenant = sp.get("t") || "jacaranda";
 
@@ -589,5 +589,13 @@ function ModalEliminar({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function IndicesPage() {
+  return (
+    <Suspense fallback={null}>
+      <IndicesPageContent />
+    </Suspense>
   );
 }

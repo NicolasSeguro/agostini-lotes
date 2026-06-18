@@ -1,12 +1,12 @@
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ============================================================================
 //  WORKFLOW DE VENTAS - utilidades compartidas
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ============================================================================
 
 import { PoolClient } from "pg";
 
 /**
  * Registrar un cambio de estado en venta_historial.
- * Se llama SIEMPRE dentro de una transacciÃ³n.
+ * Se llama SIEMPRE dentro de una transaccion.
  */
 export async function registrarHistorial(
   client: PoolClient,
@@ -71,7 +71,7 @@ export async function getVentaParaTransicion(
   const venta = res.rows[0];
   if (!estadosPermitidos.includes(venta.estado)) {
     throw new Error(
-      `OperaciÃ³n no permitida en estado ${venta.estado}. Estados vÃ¡lidos: ${estadosPermitidos.join(", ")}`
+      `Operacion no permitida en estado ${venta.estado}. Estados validos: ${estadosPermitidos.join(", ")}`
     );
   }
   return venta;
@@ -96,17 +96,17 @@ export function generarFechasVencimiento(fechaPrimerVto: string, cantCuotas: num
 }
 
 /**
- * DescomposiciÃ³n IVA para una cuota individual.
+ * Descomposicion IVA para una cuota individual.
  * Usa el mismo modelo que venta-calc.ts:
  *   - El monto se descompone aplicando porc_gravado directamente
- *   - capital_gr_neto = (monto Ã— porc_gravado) / 1.21
- *   - capital_ex      = monto Ã— (1 - porc_gravado)
- *   - iva_capital     = monto Ã— porc_gravado - capital_gr_neto
+ *   - capital_gr_neto = (monto x porc_gravado) / 1.21
+ *   - capital_ex      = monto x (1 - porc_gravado)
+ *   - iva_capital     = monto x porc_gravado - capital_gr_neto
  */
 export function descomponerCuota(
   cuotaBase: number,
   porcGravado: number,
-  porcInteres: number = 0  // % de la cuota que es interÃ©s (FrancÃ©s)
+  porcInteres: number = 0
 ): {
   capital_gr_orig: number;
   capital_ex_orig: number;
@@ -117,17 +117,14 @@ export function descomponerCuota(
 } {
   const IVA = 0.21;
   
-  // Separar capital e interÃ©s primero
   const interes_total = round(cuotaBase * porcInteres);
   const capital_total = round(cuotaBase - interes_total);
   
-  // Descomponer capital
   const gravado_capital_con_iva = round(capital_total * porcGravado);
   const capital_ex_orig = round(capital_total * (1 - porcGravado));
   const capital_gr_orig = round(gravado_capital_con_iva / (1 + IVA));
   const iva_capital_orig = round(gravado_capital_con_iva - capital_gr_orig);
   
-  // Descomponer interÃ©s
   const gravado_interes_con_iva = round(interes_total * porcGravado);
   const interes_ex_orig = round(interes_total * (1 - porcGravado));
   const interes_gr_orig = round(gravado_interes_con_iva / (1 + IVA));
@@ -140,6 +137,143 @@ export function descomponerCuota(
     interes_gr_orig,
     interes_ex_orig,
     iva_interes_orig,
+  };
+}
+
+/**
+ * Revierte la reclasificacion (descuentos_comerciales) de una venta.
+ * - Suma los montos de descuentos_comerciales
+ * - Restaura cobranzas RECLASIFICADAS al estado anterior
+ * - Recalcula precio_total, anticipo, descuento_comercial y descomposicion IVA
+ * - Borra los registros de descuentos_comerciales
+ *
+ * NO maneja BEGIN/COMMIT (debe estar dentro de una transaccion).
+ * Movida desde el route.ts a este helper porque Next.js solo permite
+ * exports tipo GET/POST/etc en archivos route.ts.
+ */
+export async function revertirReclasificacionInterno(
+  client: PoolClient,
+  schema: string,
+  tenant: string,
+  ventaId: string,
+  venta: any,
+  motivo: string
+): Promise<{
+  tenia_reclasificacion: boolean;
+  monto_total: number;
+  cobranzas_restauradas: number;
+}> {
+  const descRes = await client.query(
+    `SELECT id, monto, cobranza_original_id, observaciones
+     FROM ${schema}.descuentos_comerciales
+     WHERE venta_id = $1::uuid`,
+    [ventaId]
+  );
+
+  if (descRes.rows.length === 0) {
+    return { tenia_reclasificacion: false, monto_total: 0, cobranzas_restauradas: 0 };
+  }
+
+  const montoTotal = descRes.rows.reduce((s, d) => s + parseFloat(d.monto), 0);
+
+  const cobrRes = await client.query(
+    `SELECT id, monto_total, estado::text AS estado, observaciones
+     FROM ${schema}.cobranzas
+     WHERE venta_id = $1::uuid AND es_anticipo_venta = true`,
+    [ventaId]
+  );
+
+  let cobranzasRestauradas = 0;
+
+  for (const cob of cobrRes.rows) {
+    const obs = cob.observaciones || "";
+
+    if (cob.estado === "RECLASIFICADA") {
+      if (obs.includes("[Reclasificada de cobranza")) {
+        await client.query(`DELETE FROM ${schema}.cobranzas WHERE id = $1::uuid`, [cob.id]);
+        cobranzasRestauradas++;
+        continue;
+      }
+      await client.query(
+        `UPDATE ${schema}.cobranzas
+         SET estado = 'BORRADOR'::tenant_template.cobranza_estado,
+             observaciones = COALESCE(observaciones, '') || ' [Reclasificacion revertida]'
+         WHERE id = $1::uuid`,
+        [cob.id]
+      );
+      cobranzasRestauradas++;
+    } else if (obs.includes("[Reducida de $")) {
+      const match = obs.match(/\[Reducida de \$([\d.]+) por reclasificacion parcial\]/);
+      if (match) {
+        const montoOriginal = parseFloat(match[1]);
+        await client.query(
+          `UPDATE ${schema}.cobranzas
+           SET monto_total = $2,
+               observaciones = REPLACE(observaciones, $3, '') || ' [Restaurada]'
+           WHERE id = $1::uuid`,
+          [cob.id, montoOriginal, match[0]]
+        );
+        cobranzasRestauradas++;
+      }
+    }
+  }
+
+  await client.query(
+    `DELETE FROM ${schema}.descuentos_comerciales WHERE venta_id = $1::uuid`,
+    [ventaId]
+  );
+
+  const precioLista = parseFloat(venta.precio_lista || 0);
+  const descFin = parseFloat(venta.descuento_financiero || 0);
+  const descComActual = parseFloat(venta.descuento_comercial || 0);
+  const anticipoActual = parseFloat(venta.anticipo || 0);
+
+  const nuevoDescCom = Math.max(0, descComActual - montoTotal);
+  const nuevoAnticipo = anticipoActual + montoTotal;
+  const nuevoPrecioTotal = precioLista - descFin - nuevoDescCom;
+
+  const tenantConfig = await client.query(
+    `SELECT COALESCE((config->>'porc_gravado')::numeric, 0) AS porc_gravado FROM shared.tenants WHERE slug = $1`,
+    [tenant]
+  );
+  const porcGravado = parseFloat(tenantConfig.rows[0]?.porc_gravado || 0);
+  const IVA_RATE = 0.21;
+  const gravadoConIva = round(nuevoPrecioTotal * porcGravado);
+  const capitalEx = round(nuevoPrecioTotal * (1 - porcGravado));
+  const capitalGr = round(gravadoConIva / (1 + IVA_RATE));
+  const ivaCapital = round(gravadoConIva - capitalGr);
+
+  await client.query(
+    `UPDATE ${schema}.ventas
+     SET descuento_comercial = $2,
+         anticipo = $3,
+         precio_total = $4,
+         capital_total_gr = $5,
+         capital_total_ex = $6,
+         iva_capital_total = $7,
+         updated_at = NOW()
+     WHERE id = $1::uuid`,
+    [ventaId, nuevoDescCom, nuevoAnticipo, nuevoPrecioTotal, capitalGr, capitalEx, ivaCapital]
+  );
+
+  await registrarHistorial(
+    client, schema, ventaId,
+    venta.estado, venta.estado,
+    `Reversion de reclasificacion: ${motivo}. Monto restaurado al anticipo: $${montoTotal.toLocaleString("es-AR")}`,
+    "admin",
+    {
+      monto_revertido: montoTotal,
+      cobranzas_restauradas: cobranzasRestauradas,
+      descuentos_borrados: descRes.rows.length,
+      nuevo_anticipo: nuevoAnticipo,
+      nuevo_desc_comercial: nuevoDescCom,
+    }
+  );
+
+  return {
+    tenia_reclasificacion: true,
+    monto_total: montoTotal,
+    cobranzas_restauradas: cobranzasRestauradas,
   };
 }
 

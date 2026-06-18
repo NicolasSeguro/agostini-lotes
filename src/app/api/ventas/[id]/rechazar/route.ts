@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSchema, getPool } from "@/lib/db";
 import { registrarHistorial, getVentaParaTransicion } from "@/lib/workflow-helpers";
-import { revertirReclasificacionInterno } from "../revertir-reclasificacion/route";
+import { revertirReclasificacionInterno } from "@/lib/workflow-helpers";
 
 type Body = {
   tenant: string;

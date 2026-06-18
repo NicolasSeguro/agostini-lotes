@@ -131,7 +131,7 @@ export function Sidebar() {
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
-          if (item.disabled) {
+          if ((item as any).disabled) {
             return (
               <div
                 key={item.label}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
@@ -78,7 +78,7 @@ function EstadoBadge({ estado }: { estado: string }) {
   );
 }
 
-export default function CuotasDashboardPage() {
+function CuotasDashboardPageContent() {
   const sp = useSearchParams();
   const tenant = sp.get("t") || "jacaranda";
 
@@ -302,5 +302,13 @@ export default function CuotasDashboardPage() {
       </div>
     </div>
     </AppShell>
+  );
+}
+
+export default function CuotasDashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <CuotasDashboardPageContent />
+    </Suspense>
   );
 }
