@@ -4,6 +4,8 @@ import { query, getSchema } from "@/lib/db";
 import Link from "next/link";
 import { FileText, Info } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const TENANTS_NOMBRES: Record<string, string> = {
   jacaranda: "Jacaranda", tipuana: "Tipuana", alisos: "Alisos", boulevard: "Boulevard",
 };

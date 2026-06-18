@@ -5,6 +5,8 @@ import { query, getSchema } from "@/lib/db";
 import Link from "next/link";
 import { ArrowLeft, AlertCircle, MapPin } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const TENANTS = [
   { slug: "jacaranda", nombre: "Jacaranda" },
   { slug: "tipuana", nombre: "Tipuana" },

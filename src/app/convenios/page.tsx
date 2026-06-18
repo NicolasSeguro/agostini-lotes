@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Plus, Search, Handshake } from "lucide-react";
 import { ConveniosLista } from "./ConveniosLista";
 
+export const dynamic = "force-dynamic";
+
 async function getConvenios(activo: string | null, q: string) {
   const conditions: string[] = [];
   const params: any[] = [];

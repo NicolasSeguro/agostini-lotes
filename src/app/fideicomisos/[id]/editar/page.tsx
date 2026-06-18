@@ -3,6 +3,8 @@ import { FideicomisoForm } from "@/components/FideicomisoForm";
 import { query } from "@/lib/db";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getFideicomiso(idOrSlug: string) {
   const isUuid = /^[0-9a-f-]{36}$/i.test(idOrSlug);
   const cond = isUuid ? "id = $1::uuid" : "slug = $1";

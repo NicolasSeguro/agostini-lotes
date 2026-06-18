@@ -4,6 +4,8 @@ import { NuevaVentaForm } from "./NuevaVentaForm";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 async function getProyectos(tenantSlug: string) {
   const schema = getSchema(tenantSlug);
   return await query(`

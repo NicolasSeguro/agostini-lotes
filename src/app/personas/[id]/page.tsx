@@ -7,6 +7,8 @@ import Link from "next/link";
 import { ArrowLeft, Mail, Phone, AlertCircle, Receipt, Calendar } from "lucide-react";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getPersonaDetalle(tenantSlug: string, personaId: string) {
   const schema = getSchema(tenantSlug);
 

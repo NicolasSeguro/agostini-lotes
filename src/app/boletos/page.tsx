@@ -3,6 +3,8 @@ import { BoletosCliente } from "@/components/BoletosCliente";
 import { query, getSchema } from "@/lib/db";
 import { FileSignature } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const TENANTS_NOMBRES: Record<string, string> = {
   jacaranda: "Jacaranda", tipuana: "Tipuana", alisos: "Alisos", boulevard: "Boulevard",
 };

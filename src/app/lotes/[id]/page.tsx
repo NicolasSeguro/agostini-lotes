@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowLeft, MapPin, Ruler, Droplets, Zap, Trash2, Flame } from "lucide-react";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getLoteDetalle(tenantSlug: string, loteId: string) {
   const schema = getSchema(tenantSlug);
 

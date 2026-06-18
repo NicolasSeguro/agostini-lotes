@@ -3,6 +3,8 @@ import { LoteForm } from "@/components/LoteForm";
 import { query, getSchema } from "@/lib/db";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getProyectos(tenant: string) {
   const schema = getSchema(tenant);
   if (!schema) return [];

@@ -6,6 +6,8 @@ import { calcularSaldoCuota, esCuotaVigente, toDateString } from "@/lib/cobranza
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 async function getMediosCobro() {
   return await query(`
     SELECT id, codigo, nombre, tipo

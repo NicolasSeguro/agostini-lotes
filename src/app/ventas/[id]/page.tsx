@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 import { DetalleVentaActions } from "@/components/DetalleVentaActions";
 import { GenerarBoletoBoton } from "@/components/GenerarBoletoBoton";
 
+export const dynamic = "force-dynamic";
+
 async function getVentaDetalle(tenantSlug: string, ventaId: string) {
   const schema = getSchema(tenantSlug);
 

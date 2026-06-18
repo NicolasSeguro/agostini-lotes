@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getProyectos(tenantSlug: string) {
   const schema = getSchema(tenantSlug);
   return await query(`

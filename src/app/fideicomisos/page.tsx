@@ -3,6 +3,8 @@ import { query } from "@/lib/db";
 import Link from "next/link";
 import { Pencil, Building2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 async function getFideicomisos() {
   return await query(
     `

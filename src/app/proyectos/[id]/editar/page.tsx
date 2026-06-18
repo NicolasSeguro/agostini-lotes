@@ -3,6 +3,8 @@ import { ProyectoForm } from "@/components/ProyectoForm";
 import { query, getSchema } from "@/lib/db";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getProyecto(tenant: string, id: string) {
   const schema = getSchema(tenant);
   if (!schema) return null;

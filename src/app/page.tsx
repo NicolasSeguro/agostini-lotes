@@ -3,6 +3,8 @@ import { query, getSchema, TENANTS } from "@/lib/db";
 import { formatMoney, formatNumber } from "@/lib/utils";
 import { Users, Tag, FileText, TrendingUp, AlertCircle, Building2, Receipt } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 async function getStats(tenantSlug: string) {
   const schema = getSchema(tenantSlug);
 

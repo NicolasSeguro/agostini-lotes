@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ArrowLeft, AlertTriangle, ClipboardList } from "lucide-react";
 import { ReintegrosLista } from "./ReintegrosLista";
 
+export const dynamic = "force-dynamic";
+
 async function getReintegrosPendientes(tenantSlug: string) {
   const schema = getSchema(tenantSlug);
 

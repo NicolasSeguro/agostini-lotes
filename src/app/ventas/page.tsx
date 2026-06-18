@@ -6,6 +6,8 @@ import { Search, AlertCircle, Plus, AlertTriangle } from "lucide-react";
 import { BarraPendientes } from "@/components/BarraPendientes";
 import { AsignarIndiceButton } from "@/components/AsignarIndiceButton";
 
+export const dynamic = "force-dynamic";
+
 async function getProyectos(tenantSlug: string) {
   const schema = getSchema(tenantSlug);
   return await query(`

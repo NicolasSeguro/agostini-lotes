@@ -2,6 +2,8 @@ import { AppShell } from "@/components/AppShell";
 import { LoteForm } from "@/components/LoteForm";
 import { query, getSchema } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 async function getProyectos(tenant: string) {
   const schema = getSchema(tenant);
   if (!schema) return [];

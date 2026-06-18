@@ -4,6 +4,8 @@ import { formatMoney, formatNumber } from "@/lib/utils";
 import Link from "next/link";
 import { Search, MapPin, Plus, Pencil, Download, Upload } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 async function getProyectos(tenantSlug: string) {
   const schema = getSchema(tenantSlug);
   return await query(`

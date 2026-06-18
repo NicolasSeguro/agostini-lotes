@@ -4,6 +4,8 @@ import { formatMoney, formatNumber, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Search, AlertCircle, Plus } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 function getDefaultRange(): { desde: string; hasta: string } {
   const hoy = new Date();
   const desde = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);

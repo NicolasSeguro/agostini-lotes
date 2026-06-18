@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ArrowLeft, Receipt, Wallet, FileText, AlertCircle } from "lucide-react";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getCobranzaDetalle(tenantSlug: string, cobranzaId: string) {
   const schema = getSchema(tenantSlug);
 

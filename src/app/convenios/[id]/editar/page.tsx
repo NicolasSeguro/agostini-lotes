@@ -3,6 +3,8 @@ import { ConvenioForm } from "@/components/ConvenioForm";
 import { query } from "@/lib/db";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 async function getConvenio(id: string) {
   const rows = await query(
     `SELECT 

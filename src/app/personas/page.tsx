@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Search, AlertCircle, Plus } from "lucide-react";
 import { PersonaAcciones } from "@/components/PersonaAcciones";
 
+export const dynamic = "force-dynamic";
+
 async function getPersonas(tenantSlug: string, search: string, soloMora: boolean, offset: number) {
   const schema = getSchema(tenantSlug);
   const LIMIT = 50;
