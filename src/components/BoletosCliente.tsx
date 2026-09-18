@@ -72,7 +72,7 @@ function formatMoney(v: string | number): string {
   return Number(v).toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 function formatFecha(s: string): string {
-  if (!s) return "â€”";
+  if (!s) return "—";
   const [y, m, d] = s.split("-");
   return `${d}/${m}/${y}`;
 }
@@ -125,7 +125,7 @@ export function BoletosCliente({
       try {
         data = text ? JSON.parse(text) : {};
       } catch {
-        setError(`El servidor devolviÃ³ respuesta no-JSON (status ${res.status}). RevisÃ¡ la consola del servidor (npm run dev). Body: ${text.slice(0, 200)}`);
+        setError(`El servidor devolvió respuesta no-JSON (status ${res.status}). Revisá la consola del servidor (npm run dev). Body: ${text.slice(0, 200)}`);
         return;
       }
       if (!res.ok) { 
@@ -134,7 +134,7 @@ export function BoletosCliente({
       }
       setBoletos(data.boletos || []);
     } catch (e: any) {
-      setError(e.message || "Error de conexiÃ³n");
+      setError(e.message || "Error de conexión");
     } finally {
       setLoading(false);
     }
@@ -164,7 +164,7 @@ export function BoletosCliente({
       if (sug) setModalSelec(sug.id);
       else if (data.plantillas?.length > 0) setModalSelec(data.plantillas[0].id);
     } catch (e: any) {
-      setModalError(e.message || "Error de conexiÃ³n");
+      setModalError(e.message || "Error de conexión");
     } finally {
       setModalLoading(false);
     }
@@ -183,7 +183,7 @@ export function BoletosCliente({
       if (!res.ok) {
         let d: any;
         try { d = await res.json(); } catch { d = {}; }
-        setModalError((d.error || "Error al generar") + (d.hint ? ` â€” ${d.hint}` : ""));
+        setModalError((d.error || "Error al generar") + (d.hint ? ` — ${d.hint}` : ""));
         return;
       }
       const blob = await res.blob();
@@ -201,7 +201,7 @@ export function BoletosCliente({
       setModalVenta(null);
       buscar();
     } catch (e: any) {
-      setModalError(e.message || "Error de conexiÃ³n");
+      setModalError(e.message || "Error de conexión");
     } finally {
       setModalGenerando(false);
     }
@@ -289,7 +289,7 @@ export function BoletosCliente({
                 <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Modalidad</th>
                 <th className="px-3 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Precio</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">Boleto</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">AcciÃ³n</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -302,10 +302,10 @@ export function BoletosCliente({
                   </td>
                   <td className="px-3 py-2 text-slate-700">{formatFecha(b.fecha)}</td>
                   <td className="px-3 py-2 text-slate-700">
-                    {b.proyecto_nombre} â€” {b.lote_manzana ? `M${b.lote_manzana}-` : ""}L{b.lote_numero}
+                    {b.proyecto_nombre} — {b.lote_manzana ? `M${b.lote_manzana}-` : ""}L{b.lote_numero}
                   </td>
                   <td className="px-3 py-2 text-slate-900 font-medium">
-                    {b.titular_principal || <span className="text-slate-400">â€”</span>}
+                    {b.titular_principal || <span className="text-slate-400">—</span>}
                     {b.titulares_count > 1 && (
                       <span className="ml-1 text-xs text-slate-500">+{b.titulares_count - 1}</span>
                     )}
@@ -315,7 +315,7 @@ export function BoletosCliente({
                   <td className="px-3 py-2 text-center">
                     {b.emisiones_count > 0 ? (
                       <span
-                        title={b.ultima_emision ? `Ãšltima: ${formatFechaHora(b.ultima_emision)}${b.emisiones_count > 1 ? ` (${b.emisiones_count} emisiones)` : ""}` : ""}
+                        title={b.ultima_emision ? `Íšltima: ${formatFechaHora(b.ultima_emision)}${b.emisiones_count > 1 ? ` (${b.emisiones_count} emisiones)` : ""}` : ""}
                         className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700"
                       >
                         <CheckCircle2 size={12} /> Emitido
@@ -348,7 +348,7 @@ export function BoletosCliente({
         </div>
       </div>
 
-      {/* Modal de generaciÃ³n */}
+      {/* Modal de generación */}
       {modalVenta && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col">
@@ -358,7 +358,7 @@ export function BoletosCliente({
                   {modalVenta.emisiones_count > 0 ? "Regenerar Boleto" : "Generar Boleto"}
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Venta #{modalVenta.nro} â€” {modalVenta.titular_principal}
+                  Venta #{modalVenta.nro} — {modalVenta.titular_principal}
                 </p>
               </div>
               <button onClick={() => setModalVenta(null)} className="text-slate-400 hover:text-slate-700">
@@ -396,7 +396,7 @@ export function BoletosCliente({
                   )}
                   <p className="text-sm text-slate-600 mb-3">
                     {modalProyNombre && <>Proyecto: <strong>{modalProyNombre}</strong>. </>}
-                    La sugerida segÃºn los datos de la venta estÃ¡ marcada con <CheckCircle2 size={14} className="inline text-green-600" />.
+                    La sugerida según los datos de la venta está marcada con <CheckCircle2 size={14} className="inline text-green-600" />.
                   </p>
                   <div className="space-y-2">
                     {modalPlantillas.map(p => (

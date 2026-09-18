@@ -30,7 +30,7 @@ type PreviewResp = {
 };
 
 function formatVal(v: any): string {
-  if (v === null || v === undefined || v === "") return "â€”";
+  if (v === null || v === undefined || v === "") return "—";
   if (typeof v === "boolean") return v ? "SI" : "NO";
   if (typeof v === "number") {
     if (Math.abs(v) >= 1000) return v.toLocaleString("es-AR", { maximumFractionDigits: 2 });
@@ -40,14 +40,14 @@ function formatVal(v: any): string {
 }
 
 const LABEL_CAMPO: Record<string, string> = {
-  superficie_m2: "Superficie (mÂ²)",
+  superficie_m2: "Superficie (m²)",
   frente_ml: "Frente (ml)",
   fondo_ml: "Fondo (ml)",
   zona: "Zona",
   precio_lista: "Precio lista",
   coeficiente: "Coeficiente",
   moneda: "Moneda",
-  matricula: "MatrÃ­cula",
+  matricula: "Matrícula",
   tiene_agua: "Agua",
   tiene_luz: "Luz",
   tiene_cloacas: "Cloacas",
@@ -64,7 +64,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
   const [resultado, setResultado] = useState<{ aplicados: number; omitidos: number } | null>(null);
 
   async function handlePreview() {
-    if (!file) { setError("SeleccionÃ¡ un archivo"); return; }
+    if (!file) { setError("Seleccioná un archivo"); return; }
     setError(null);
     setPreview(null);
     setLoading(true);
@@ -80,7 +80,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
       }
       setPreview(data);
     } catch (e: any) {
-      setError(e.message || "Error de conexiÃ³n");
+      setError(e.message || "Error de conexión");
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
 
   async function handleAplicar() {
     if (!preview || preview.cambios.length === 0) return;
-    if (!confirm(`Se van a actualizar ${preview.cambios.length} lote(s). Â¿ConfirmÃ¡s?`)) return;
+    if (!confirm(`Se van a actualizar ${preview.cambios.length} lote(s). ¿Confirmás?`)) return;
     setAplicando(true);
     setError(null);
     try {
@@ -110,7 +110,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
       setPreview(null);
       setFile(null);
     } catch (e: any) {
-      setError(e.message || "Error de conexiÃ³n");
+      setError(e.message || "Error de conexión");
     } finally {
       setAplicando(false);
     }
@@ -128,7 +128,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
         <CheckCircle2 className="mx-auto text-green-600 mb-3" size={48} />
-        <h2 className="text-xl font-semibold text-slate-900 mb-2">ImportaciÃ³n completada</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-2">Importación completada</h2>
         <p className="text-slate-600 mb-4">
           Se actualizaron <b>{resultado.aplicados}</b> lote{resultado.aplicados === 1 ? "" : "s"}.
           {resultado.omitidos > 0 && <span> Omitidos: {resultado.omitidos}.</span>}
@@ -146,17 +146,17 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
       {/* Paso 1: subir archivo */}
       {!preview && (
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-semibold text-slate-900 mb-2">1. SeleccionÃ¡ el archivo Excel</h2>
+          <h2 className="font-semibold text-slate-900 mb-2">1. Seleccioná el archivo Excel</h2>
           <p className="text-xs text-slate-500 mb-4">
-            UsÃ¡ el archivo descargado con "Exportar Excel", editÃ¡ los precios u otros campos en tu PC,
-            y subilo acÃ¡. Vas a ver un preview antes de aplicar nada.
+            Usá el archivo descargado con "Exportar Excel", editá los precios u otros campos en tu PC,
+            y subilo acá. Vas a ver un preview antes de aplicar nada.
           </p>
 
           <label className="flex items-center gap-3 border-2 border-dashed border-slate-300 hover:border-brand-400 hover:bg-slate-50 rounded-lg p-6 cursor-pointer transition">
             <FileSpreadsheet className="text-slate-400" size={32} />
             <div className="flex-1">
               <div className="text-sm text-slate-700 font-medium">
-                {file ? file.name : "HacÃ© click para seleccionar archivo .xlsx"}
+                {file ? file.name : "Hacé click para seleccionar archivo .xlsx"}
               </div>
               {file && <div className="text-xs text-slate-500">{(file.size / 1024).toFixed(1)} KB</div>}
             </div>
@@ -221,7 +221,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
                 {preview.errores.slice(0, 50).map((e, i) => (
                   <li key={i}>Fila {e.fila}: {e.mensaje}</li>
                 ))}
-                {preview.errores.length > 50 && <li className="text-xs">... y {preview.errores.length - 50} mÃ¡s</li>}
+                {preview.errores.length > 50 && <li className="text-xs">... y {preview.errores.length - 50} más</li>}
               </ul>
             </div>
           )}
@@ -247,7 +247,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
                   </tbody>
                 </table>
                 {preview.omitidos.length > 100 && (
-                  <p className="text-xs text-amber-600 mt-2">... y {preview.omitidos.length - 100} mÃ¡s</p>
+                  <p className="text-xs text-amber-600 mt-2">... y {preview.omitidos.length - 100} más</p>
                 )}
               </div>
             </div>
@@ -293,7 +293,7 @@ export function ImportLotesCliente({ tenant }: { tenant: string }) {
             </div>
           ) : (
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center text-slate-600">
-              No hay cambios para aplicar. Todos los lotes estÃ¡n iguales que en la base.
+              No hay cambios para aplicar. Todos los lotes están iguales que en la base.
             </div>
           )}
 

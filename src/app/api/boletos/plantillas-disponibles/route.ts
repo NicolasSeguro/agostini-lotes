@@ -6,7 +6,7 @@ import { query, getSchema } from "@/lib/db";
 /**
  * GET /api/boletos/plantillas-disponibles?t=tenant&venta_id=...
  * Devuelve las plantillas del proyecto de la venta + sugerencia.
- * El proyecto de la venta se obtiene a travÃ©s del lote (la tabla ventas no tiene proyecto_id directo).
+ * El proyecto de la venta se obtiene a través del lote (la tabla ventas no tiene proyecto_id directo).
  */
 export async function GET(req: NextRequest) {
   const authz = await requireRole(ROLES.ALL);
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const schema = getSchema(tenant);
   if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
-  // Traer datos clave de la venta a travÃ©s del lote (proyecto estÃ¡ en lotes, no en ventas)
+  // Traer datos clave de la venta a través del lote (proyecto está en lotes, no en ventas)
   const v = await query(
     `
     SELECT 
@@ -67,10 +67,10 @@ export async function GET(req: NextRequest) {
     indSug = ajustable ? (indice !== "NINGUNO" ? indice : "CAC") : "FIJO";
   }
 
-  // Si AJUSTABLE pero el Ã­ndice es NINGUNO, aviso
+  // Si AJUSTABLE pero el índice es NINGUNO, aviso
   let aviso_indice: string | null = null;
   if (ajustable && indice === "NINGUNO") {
-    aviso_indice = "La venta es AJUSTABLE pero no tiene Ã­ndice de ajuste cargado. EditÃ¡ la venta y cargÃ¡ el Ã­ndice antes de generar el boleto.";
+    aviso_indice = "La venta es AJUSTABLE pero no tiene índice de ajuste cargado. Editá la venta y cargá el índice antes de generar el boleto.";
   }
 
   // Traer todas las plantillas del proyecto

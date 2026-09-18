@@ -11,17 +11,17 @@ type Body = {
 /**
  * POST /api/ventas/[id]/cerrar-pendiente
  * 
- * Cierra la carga del vendedor. El sistema decide el estado destino segÃºn
+ * Cierra la carga del vendedor. El sistema decide el estado destino según
  * si ya hay anticipo cobrado (caso de venta corregida tras rechazo):
  * 
  *   - Si NO hay anticipo cobrado o anticipo de la venta == 0:
- *       Si anticipo de venta > 0 â†’ CERRADA_PENDIENTE (espera cobro)
- *       Si anticipo de venta = 0 â†’ CERRADA_CONFIRMADA (no hay nada que cobrar)
+ *       Si anticipo de venta > 0 → CERRADA_PENDIENTE (espera cobro)
+ *       Si anticipo de venta = 0 → CERRADA_CONFIRMADA (no hay nada que cobrar)
  *   
  *   - Si hay anticipo cobrado vigente:
- *       Si cobrado == anticipo de venta â†’ CERRADA_CONFIRMADA (anticipo cubierto)
- *       Si cobrado < anticipo de venta  â†’ CERRADA_PENDIENTE (falta cobrar diferencia)
- *       Si cobrado > anticipo de venta  â†’ genera saldo_a_favor por el excedente,
+ *       Si cobrado == anticipo de venta → CERRADA_CONFIRMADA (anticipo cubierto)
+ *       Si cobrado < anticipo de venta  → CERRADA_PENDIENTE (falta cobrar diferencia)
+ *       Si cobrado > anticipo de venta  → genera saldo_a_favor por el excedente,
  *                                          pasa a CERRADA_CONFIRMADA
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       estadoDestino = "CERRADA_PENDIENTE";
       mensajeHistorial = "Cerrada por vendedor, esperando cobro de anticipo";
     } else if (Math.abs(anticipoCobrado - anticipoVenta) < 0.01) {
-      // Anticipo exactamente cubierto (caso tÃ­pico tras corregir rechazo)
+      // Anticipo exactamente cubierto (caso típico tras corregir rechazo)
       estadoDestino = "CERRADA_CONFIRMADA";
       mensajeHistorial = `Cerrada con anticipo ya cobrado ($${anticipoCobrado.toLocaleString("es-AR")}). Pasa directo a confirmada.`;
     } else if (anticipoCobrado < anticipoVenta) {
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       // Cobrado en exceso: generar saldo a favor por la diferencia
       const excedente = anticipoCobrado - anticipoVenta;
       
-      // Obtener primer titular como dueÃ±o del saldo
+      // Obtener primer titular como dueño del saldo
       const tit = await client.query(
         `SELECT persona_id FROM ${schema}.venta_titulares WHERE venta_id = $1::uuid ORDER BY orden LIMIT 1`,
         [id]

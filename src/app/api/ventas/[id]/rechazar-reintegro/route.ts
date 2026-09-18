@@ -12,11 +12,11 @@ type Body = {
 /**
  * POST /api/ventas/[id]/rechazar-reintegro
  * 
- * El cajero rechaza la solicitud de reintegro (ej: cliente no se presentÃ³,
+ * El cajero rechaza la solicitud de reintegro (ej: cliente no se presentó,
  * datos incompletos, etc.). La venta vuelve al estado de rechazo anterior
- * (RECHAZADA_COMERCIAL o RECHAZADA_CONTABILIDAD) segÃºn corresponda.
+ * (RECHAZADA_COMERCIAL o RECHAZADA_CONTABILIDAD) según corresponda.
  * 
- * Si la venta venÃ­a de un rechazo, vuelve a ese estado. Si venÃ­a de otro lado
+ * Si la venta venía de un rechazo, vuelve a ese estado. Si venía de otro lado
  * (EN_CARGA / CERRADA_PENDIENTE), vuelve a EN_CARGA por simplicidad.
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.motivo || body.motivo.trim().length < 3) {
-    return NextResponse.json({ error: "Motivo obligatorio (mÃ­nimo 3 caracteres)" }, { status: 400 });
+    return NextResponse.json({ error: "Motivo obligatorio (mínimo 3 caracteres)" }, { status: 400 });
   }
 
   const schema = getSchema(body.tenant);
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
     const venta = await getVentaParaTransicion(client, schema, id, ["PENDIENTE_REINTEGRO"]);
 
-    // Determinar a quÃ© estado volver: mirar el historial reciente para encontrar
+    // Determinar a qué estado volver: mirar el historial reciente para encontrar
     // el estado RECHAZADA_* anterior o EN_CARGA
     const hist = await client.query(
       `SELECT estado_anterior FROM ${schema}.venta_historial
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       "PENDIENTE_REINTEGRO", estadoOriginal,
-      `Caja rechazÃ³ el reintegro: ${body.motivo.trim()}`, sessionLabel(session),
+      `Caja rechazó el reintegro: ${body.motivo.trim()}`, sessionLabel(session),
       { motivo_rechazo_caja: body.motivo.trim() }
     );
 

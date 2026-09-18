@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/ops-ui";
 import {
   Percent,
   Calendar,
@@ -120,18 +121,12 @@ function CuotasDashboardPageContent() {
 
   return (
     <AppShell>
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center">
-            <Percent className="text-white" size={20} />
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900">Cuotas</h1>
-        </div>
-        <p className="text-slate-500">
-          Aplicacion mensual de ajustes por indices (CAC, CVS) sobre cuotas vigentes.
-        </p>
-      </div>
+    <div className="p-6 md:p-10 max-w-7xl mx-auto">
+      <PageHeader
+        kicker="Cartera"
+        title="Cuotas"
+        description="Aplicación mensual de ajustes por índices (CAC, CVS) sobre cuotas vigentes."
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-xl border border-slate-200 p-6">

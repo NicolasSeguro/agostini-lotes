@@ -72,7 +72,7 @@ export function ConvenioForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ValidaciÃ³n CUIT en vivo (para feedback al usuario)
+  // Validación CUIT en vivo (para feedback al usuario)
   const cuitVal = cuit ? validarCuit(cuit) : { valido: false, error: undefined };
   const cuitMostrado = cuit ? formatearCuit(cuit) : "";
 
@@ -89,8 +89,8 @@ export function ConvenioForm({
     setError(null);
 
     // Validaciones cliente
-    if (razonSocial.trim().length < 2) { setError("RazÃ³n social requerida"); return; }
-    if (!cuitVal.valido) { setError(`CUIT invÃ¡lido: ${cuitVal.error || "verificar"}`); return; }
+    if (razonSocial.trim().length < 2) { setError("Razón social requerida"); return; }
+    if (!cuitVal.valido) { setError(`CUIT inválido: ${cuitVal.error || "verificar"}`); return; }
     if (!fechaInicio || !fechaFin) { setError("Fechas requeridas"); return; }
     if (fechaFin < fechaInicio) { setError("Fecha fin debe ser >= fecha inicio"); return; }
     if (!valorBeneficio || (typeof valorBeneficio === "number" && valorBeneficio <= 0)) {
@@ -99,7 +99,7 @@ export function ConvenioForm({
     if (tipoBeneficio === "PORCENTAJE" && typeof valorBeneficio === "number" && valorBeneficio > 100) {
       setError("Porcentaje no puede superar 100%"); return;
     }
-    if (tenantsAplicables.length === 0) { setError("SeleccionÃ¡ al menos un fideicomiso"); return; }
+    if (tenantsAplicables.length === 0) { setError("Seleccioná al menos un fideicomiso"); return; }
 
     setSubmitting(true);
     try {
@@ -129,7 +129,7 @@ export function ConvenioForm({
       router.push(`/convenios?t=${tenant}`);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃ³n");
+      setError(err.message || "Error de conexión");
       setSubmitting(false);
     }
   }
@@ -160,7 +160,7 @@ export function ConvenioForm({
         <h2 className="font-semibold text-slate-900 mb-3">Entidad</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="md:col-span-2">
-            <label className="text-xs text-slate-600 mb-1 block">RazÃ³n social *</label>
+            <label className="text-xs text-slate-600 mb-1 block">Razón social *</label>
             <input
               type="text"
               value={razonSocial}
@@ -185,7 +185,7 @@ export function ConvenioForm({
               }`}
             />
             {cuit && cuitVal.valido && (
-              <div className="text-xs text-green-700 mt-1">âœ“ VÃ¡lido: {cuitMostrado}</div>
+              <div className="text-xs text-green-700 mt-1">âœ“ Válido: {cuitMostrado}</div>
             )}
             {cuit && !cuitVal.valido && cuitVal.error && (
               <div className="text-xs text-red-700 mt-1">{cuitVal.error}</div>
@@ -281,7 +281,7 @@ export function ConvenioForm({
       <section className="bg-white rounded-xl border border-slate-200 p-5">
         <h2 className="font-semibold text-slate-900 mb-1">Fideicomisos donde aplica *</h2>
         <p className="text-xs text-slate-500 mb-3">
-          Por defecto aplica a todos. DestildÃ¡ los que NO aplican.
+          Por defecto aplica a todos. Destildá los que NO aplican.
         </p>
         <div className="grid grid-cols-2 gap-2">
           {TENANTS.map(t => (
@@ -324,7 +324,7 @@ export function ConvenioForm({
           {!activo && (
             <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 mt-2 inline-flex items-start gap-1">
               <AlertTriangle size={12} className="mt-0.5 flex-shrink-0" />
-              <span>El convenio queda dado de baja. Ventas existentes no se afectan, pero no aparecerÃ¡ para ventas nuevas.</span>
+              <span>El convenio queda dado de baja. Ventas existentes no se afectan, pero no aparecerá para ventas nuevas.</span>
             </div>
           )}
         </section>

@@ -66,10 +66,10 @@ export function NuevaVentaForm({
   const router = useRouter();
   const editando = !!ventaInicial;
   const ventaId = ventaInicial?.id;
-  // Si estÃƒÂ¡ editando y NO se permite cambiar lote, queda fijo
+  // Si estÍƒ¡ editando y NO se permite cambiar lote, queda fijo
   const lotInmutable = editando && !permitirCambiarLote;
   
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Estado: Lote Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ Estado: Lote Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   const [proyectoId, setProyectoId] = useState<string>(ventaInicial?.lote_proyecto_id || proyectos[0]?.id || "");
   // Si permite cambiar lote, arranca con el lote actual pero el usuario puede limpiarlo
   const [lote, setLote] = useState<Lote | null>(ventaInicial?.lote || null);
@@ -80,14 +80,14 @@ export function NuevaVentaForm({
   const [showWarningCambioLote, setShowWarningCambioLote] = useState(false);
   const [loteCandidato, setLoteCandidato] = useState<Lote | null>(null);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Estado: Titulares Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ Estado: Titulares Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   const [titulares, setTitulares] = useState<Titular[]>(ventaInicial?.titulares || []);
   const [tituSearch, setTituSearch] = useState("");
   const [tituResults, setTituResults] = useState<Persona[]>([]);
   const [loadingTitu, setLoadingTitu] = useState(false);
   const [showModalCrear, setShowModalCrear] = useState(false);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Estado: Convenio Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ Estado: Convenio Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   type ConvenioOption = {
     id: string;
     razon_social: string;
@@ -114,7 +114,7 @@ export function NuevaVentaForm({
         valor_beneficio: ventaInicial.convenio_valor_beneficio,
       } : null);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Estado: Condiciones Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ Estado: Condiciones Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   const [precioLista, setPrecioLista] = useState<number | "">(ventaInicial?.precio_lista ?? "");
   const [descFinanciero, setDescFinanciero] = useState<number | "">(ventaInicial?.descuento_financiero ?? "");
   const [anticipo, setAnticipo] = useState<number | "">(ventaInicial?.anticipo ?? "");
@@ -138,7 +138,7 @@ export function NuevaVentaForm({
 
   const proyecto = useMemo(() => proyectos.find(p => p.id === proyectoId), [proyectos, proyectoId]);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ BÃƒÂºsqueda de lotes Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ BÍƒÂºsqueda de lotes Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   useEffect(() => {
     if (!proyectoId || lote) {
       // No buscar si ya hay un lote seleccionado
@@ -165,7 +165,7 @@ export function NuevaVentaForm({
   }, [tenant, proyectoId, loteSearch, lote]);
 
   function seleccionarLote(l: Lote) {
-    // Si estÃƒÂ¡ editando con permiso de cambiar lote y el nuevo es distinto al original Ã¢â€ â€™ confirmar
+    // Si estÍƒ¡ editando con permiso de cambiar lote y el nuevo es distinto al original → confirmar
     if (permitirCambiarLote && loteOriginal && l.id !== loteOriginal.id) {
       setLoteCandidato(l);
       setShowWarningCambioLote(true);
@@ -183,7 +183,7 @@ export function NuevaVentaForm({
     setLoteCandidato(null);
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ BÃƒÂºsqueda de titulares Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ BÍƒÂºsqueda de titulares Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   useEffect(() => {
     if (tituSearch.length < 2) {
       setTituResults([]);
@@ -210,7 +210,7 @@ export function NuevaVentaForm({
 
   function agregarTitular(p: Persona) {
     if (titulares.find(t => t.persona.id === p.id)) {
-      setError("Esa persona ya estÃƒÂ¡ en la lista de titulares");
+      setError("Esa persona ya estÍƒ¡ en la lista de titulares");
       return;
     }
     setError(null);
@@ -242,7 +242,7 @@ export function NuevaVentaForm({
     setTitulares(titulares.map((t, i) => ({ ...t, porcentaje: pcts[i] })));
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Descuento financiero: % y monto sincronizados Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ Descuento financiero: % y monto sincronizados Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   const descPctActual = useMemo(() => {
     if (!precioLista || precioLista <= 0 || !descFinanciero) return 0;
     return (typeof descFinanciero === "number" ? descFinanciero : 0) / precioLista * 100;
@@ -257,7 +257,7 @@ export function NuevaVentaForm({
     setDescFinanciero(monto);
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ CÃƒÂ¡lculos derivados Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ CÍƒ¡lculos derivados Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   const sumaPct = titulares.reduce((s, t) => s + t.porcentaje, 0);
   const sumaPctOk = Math.abs(sumaPct - 100) < 0.01 && titulares.length > 0;
 
@@ -285,21 +285,21 @@ export function NuevaVentaForm({
     return previewPlan(cantCuotas, calc.cuota_base, fechaPrimerVto);
   }, [calc, cantCuotas, fechaPrimerVto]);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ ValidaciÃƒÂ³n en vivo Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ ValidaciÍƒÂ³n en vivo Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   const errores: string[] = [];
   if (!lote) errores.push("Falta elegir lote");
   if (titulares.length === 0) errores.push("Falta al menos 1 titular");
   if (titulares.length > 0 && !sumaPctOk) errores.push(`Titulares deben sumar 100% (actual: ${sumaPct.toFixed(2)}%)`);
   if (!precioLista || precioLista <= 0) errores.push("Falta precio lista");
   if (!cantCuotas || cantCuotas <= 0) errores.push("Falta cantidad de cuotas");
-  if (sistemaAmort === "FRANCES" && (!tasaInteres || tasaInteres <= 0)) errores.push("Sistema FrancÃƒÂ©s requiere tasa de interÃƒÂ©s");
-  if (sistemaAmort === "AJUSTABLE" && (!indiceAjuste || indiceAjuste === "NINGUNO")) errores.push("Sistema Ajustable requiere ÃƒÂ­ndice de ajuste (CAC, CVS, UVA, IPC o USD Oficial)");
+  if (sistemaAmort === "FRANCES" && (!tasaInteres || tasaInteres <= 0)) errores.push("Sistema FrancÍƒÂ©s requiere tasa de interÍƒÂ©s");
+  if (sistemaAmort === "AJUSTABLE" && (!indiceAjuste || indiceAjuste === "NINGUNO")) errores.push("Sistema Ajustable requiere ÍƒÂ­ndice de ajuste (CAC, CVS, UVA, IPC o USD Oficial)");
   if (calc && calc.monto_a_financiar < 0) errores.push("El anticipo no puede superar el precio boleto");
 
   const puedeCerrar = errores.length === 0;
-  const puedeGuardarBorrador = lote && titulares.length > 0; // MÃƒÂ­nimo para guardar borrador
+  const puedeGuardarBorrador = lote && titulares.length > 0; // MÍƒÂ­nimo para guardar borrador
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Submit Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬ Submit Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬Í¢”â‚¬
   async function handleSubmit(e: FormEvent, accion: "borrador" | "cerrar") {
     e.preventDefault();
     setError(null);
@@ -309,7 +309,7 @@ export function NuevaVentaForm({
       return;
     }
     if (accion === "borrador" && !puedeGuardarBorrador) {
-      setError("Para guardar borrador necesitÃƒÂ¡s al menos un lote y un titular");
+      setError("Para guardar borrador necesitÍƒ¡s al menos un lote y un titular");
       return;
     }
 
@@ -380,14 +380,14 @@ export function NuevaVentaForm({
       router.push(`/ventas/${resultId}?t=${tenant}`);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃƒÂ³n");
+      setError(err.message || "Error de conexiÍƒÂ³n");
       setSubmitting(false);
     }
   }
 
   return (
     <form className="space-y-6">
-      {/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SECCIÃƒâ€œN 1: LOTE Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */}
+      {/* Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â SECCIÍƒ“N 1: LOTE Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-slate-900">1. Lote a vender</h2>
@@ -412,7 +412,7 @@ export function NuevaVentaForm({
             </select>
           </div>
           <div className="md:col-span-2 relative">
-            <label className="text-xs text-slate-600 mb-1 block">Buscar lote (M/L/padrÃƒÂ³n)</label>
+            <label className="text-xs text-slate-600 mb-1 block">Buscar lote (M/L/padrÍƒÂ³n)</label>
             <div className="relative">
               <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
               <input
@@ -432,10 +432,10 @@ export function NuevaVentaForm({
             <div>
               <div className="font-medium text-slate-900">
                 {lote.manzana ? `M${lote.manzana}-` : ""}L{lote.numero}
-                {lote.numero_padron && <span className="text-slate-500 ml-2 text-sm">PadrÃƒÂ³n {lote.numero_padron}</span>}
+                {lote.numero_padron && <span className="text-slate-500 ml-2 text-sm">PadrÍƒÂ³n {lote.numero_padron}</span>}
               </div>
               <div className="text-xs text-slate-600 mt-1">
-                {lote.superficie_m2 && `${lote.superficie_m2} mÃ‚Â² Ã‚Â· `}
+                {lote.superficie_m2 && `${lote.superficie_m2} mÍ‚² Í‚· `}
                 Precio lista: {lote.precio_lista ? formatMoney(parseFloat(String(lote.precio_lista))) : "(sin definir)"}
               </div>
             </div>
@@ -454,7 +454,7 @@ export function NuevaVentaForm({
             {loadingLotes && <div className="px-4 py-3 text-sm text-slate-500">Buscando...</div>}
             {!loadingLotes && lotesBusqueda.length === 0 && (
               <div className="px-4 py-3 text-sm text-slate-500">
-                {loteSearch ? "Sin resultados" : "EmpezÃƒÂ¡ a escribir para buscar"}
+                {loteSearch ? "Sin resultados" : "EmpezÍƒ¡ a escribir para buscar"}
               </div>
             )}
             {lotesBusqueda.map(l => (
@@ -466,10 +466,10 @@ export function NuevaVentaForm({
               >
                 <div className="font-medium text-sm text-slate-900">
                   {l.manzana ? `M${l.manzana}-` : ""}L{l.numero}
-                  {l.numero_padron && <span className="text-slate-500 ml-2 text-xs">PadrÃƒÂ³n {l.numero_padron}</span>}
+                  {l.numero_padron && <span className="text-slate-500 ml-2 text-xs">PadrÍƒÂ³n {l.numero_padron}</span>}
                 </div>
                 <div className="text-xs text-slate-500">
-                  {l.superficie_m2 && `${l.superficie_m2} mÃ‚Â² Ã‚Â· `}
+                  {l.superficie_m2 && `${l.superficie_m2} mÍ‚² Í‚· `}
                   {l.precio_lista ? formatMoney(parseFloat(String(l.precio_lista))) : "(sin precio)"}
                 </div>
               </button>
@@ -478,7 +478,7 @@ export function NuevaVentaForm({
         )}
       </section>
 
-      {/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SECCIÃƒâ€œN 2: TITULARES Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */}
+      {/* Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â SECCIÍƒ“N 2: TITULARES Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-slate-900">2. Titulares</h2>
@@ -502,7 +502,7 @@ export function NuevaVentaForm({
                   <div className="text-xs text-slate-500">{t.persona.cuit || t.persona.doc_numero}</div>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-600 block mb-0.5">% participaciÃƒÂ³n</label>
+                  <label className="text-xs text-slate-600 block mb-0.5">% participaciÍƒÂ³n</label>
                   <input
                     type="number"
                     step="0.01"
@@ -524,7 +524,7 @@ export function NuevaVentaForm({
               </div>
             ))}
             <div className={`text-xs px-2 py-1 rounded inline-block ${sumaPctOk ? "text-green-700 bg-green-50" : "text-red-700 bg-red-50"}`}>
-              Total participaciÃƒÂ³n: {sumaPct.toFixed(2)}% {sumaPctOk && "Ã¢Å“â€œ"}
+              Total participaciÍƒÂ³n: {sumaPct.toFixed(2)}% {sumaPctOk && "Í¢Å““"}
             </div>
           </div>
         )}
@@ -573,7 +573,7 @@ export function NuevaVentaForm({
         </div>
       </section>
 
-      {/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SECCIÃƒâ€œN 3: CONVENIO (opcional) Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */}
+      {/* Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â SECCIÍƒ“N 3: CONVENIO (opcional) Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="flex items-center justify-between mb-1">
           <h2 className="font-semibold text-slate-900">3. Convenio (opcional)</h2>
@@ -588,7 +588,7 @@ export function NuevaVentaForm({
           )}
         </div>
         <p className="text-xs text-slate-500 mb-3">
-          Si el cliente accede a algÃƒÂºn convenio firmado con una entidad, se aplica el descuento antes del financiero.
+          Si el cliente accede a algÍƒÂºn convenio firmado con una entidad, se aplica el descuento antes del financiero.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -622,7 +622,7 @@ export function NuevaVentaForm({
                   {formatMoney(calc.descuento_convenio)}
                 </span>
               ) : (
-                <span className="text-slate-400">Ã¢â‚¬â€</span>
+                <span className="text-slate-400">—</span>
               )}
             </div>
           </div>
@@ -636,7 +636,7 @@ export function NuevaVentaForm({
         )}
       </section>
 
-      {/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SECCIÃƒâ€œN 4: CONDICIONES FINANCIERAS Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */}
+      {/* Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â SECCIÍƒ“N 4: CONDICIONES FINANCIERAS Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
         <h2 className="font-semibold text-slate-900 mb-3">4. Condiciones financieras</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -673,7 +673,7 @@ export function NuevaVentaForm({
             <div className="md:col-span-3">
               <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 inline-flex items-center gap-1">
                 <AlertTriangle size={12} />
-                Descuento de {pct(calc.desc_financiero_pct)} excede el tope. RequerirÃƒÂ¡ autorizaciÃƒÂ³n del Gerente Comercial.
+                Descuento de {pct(calc.desc_financiero_pct)} excede el tope. RequerirÍƒ¡ autorizaciÍƒÂ³n del Gerente Comercial.
               </div>
             </div>
           )}
@@ -703,13 +703,13 @@ export function NuevaVentaForm({
               onChange={(e) => setSistemaAmort(e.target.value as any)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
-              <option value="AJUSTABLE">Ajustable (sin interÃƒÂ©s)</option>
-              <option value="FRANCES">FrancÃƒÂ©s (cuota constante)</option>
+              <option value="AJUSTABLE">Ajustable (sin interÍƒÂ©s)</option>
+              <option value="FRANCES">FrancÍƒÂ©s (cuota constante)</option>
             </select>
           </div>
           {sistemaAmort === "FRANCES" && (
             <div>
-              <label className="text-xs text-slate-600 mb-1 block">Tasa interÃƒÂ©s mensual (%)</label>
+              <label className="text-xs text-slate-600 mb-1 block">Tasa interÍƒÂ©s mensual (%)</label>
               <input
                 type="number"
                 step="0.01"
@@ -723,7 +723,7 @@ export function NuevaVentaForm({
           {sistemaAmort === "AJUSTABLE" && (
             <div>
               <label className="text-xs text-slate-600 mb-1 block">
-                ÃƒÂndice de ajuste <span className="text-red-500">*</span>
+                ÍƒÂndice de ajuste <span className="text-red-500">*</span>
               </label>
               <select
                 value={indiceAjuste}
@@ -734,7 +734,7 @@ export function NuevaVentaForm({
                     : "border-slate-300 bg-white focus:ring-brand-500"
                 }`}
               >
-                <option value="NINGUNO">Ã¢â‚¬â€ ELEGIR INDICE Ã¢â‚¬â€</option>
+                <option value="NINGUNO">— ELEGIR INDICE —</option>
                 <option value="CAC">CAC</option>
                 <option value="CVS">CVS</option>
                 <option value="UVA">UVA</option>
@@ -782,12 +782,12 @@ export function NuevaVentaForm({
         </div>
       </section>
 
-      {/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SECCIÃƒâ€œN 5: RESUMEN Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */}
+      {/* Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â SECCIÍƒ“N 5: RESUMEN Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â */}
       <section className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-brand-200 p-5">
         <h2 className="font-semibold text-slate-900 mb-3">5. Resumen</h2>
         {calc ? (
           <>
-            {/* Paso a paso del cÃƒÂ¡lculo */}
+            {/* Paso a paso del cÍƒ¡lculo */}
             <div className="bg-white/60 rounded-lg p-3 mb-4 text-sm space-y-1">
               <div className="flex justify-between">
                 <span className="text-slate-600">Precio lista</span>
@@ -795,8 +795,8 @@ export function NuevaVentaForm({
               </div>
               {calc.descuento_convenio > 0 && (
                 <div className="flex justify-between text-purple-700">
-                  <span>Ã¢Ë†â€™ Descuento convenio {convenioActual?.razon_social ? `(${convenioActual.razon_social})` : ""}</span>
-                  <span className="font-medium">Ã¢Ë†â€™ {formatMoney(calc.descuento_convenio)}</span>
+                  <span>Í¢Ë†' Descuento convenio {convenioActual?.razon_social ? `(${convenioActual.razon_social})` : ""}</span>
+                  <span className="font-medium">Í¢Ë†' {formatMoney(calc.descuento_convenio)}</span>
                 </div>
               )}
               {calc.descuento_convenio > 0 && (
@@ -807,8 +807,8 @@ export function NuevaVentaForm({
               )}
               {(typeof descFinanciero === "number" && descFinanciero > 0) && (
                 <div className="flex justify-between text-blue-700">
-                  <span>Ã¢Ë†â€™ Descuento financiero</span>
-                  <span className="font-medium">Ã¢Ë†â€™ {formatMoney(descFinanciero)}</span>
+                  <span>Í¢Ë†' Descuento financiero</span>
+                  <span className="font-medium">Í¢Ë†' {formatMoney(descFinanciero)}</span>
                 </div>
               )}
               <div className="flex justify-between border-t border-slate-300 pt-1 font-semibold">
@@ -817,8 +817,8 @@ export function NuevaVentaForm({
               </div>
               {(typeof anticipo === "number" && anticipo > 0) && (
                 <div className="flex justify-between text-amber-700">
-                  <span>Ã¢Ë†â€™ Anticipo</span>
-                  <span className="font-medium">Ã¢Ë†â€™ {formatMoney(anticipo)}</span>
+                  <span>Í¢Ë†' Anticipo</span>
+                  <span className="font-medium">Í¢Ë†' {formatMoney(anticipo)}</span>
                 </div>
               )}
               <div className="flex justify-between border-t border-slate-300 pt-1">
@@ -826,7 +826,7 @@ export function NuevaVentaForm({
                 <span className="font-medium">{formatMoney(calc.monto_a_financiar)}</span>
               </div>
               <div className="flex justify-between text-xs text-slate-500 pl-3">
-                <span>ÃƒÂ· {cantCuotas} cuotas {sistemaAmort === "FRANCES" && typeof tasaInteres === "number" && tasaInteres > 0 ? `(${tasaInteres}% mensual)` : ""}</span>
+                <span>Íƒ· {cantCuotas} cuotas {sistemaAmort === "FRANCES" && typeof tasaInteres === "number" && tasaInteres > 0 ? `(${tasaInteres}% mensual)` : ""}</span>
               </div>
               <div className="flex justify-between border-t border-brand-300 pt-1 text-lg font-bold">
                 <span className="text-slate-900">= Cuota base</span>
@@ -835,7 +835,7 @@ export function NuevaVentaForm({
             </div>
 
             <div className="text-xs text-slate-600 space-y-0.5 mb-3 border-t border-brand-200 pt-3">
-              <div>DescomposiciÃƒÂ³n IVA del precio boleto (porc gravado: {pct(porcGravado)}):</div>
+              <div>DescomposiciÍƒÂ³n IVA del precio boleto (porc gravado: {pct(porcGravado)}):</div>
               <div className="ml-3">Capital gravado: {formatMoney(calc.capital_gr_total)}</div>
               <div className="ml-3">Capital exento: {formatMoney(calc.capital_ex_total)}</div>
               <div className="ml-3">IVA capital: {formatMoney(calc.iva_capital_total)}</div>
@@ -849,19 +849,19 @@ export function NuevaVentaForm({
                   className="text-xs text-slate-700 hover:text-slate-900 inline-flex items-center gap-1"
                 >
                   <ChevronDown size={12} className={showPlanPreview ? "" : "-rotate-90"} />
-                  Ver plan de cuotas (preview, se generarÃƒÂ¡ al contabilizar)
+                  Ver plan de cuotas (preview, se generarÍƒ¡ al contabilizar)
                 </button>
                 {showPlanPreview && (
                   <div className="mt-2 max-h-48 overflow-y-auto bg-white rounded-lg border border-slate-200 p-2">
                     {planPreview.slice(0, 12).map(c => (
                       <div key={c.numero} className="flex justify-between text-xs py-0.5 border-b border-slate-50 last:border-0">
-                        <span>Cuota {c.numero} Ã‚Â· {new Date(c.fecha_vto + "T00:00:00").toLocaleDateString("es-AR")}</span>
+                        <span>Cuota {c.numero} Í‚· {new Date(c.fecha_vto + "T00:00:00").toLocaleDateString("es-AR")}</span>
                         <span className="font-medium">{formatMoney(c.monto)}</span>
                       </div>
                     ))}
                     {planPreview.length > 12 && (
                       <div className="text-xs text-slate-400 text-center py-1">
-                        ... y {planPreview.length - 12} cuotas mÃƒÂ¡s
+                        ... y {planPreview.length - 12} cuotas mÍƒ¡s
                       </div>
                     )}
                   </div>
@@ -870,11 +870,11 @@ export function NuevaVentaForm({
             )}
           </>
         ) : (
-          <div className="text-sm text-slate-500">CompletÃƒÂ¡ los campos para ver el resumen</div>
+          <div className="text-sm text-slate-500">CompletÍƒ¡ los campos para ver el resumen</div>
         )}
       </section>
 
-      {/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â BOTONES Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */}
+      {/* Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â BOTONES Í¢"¢ÂÍ¢"¢ÂÍ¢"¢Â */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         {error && (
           <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 inline-flex items-center gap-2">
@@ -884,7 +884,7 @@ export function NuevaVentaForm({
         )}
         {errores.length > 0 && (
           <div className="mb-3 text-xs text-slate-500">
-            Para cerrar la venta falta: {errores.join(" Ã‚Â· ")}
+            Para cerrar la venta falta: {errores.join(" Í‚· ")}
           </div>
         )}
         <div className="flex gap-3 justify-end">
@@ -907,7 +907,7 @@ export function NuevaVentaForm({
             onClick={(e) => handleSubmit(e, "cerrar")}
             disabled={submitting || !puedeCerrar}
             className="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 inline-flex items-center gap-2"
-            title={!puedeCerrar ? errores.join(" Ã‚Â· ") : ""}
+            title={!puedeCerrar ? errores.join(" Í‚· ") : ""}
           >
             <CheckCircle2 size={16} />
             {submitting ? "Procesando..." : "Cerrar venta (pasa a confirmar)"}
@@ -932,21 +932,21 @@ export function NuevaVentaForm({
             <h2 className="text-lg font-semibold text-slate-900 mb-3">Confirmar cambio de lote</h2>
             <div className="space-y-3 text-sm">
               <div className="bg-amber-50 border border-amber-200 rounded p-3 space-y-1">
-                <div className="font-medium text-amber-900">AtenciÃƒÂ³n:</div>
-                <div>Ã¢â‚¬Â¢ Al guardar, el lote actual <strong>{loteOriginal.manzana ? `M${loteOriginal.manzana}-` : ""}L{loteOriginal.numero}</strong> volverÃƒÂ¡ a DISPONIBLE</div>
-                <div>Ã¢â‚¬Â¢ El nuevo lote <strong>{loteCandidato.manzana ? `M${loteCandidato.manzana}-` : ""}L{loteCandidato.numero}</strong> quedarÃƒÂ¡ RESERVADO</div>
-                <div>Ã¢â‚¬Â¢ El anticipo cobrado (si existe) se mantiene asociado a la venta</div>
+                <div className="font-medium text-amber-900">AtenciÍƒÂ³n:</div>
+                <div>”Â¢ Al guardar, el lote actual <strong>{loteOriginal.manzana ? `M${loteOriginal.manzana}-` : ""}L{loteOriginal.numero}</strong> volverÍƒ¡ a DISPONIBLE</div>
+                <div>”Â¢ El nuevo lote <strong>{loteCandidato.manzana ? `M${loteCandidato.manzana}-` : ""}L{loteCandidato.numero}</strong> quedarÍƒ¡ RESERVADO</div>
+                <div>”Â¢ El anticipo cobrado (si existe) se mantiene asociado a la venta</div>
               </div>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="border border-slate-200 rounded p-2">
                   <div className="text-slate-500">Lote actual</div>
                   <div className="font-medium">{loteOriginal.manzana ? `M${loteOriginal.manzana}-` : ""}L{loteOriginal.numero}</div>
-                  <div className="text-slate-500 mt-1">{loteOriginal.precio_lista ? formatMoney(parseFloat(String(loteOriginal.precio_lista))) : "Ã¢â‚¬â€"}</div>
+                  <div className="text-slate-500 mt-1">{loteOriginal.precio_lista ? formatMoney(parseFloat(String(loteOriginal.precio_lista))) : "—"}</div>
                 </div>
                 <div className="border border-brand-300 bg-brand-50/50 rounded p-2">
                   <div className="text-slate-500">Nuevo lote</div>
                   <div className="font-medium">{loteCandidato.manzana ? `M${loteCandidato.manzana}-` : ""}L{loteCandidato.numero}</div>
-                  <div className="text-slate-500 mt-1">{loteCandidato.precio_lista ? formatMoney(parseFloat(String(loteCandidato.precio_lista))) : "Ã¢â‚¬â€"}</div>
+                  <div className="text-slate-500 mt-1">{loteCandidato.precio_lista ? formatMoney(parseFloat(String(loteCandidato.precio_lista))) : "—"}</div>
                 </div>
               </div>
             </div>
@@ -975,8 +975,8 @@ export function NuevaVentaForm({
 
 /**
  * Input de porcentaje con estado local.
- * El valor se sincroniza con el exterior solo al blur o cuando es claramente vÃƒÂ¡lido.
- * Esto permite tipear "10,5" sin que se reformatee mientras escribÃƒÂ­s.
+ * El valor se sincroniza con el exterior solo al blur o cuando es claramente vÍƒ¡lido.
+ * Esto permite tipear "10,5" sin que se reformatee mientras escribÍƒÂ­s.
  */
 function DescPctInput({
   precioLista,
@@ -993,7 +993,7 @@ function DescPctInput({
   const [local, setLocal] = useState<string>(calcPct > 0 ? calcPct.toFixed(2).replace(".", ",") : "");
   const [focused, setFocused] = useState(false);
   
-  // Sync cuando cambia desde afuera y no estÃƒÂ¡ focuseado
+  // Sync cuando cambia desde afuera y no estÍƒ¡ focuseado
   useEffect(() => {
     if (!focused) {
       setLocal(calcPct > 0 ? calcPct.toFixed(2).replace(".", ",") : "");
@@ -1002,9 +1002,9 @@ function DescPctInput({
   
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value;
-    // Permitir solo dÃƒÂ­gitos y una coma o punto
+    // Permitir solo dÍƒÂ­gitos y una coma o punto
     let cleaned = raw.replace(/[^\d.,]/g, "").replace(".", ",");
-    // Si tiene mÃƒÂ¡s de una coma, quedarse con la primera
+    // Si tiene mÍƒ¡s de una coma, quedarse con la primera
     const coma = cleaned.indexOf(",");
     if (coma !== -1) {
       cleaned = cleaned.substring(0, coma + 1) + cleaned.substring(coma + 1).replace(/,/g, "");

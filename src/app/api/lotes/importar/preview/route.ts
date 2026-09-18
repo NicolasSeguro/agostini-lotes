@@ -30,7 +30,7 @@ type Omitido = {
 function parseBool(v: any): boolean | null {
   if (v === null || v === undefined || v === "") return null;
   const s = String(v).trim().toUpperCase();
-  if (["SI", "SÃ", "TRUE", "1", "Y", "YES", "VERDADERO"].includes(s)) return true;
+  if (["SI", "SÍ", "TRUE", "1", "Y", "YES", "VERDADERO"].includes(s)) return true;
   if (["NO", "FALSE", "0", "N", "FALSO"].includes(s)) return false;
   return null;
 }
@@ -52,7 +52,7 @@ function normalizeMoneda(v: any): string | null {
 }
 
 function valoresIguales(a: any, b: any): boolean {
-  // ComparaciÃ³n tolerante: null vs "" iguales, nÃºmeros con tolerancia 0.001
+  // Comparación tolerante: null vs "" iguales, números con tolerancia 0.001
   if (a === null && (b === null || b === "" || b === undefined)) return true;
   if (b === null && (a === null || a === "" || a === undefined)) return true;
   if (typeof a === "number" && typeof b === "number") return Math.abs(a - b) < 0.001;
@@ -74,9 +74,9 @@ export async function POST(req: NextRequest) {
     const schema = getSchema(tenant);
     if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
-    // TamaÃ±o mÃ¡ximo razonable: 10 MB
+    // Tamaño máximo razonable: 10 MB
     if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: "Archivo demasiado grande (mÃ¡x 10 MB)" }, { status: 400 });
+      return NextResponse.json({ error: "Archivo demasiado grande (máx 10 MB)" }, { status: 400 });
     }
 
     // Leer xlsx
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     try {
       wb = XLSX.read(buffer, { type: "buffer" });
     } catch (err: any) {
-      return NextResponse.json({ error: "El archivo no es un Excel vÃ¡lido (.xlsx)" }, { status: 400 });
+      return NextResponse.json({ error: "El archivo no es un Excel válido (.xlsx)" }, { status: 400 });
     }
 
     // Buscar la hoja "Lotes"
@@ -96,21 +96,21 @@ export async function POST(req: NextRequest) {
     const filas: any[] = XLSX.utils.sheet_to_json(ws, { defval: null });
 
     if (filas.length === 0) {
-      return NextResponse.json({ error: "La hoja estÃ¡ vacÃ­a" }, { status: 400 });
+      return NextResponse.json({ error: "La hoja está vacía" }, { status: 400 });
     }
 
     // Validar headers esperados
     const primeraFila = filas[0];
     if (!("id" in primeraFila)) {
       return NextResponse.json({
-        error: "Falta la columna 'id'. UsÃ¡ un archivo exportado por el sistema."
+        error: "Falta la columna 'id'. Usá un archivo exportado por el sistema."
       }, { status: 400 });
     }
 
     // Recolectar todos los ids del Excel
     const idsExcel = filas.map(f => f.id).filter(Boolean);
     if (idsExcel.length === 0) {
-      return NextResponse.json({ error: "Ninguna fila tiene id vÃ¡lido" }, { status: 400 });
+      return NextResponse.json({ error: "Ninguna fila tiene id válido" }, { status: 400 });
     }
 
     // Traer todos los lotes referenciados de la BD en una sola query
@@ -175,13 +175,13 @@ export async function POST(req: NextRequest) {
 
       // Validar moneda
       if (fila.moneda && nuevos.moneda === null) {
-        errores.push({ fila: numFila, mensaje: `Moneda invÃ¡lida: "${fila.moneda}". UsÃ¡ ARS o USD.` });
+        errores.push({ fila: numFila, mensaje: `Moneda inválida: "${fila.moneda}". Usá ARS o USD.` });
         continue;
       }
       // Validar booleanos
       for (const k of ["tiene_agua", "tiene_luz", "tiene_cloacas", "tiene_gas"]) {
         if (fila[k] !== null && fila[k] !== undefined && fila[k] !== "" && nuevos[k] === null) {
-          errores.push({ fila: numFila, mensaje: `Valor invÃ¡lido en ${k}: "${fila[k]}". UsÃ¡ SI o NO.` });
+          errores.push({ fila: numFila, mensaje: `Valor inválido en ${k}: "${fila[k]}". Usá SI o NO.` });
         }
       }
 
@@ -190,10 +190,10 @@ export async function POST(req: NextRequest) {
       for (const campo of CAMPOS_EDITABLES) {
         const viejo = lote[campo];
         const nuevo = nuevos[campo];
-        // Si el Excel tiene null/vacÃ­o en un campo, lo interpretamos como "no cambiar"
+        // Si el Excel tiene null/vacío en un campo, lo interpretamos como "no cambiar"
         // (para evitar borrar accidentalmente valores existentes)
         if (nuevo === null) continue;
-        // Convertir nÃºmeros de BD (suelen venir como strings)
+        // Convertir números de BD (suelen venir como strings)
         const viejoNorm = typeof viejo === "string" && !isNaN(parseFloat(viejo)) && campo !== "moneda" && campo !== "matricula" && campo !== "zona"
           ? parseFloat(viejo)
           : viejo;

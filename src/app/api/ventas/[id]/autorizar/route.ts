@@ -12,8 +12,8 @@ type Body = {
 /**
  * POST /api/ventas/[id]/autorizar
  * 
- * El Gerente Comercial autoriza una venta CERRADA_CONFIRMADA â†’ AUTORIZADA.
- * Si la venta tenÃ­a requiere_aut_desc_fin = true, tambiÃ©n se autoriza el descuento extra.
+ * El Gerente Comercial autoriza una venta CERRADA_CONFIRMADA → AUTORIZADA.
+ * Si la venta tenía requiere_aut_desc_fin = true, también se autoriza el descuento extra.
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.GERENCIA);
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     );
 
     const motivo = requeriaAuthDesc
-      ? `Venta autorizada (incluye autorizaciÃ³n de descuento financiero por encima del tope)`
+      ? `Venta autorizada (incluye autorización de descuento financiero por encima del tope)`
       : `Venta autorizada por Gerente Comercial`;
 
     await registrarHistorial(

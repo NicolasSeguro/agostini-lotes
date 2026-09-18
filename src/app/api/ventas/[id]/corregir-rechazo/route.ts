@@ -18,7 +18,7 @@ type Body = {
  *   - El lote sigue RESERVADO
  * 
  * permite_cambiar_lote: solo es un flag informativo del cliente.
- *                       La pantalla de ediciÃ³n decide si habilita el selector.
+ *                       La pantalla de edición decide si habilita el selector.
  * 
  * Estados origen permitidos:
  *   - RECHAZADA_COMERCIAL

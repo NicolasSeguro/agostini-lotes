@@ -18,7 +18,7 @@ type Body = {
  * Estados origen permitidos:
  *   - RECHAZADA_COMERCIAL
  *   - RECHAZADA_CONTABILIDAD
- *   - (tambiÃ©n desde EN_CARGA si la venta tiene anticipo cobrado y el vendedor decide anular)
+ *   - (también desde EN_CARGA si la venta tiene anticipo cobrado y el vendedor decide anular)
  * 
  * Si la venta NO tiene anticipo cobrado, no tiene sentido pasar por caja:
  * se anula directo (es un cambio futuro, por ahora exigimos cobranzas).
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.motivo || body.motivo.trim().length < 3) {
-    return NextResponse.json({ error: "Motivo obligatorio (mÃ­nimo 3 caracteres)" }, { status: 400 });
+    return NextResponse.json({ error: "Motivo obligatorio (mínimo 3 caracteres)" }, { status: 400 });
   }
 
   const schema = getSchema(body.tenant);
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       await registrarHistorial(
         client, schema, id,
         venta.estado, "ANULADA",
-        `AnulaciÃ³n sin reintegro (sin anticipo cobrado): ${body.motivo.trim()}`, sessionLabel(session)
+        `Anulación sin reintegro (sin anticipo cobrado): ${body.motivo.trim()}`, sessionLabel(session)
       );
       
       await client.query("COMMIT");
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       venta.estado, "PENDIENTE_REINTEGRO",
-      `Solicitud de anulaciÃ³n con reintegro: ${body.motivo.trim()}`, sessionLabel(session),
+      `Solicitud de anulación con reintegro: ${body.motivo.trim()}`, sessionLabel(session),
       { 
         monto_a_reintegrar: parseFloat(cobr.rows[0].total),
         cobranzas_activas: cobr.rows[0].cant,
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     });
   } catch (err: any) {
     await client.query("ROLLBACK");
-    console.error("Error solicitar anulaciÃ³n:", err);
+    console.error("Error solicitar anulación:", err);
     return NextResponse.json({ error: err.message || "Error" }, { status: 500 });
   } finally {
     client.release();

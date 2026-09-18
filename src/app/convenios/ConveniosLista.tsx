@@ -36,7 +36,7 @@ const TENANT_LABELS: Record<string, string> = {
 
 const SITUACION_STYLE: Record<string, { label: string; color: string }> = {
   VIGENTE:  { label: "Vigente",  color: "bg-green-100 text-green-700" },
-  PROXIMO:  { label: "PrÃ³ximo",  color: "bg-blue-100 text-blue-700" },
+  PROXIMO:  { label: "Próximo",  color: "bg-blue-100 text-blue-700" },
   VENCIDO:  { label: "Vencido",  color: "bg-amber-100 text-amber-700" },
   INACTIVO: { label: "Inactivo", color: "bg-slate-100 text-slate-500" },
 };
@@ -46,10 +46,10 @@ function formatMoney(n: number): string {
 }
 
 function formatDate(d: string | Date): string {
-  if (!d) return "â€”";
+  if (!d) return "—";
   try { 
     const s = toDateInputStr(d);
-    if (!s) return "â€”";
+    if (!s) return "—";
     return new Date(s + "T00:00:00").toLocaleDateString("es-AR"); 
   } catch { return String(d); }
 }
@@ -65,7 +65,7 @@ export function ConveniosLista({ tenant, convenios }: { tenant: string; convenio
   const [processing, setProcessing] = useState<string | null>(null);
 
   async function bajaLogica(id: string, razon: string) {
-    if (!confirm(`Â¿Dar de baja el convenio "${razon}"? Las ventas existentes no se afectan, pero no aparecerÃ¡ en nuevas ventas.`)) return;
+    if (!confirm(`¿Dar de baja el convenio "${razon}"? Las ventas existentes no se afectan, pero no aparecerá en nuevas ventas.`)) return;
     setProcessing(id);
     try {
       const res = await fetch(`/api/convenios/${id}`, { method: "DELETE" });
@@ -77,7 +77,7 @@ export function ConveniosLista({ tenant, convenios }: { tenant: string; convenio
 
   async function activar(id: string) {
     // Activar = PUT con activo=true. Pero necesito el resto de los campos.
-    // MÃ¡s simple: hacer un endpoint GET, recibir el convenio y hacer PUT manteniendo todo + activo=true
+    // Más simple: hacer un endpoint GET, recibir el convenio y hacer PUT manteniendo todo + activo=true
     setProcessing(id);
     try {
       const r = await fetch(`/api/convenios/${id}`);
@@ -106,7 +106,7 @@ export function ConveniosLista({ tenant, convenios }: { tenant: string; convenio
   }
 
   async function borrarFisico(id: string, razon: string) {
-    if (!confirm(`Â¿ELIMINAR PERMANENTEMENTE el convenio "${razon}"? Esta acciÃ³n no se puede deshacer.`)) return;
+    if (!confirm(`¿ELIMINAR PERMANENTEMENTE el convenio "${razon}"? Esta acción no se puede deshacer.`)) return;
     setProcessing(id);
     try {
       const res = await fetch(`/api/convenios/${id}?fisico=true`, { method: "DELETE" });
@@ -135,7 +135,7 @@ export function ConveniosLista({ tenant, convenios }: { tenant: string; convenio
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs text-slate-500 border-b border-slate-200">
-              <th className="px-4 py-3">RazÃ³n social / CUIT</th>
+              <th className="px-4 py-3">Razón social / CUIT</th>
               <th className="px-4 py-3">Beneficio</th>
               <th className="px-4 py-3">Vigencia</th>
               <th className="px-4 py-3">Aplica a</th>

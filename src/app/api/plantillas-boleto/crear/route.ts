@@ -23,16 +23,16 @@ export async function POST(req: NextRequest) {
 
     if (!tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
     if (!proyectoId) return NextResponse.json({ error: "Proyecto requerido" }, { status: 400 });
-    if (!MODALIDADES.includes(modalidad)) return NextResponse.json({ error: "Modalidad invÃ¡lida" }, { status: 400 });
-    if (!INDICES.includes(indice)) return NextResponse.json({ error: "Ãndice invÃ¡lido" }, { status: 400 });
+    if (!MODALIDADES.includes(modalidad)) return NextResponse.json({ error: "Modalidad inválida" }, { status: 400 });
+    if (!INDICES.includes(indice)) return NextResponse.json({ error: "Índice inválido" }, { status: 400 });
     if (!nombre) return NextResponse.json({ error: "Nombre requerido" }, { status: 400 });
     if (!file) return NextResponse.json({ error: "Archivo .docx requerido" }, { status: 400 });
-    if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: "Archivo demasiado grande (mÃ¡x 10 MB)" }, { status: 400 });
+    if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: "Archivo demasiado grande (máx 10 MB)" }, { status: 400 });
     if (!file.name.toLowerCase().endsWith(".docx")) return NextResponse.json({ error: "El archivo debe ser .docx" }, { status: 400 });
 
-    // Validar combinaciÃ³n lÃ³gica (modalidad CONTADO no tiene Ã­ndice ni anticipo)
+    // Validar combinación lógica (modalidad CONTADO no tiene índice ni anticipo)
     if (modalidad === "CONTADO" && (conAnticipo || indice !== "NINGUNO")) {
-      return NextResponse.json({ error: "CONTADO no admite anticipo ni Ã­ndice" }, { status: 400 });
+      return NextResponse.json({ error: "CONTADO no admite anticipo ni índice" }, { status: 400 });
     }
     if (modalidad === "FINANCIADO" && conAnticipo) {
       return NextResponse.json({ error: "FINANCIADO es 100% financiado, no admite anticipo" }, { status: 400 });
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     const pool = getPool();
     const client = await pool.connect();
     try {
-      // Si ya existe una plantilla para la combinaciÃ³n, hacer upsert (reemplazar)
+      // Si ya existe una plantilla para la combinación, hacer upsert (reemplazar)
       const dup = await client.query(
         `SELECT id FROM ${schema}.plantillas_boleto 
          WHERE proyecto_id = $1::uuid AND modalidad = $2 AND con_anticipo = $3 AND indice = $4

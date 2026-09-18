@@ -17,13 +17,13 @@ type Props = {
   tenant: string;
   lotes: LoteMapa[];
   proyectoCentro?: { lat: number; lng: number } | null;
-  // Estados visibles (filtro). Si estÃ¡ vacÃ­o, muestra todos.
+  // Estados visibles (filtro). Si está vacío, muestra todos.
   estadosVisibles: Set<string>;
 };
 
 const JUJUY = { lat: -24.1858, lng: -65.2995 };
 
-// 3 categorÃ­as de color (decisiÃ³n confirmada):
+// 3 categorías de color (decisión confirmada):
 //   DISPONIBLE          -> verde
 //   RESERVADO           -> amarillo
 //   resto (no disponible) -> rojo
@@ -34,7 +34,7 @@ function colorPorEstado(estado: string): { fill: string; border: string; label: 
 }
 
 function formatMoney(n: number | null): string {
-  if (!n) return "â€”";
+  if (!n) return "—";
   return Number(n).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 }
 
@@ -79,7 +79,7 @@ export function MapaProyecto({ tenant, lotes, proyectoCentro, estadosVisibles }:
         setTimeout(() => map.invalidateSize(), 200);
       } catch (err: any) {
         console.error("[MapaProyecto] error:", err);
-        setError("No se pudo cargar el mapa. VerificÃ¡ la conexiÃ³n a internet.");
+        setError("No se pudo cargar el mapa. Verificá la conexión a internet.");
       }
     }
     initMap();
@@ -95,13 +95,13 @@ export function MapaProyecto({ tenant, lotes, proyectoCentro, estadosVisibles }:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Render de polÃ­gonos cuando cambian los lotes, su filtro, o cuando el mapa ya cargÃ³
+  // Render de polígonos cuando cambian los lotes, su filtro, o cuando el mapa ya cargó
   useEffect(() => {
     const L = Lref.current;
     const map = mapInstance.current;
     if (!L || !map || !loaded) return;
 
-    // Limpiar polÃ­gonos previos
+    // Limpiar polígonos previos
     polygonsRef.current.forEach((p) => map.removeLayer(p));
     polygonsRef.current.clear();
 
@@ -109,7 +109,7 @@ export function MapaProyecto({ tenant, lotes, proyectoCentro, estadosVisibles }:
     const bounds: any[] = [];
 
     for (const lote of lotes) {
-      // Determinar categorÃ­a visible
+      // Determinar categoría visible
       const cat = lote.estado === "DISPONIBLE"
         ? "DISPONIBLE"
         : lote.estado === "RESERVADO"
@@ -134,11 +134,11 @@ export function MapaProyecto({ tenant, lotes, proyectoCentro, estadosVisibles }:
             <span style="display:inline-block; padding:1px 6px; border-radius:3px; background:${c.fill}; color:white; font-size:11px; font-weight:500">${c.label}</span>
             <span style="color:#64748b; font-size:11px"> (${lote.estado})</span>
           </div>
-          ${lote.superficie_m2 ? `<div style="color:#475569"><b>Superficie:</b> ${Number(lote.superficie_m2).toLocaleString("es-AR")} mÂ²</div>` : ""}
+          ${lote.superficie_m2 ? `<div style="color:#475569"><b>Superficie:</b> ${Number(lote.superficie_m2).toLocaleString("es-AR")} m²</div>` : ""}
           ${lote.precio_lista ? `<div style="color:#475569"><b>Precio:</b> ${formatMoney(lote.precio_lista)}</div>` : ""}
           ${lote.comprador_actual ? `<div style="color:#475569"><b>Comprador:</b> ${lote.comprador_actual}</div>` : ""}
           <div style="margin-top:8px; display:flex; gap:6px">
-            <a href="/lotes/${lote.id}?t=${tenant}" style="color:#ea580c; font-weight:500; text-decoration:none; font-size:12px">Ver detalle â†’</a>
+            <a href="/lotes/${lote.id}?t=${tenant}" style="color:#ea580c; font-weight:500; text-decoration:none; font-size:12px">Ver detalle →</a>
             <a href="/lotes/${lote.id}/editar?t=${tenant}" style="color:#475569; text-decoration:none; font-size:12px">Editar</a>
           </div>
         </div>

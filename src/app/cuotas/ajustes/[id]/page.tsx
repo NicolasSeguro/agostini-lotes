@@ -157,7 +157,7 @@ export default function AjusteDetallePage() {
   const [loading, setLoading] = useState(true);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
 
-  // Filtros (estado en UI = lo que el usuario tipeÃ³, todavia no aplicado)
+  // Filtros (estado en UI = lo que el usuario tipeó, todavia no aplicado)
   const [filtroProyecto, setFiltroProyecto] = useState("");
   const [filtroVenta, setFiltroVenta] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
@@ -546,7 +546,7 @@ export default function AjusteDetallePage() {
               </div>
               <div className="text-slate-400 text-xs max-w-md mx-auto">
                 Esta corrida tiene {header.cuotas_afectadas.toLocaleString("es-AR")} cuotas afectadas.
-                Para evitar cargar todo, eligi un proyecto, buscÃ¡ una venta o filtra por estado.
+                Para evitar cargar todo, eligi un proyecto, buscá una venta o filtra por estado.
               </div>
             </div>
           ) : detalle.length === 0 ? (

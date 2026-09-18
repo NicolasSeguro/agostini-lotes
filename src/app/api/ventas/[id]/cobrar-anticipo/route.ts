@@ -22,10 +22,10 @@ type Body = {
  * POST /api/ventas/[id]/cobrar-anticipo
  * 
  * Genera una cobranza de anticipo en estado BORRADOR.
- * Se puede llamar mÃºltiples veces para cobrar el anticipo en cuotas.
+ * Se puede llamar múltiples veces para cobrar el anticipo en cuotas.
  * 
  * Si la suma de anticipos cobrados alcanza el monto del anticipo de la venta,
- * la venta pasa de CERRADA_PENDIENTE â†’ CERRADA_CONFIRMADA automÃ¡ticamente.
+ * la venta pasa de CERRADA_PENDIENTE → CERRADA_CONFIRMADA automáticamente.
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.CAJA);
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     const restante = anticipoEsperado - yaCobrado;
     
     if (restante <= 0) {
-      throw new Error(`El anticipo ya estÃ¡ totalmente cobrado ($${anticipoEsperado.toLocaleString("es-AR")})`);
+      throw new Error(`El anticipo ya está totalmente cobrado ($${anticipoEsperado.toLocaleString("es-AR")})`);
     }
     if (body.monto > restante + 0.01) {
       throw new Error(
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     const cobranzaId = cobranzaRes.rows[0].id;
     const nroRecibo = cobranzaRes.rows[0].nro_recibo;
 
-    // 5) Si el anticipo estÃ¡ completo, pasar la venta a CERRADA_CONFIRMADA
+    // 5) Si el anticipo está completo, pasar la venta a CERRADA_CONFIRMADA
     const totalAhora = yaCobrado + body.monto;
     let nuevoEstado: string | null = null;
     

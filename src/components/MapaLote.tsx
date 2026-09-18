@@ -8,11 +8,11 @@ type GeomData = {
 } | null;
 
 type Props = {
-  // GeometrÃ­a inicial (al editar). Formato esperado: { polygon: [[lat,lng],...], center: {lat,lng} }
+  // Geometría inicial (al editar). Formato esperado: { polygon: [[lat,lng],...], center: {lat,lng} }
   initialGeom?: any;
   // Centro inicial del mapa (centro del proyecto). Fallback: San Salvador de Jujuy.
   initialCenter?: { lat: number; lng: number } | null;
-  // Callback cuando cambia la geometrÃ­a
+  // Callback cuando cambia la geometría
   onChange: (geom: GeomData) => void;
 };
 
@@ -38,7 +38,7 @@ export function MapaLote({ initialGeom, initialCenter, onChange }: Props) {
 
     async function initMap() {
       try {
-        // Importar Leaflet y leaflet-draw dinÃ¡micamente (solo cliente)
+        // Importar Leaflet y leaflet-draw dinámicamente (solo cliente)
         const L = (await import("leaflet")).default;
         await import("leaflet-draw");
         // CSS
@@ -46,7 +46,7 @@ export function MapaLote({ initialGeom, initialCenter, onChange }: Props) {
         await import("leaflet-draw/dist/leaflet.draw.css");
 
         if (cancelled || !mapRef.current) return;
-        // Evitar doble inicializaciÃ³n
+        // Evitar doble inicialización
         if (mapInstance.current) return;
 
         // Centro: initialGeom > initialCenter > Jujuy
@@ -84,7 +84,7 @@ export function MapaLote({ initialGeom, initialCenter, onChange }: Props) {
         map.addLayer(items);
         drawnItems.current = items;
 
-        // Cargar polÃ­gono existente
+        // Cargar polígono existente
         if (initialGeom?.polygon && Array.isArray(initialGeom.polygon) && initialGeom.polygon.length >= 3) {
           const poly = L.polygon(initialGeom.polygon, { color: "#ea580c", weight: 2 });
           items.addLayer(poly);
@@ -109,7 +109,7 @@ export function MapaLote({ initialGeom, initialCenter, onChange }: Props) {
           onChange({ polygon: latlngs, center });
         }
 
-        // Al crear un polÃ­gono nuevo, borrar el anterior (solo 1 por lote)
+        // Al crear un polígono nuevo, borrar el anterior (solo 1 por lote)
         map.on((L as any).Draw.Event.CREATED, (e: any) => {
           items.clearLayers();
           items.addLayer(e.layer);
@@ -119,11 +119,11 @@ export function MapaLote({ initialGeom, initialCenter, onChange }: Props) {
         map.on((L as any).Draw.Event.DELETED, () => emitChange());
 
         setLoaded(true);
-        // Forzar recÃ¡lculo de tamaÃ±o (a veces el contenedor no estÃ¡ listo)
+        // Forzar recálculo de tamaño (a veces el contenedor no está listo)
         setTimeout(() => map.invalidateSize(), 200);
       } catch (err: any) {
         console.error("[MapaLote] error:", err);
-        setError("No se pudo cargar el mapa. VerificÃ¡ la conexiÃ³n a internet.");
+        setError("No se pudo cargar el mapa. Verificá la conexión a internet.");
       }
     }
 
@@ -148,8 +148,8 @@ export function MapaLote({ initialGeom, initialCenter, onChange }: Props) {
         <div ref={mapRef} style={{ height: "420px", width: "100%" }} />
       </div>
       <p className="text-xs text-slate-500 mt-2">
-        UsÃ¡ la herramienta de polÃ­gono (Ã­cono arriba a la izquierda del mapa) para dibujar el contorno del lote.
-        HacÃ© click en cada esquina y cerrÃ¡ el polÃ­gono en el punto inicial. PodÃ©s editarlo arrastrando los vÃ©rtices.
+        Usá la herramienta de polígono (ícono arriba a la izquierda del mapa) para dibujar el contorno del lote.
+        Hacé click en cada esquina y cerrá el polígono en el punto inicial. Podés editarlo arrastrando los vértices.
       </p>
       {!loaded && !error && <p className="text-xs text-slate-400 mt-1">Cargando mapa...</p>}
     </div>

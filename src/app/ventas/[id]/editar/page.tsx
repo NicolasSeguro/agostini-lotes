@@ -149,7 +149,7 @@ export default async function EditarVentaPage({
             {permitirCambiarLote ? "Continuar carga de venta (con cambio de lote)" : "Continuar carga de venta"}
           </h1>
           <p className="text-slate-500 mt-1">
-            {tenantNombre} Â· Porcentaje gravado: {(porcGravado * 100).toFixed(0)}%
+            {tenantNombre} · Porcentaje gravado: {(porcGravado * 100).toFixed(0)}%
           </p>
         </div>
 

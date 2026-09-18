@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   const pool = getPool();
   const client = await pool.connect();
   try {
-    // 1. Traer venta + lote + proyecto (el proyecto viene a travÃ©s del lote, no de la venta)
+    // 1. Traer venta + lote + proyecto (el proyecto viene a través del lote, no de la venta)
     const ventaRows = await client.query(
       `
       SELECT 
@@ -81,9 +81,9 @@ export async function POST(req: NextRequest) {
     if (plantillaRows.rows.length === 0) return NextResponse.json({ error: "Plantilla no encontrada" }, { status: 404 });
     const plantilla = plantillaRows.rows[0];
 
-    // 4. CÃ¡lculos: usamos cuota_base (ya calculado al cerrar venta) y precio_total
+    // 4. Cálculos: usamos cuota_base (ya calculado al cerrar venta) y precio_total
     // precio_total = el precio del boleto (precio_lista - descuentos)
-    // cuota_base = el importe real de cada cuota (incluye intereses/IVA segÃºn sistema)
+    // cuota_base = el importe real de cada cuota (incluye intereses/IVA según sistema)
     const monto_cuota = Number(venta.cuota_base) || 0;
     const saldo = (Number(venta.precio_total) || 0) - (Number(venta.anticipo) || 0);
 
@@ -104,12 +104,12 @@ export async function POST(req: NextRequest) {
     const lote_padron = [
       venta.lote_manzana ? `Manzana ${venta.lote_manzana}` : null,
       venta.lote_numero ? `Lote ${venta.lote_numero}` : null,
-      venta.lote_padron_num ? `PadrÃ³n ${venta.lote_padron_num}` : null,
-      venta.lote_matricula ? `MatrÃ­cula ${venta.lote_matricula}` : null,
+      venta.lote_padron_num ? `Padrón ${venta.lote_padron_num}` : null,
+      venta.lote_matricula ? `Matrícula ${venta.lote_matricula}` : null,
     ].filter(Boolean).join(" - ") || "[COMPLETAR]";
 
     const lote_superficie = venta.superficie_m2
-      ? `${formatNumero(Number(venta.superficie_m2), 2)} mÂ²`
+      ? `${formatNumero(Number(venta.superficie_m2), 2)} m²`
       : "[COMPLETAR]";
 
     // 7. Data
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
     }
     const docxBuffer: Buffer = doc.getZip().generate({ type: "nodebuffer", compression: "DEFLATE" });
 
-    // 8.5 â€” Si pidieron PDF, convertir
+    // 8.5 — Si pidieron PDF, convertir
     let outputBuffer: Buffer;
     let contentType: string;
     let extension: string;
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
       } catch (err: any) {
         return NextResponse.json({ 
           error: `Error al convertir a PDF: ${err.message}`,
-          hint: "VerificÃ¡ que LibreOffice estÃ© instalado. Si estÃ¡ en otra ruta, configurÃ¡ LIBREOFFICE_PATH en .env.local"
+          hint: "Verificá que LibreOffice esté instalado. Si está en otra ruta, configurá LIBREOFFICE_PATH en .env.local"
         }, { status: 500 });
       }
       contentType = "application/pdf";
@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
 
     const filename = `Boleto_${tenant}_${venta_id.substring(0,8)}.${extension}`;
 
-    // 9. Registrar emisiÃ³n en boletos_emitidos (con formato)
+    // 9. Registrar emisión en boletos_emitidos (con formato)
     try {
       await client.query(
         `INSERT INTO ${schema}.boletos_emitidos (venta_id, plantilla_id, generado_por, archivo_nombre, formato)
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
         [venta_id, plantilla_id, filename, formato, sessionLabel(session)]
       );
     } catch (err: any) {
-      console.error("[generar-boleto] No se pudo registrar emisiÃ³n:", err.message);
+      console.error("[generar-boleto] No se pudo registrar emisión:", err.message);
     }
 
     return new NextResponse(new Uint8Array(outputBuffer), {

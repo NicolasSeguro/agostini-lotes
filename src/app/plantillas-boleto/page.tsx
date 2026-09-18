@@ -58,7 +58,7 @@ export default async function PlantillasBoletoPage({
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Plantillas de Boleto</h1>
             <p className="text-slate-500 mt-1">
-              {tenantNombre} â€” {plantillas.length} plantilla{plantillas.length === 1 ? "" : "s"} cargada{plantillas.length === 1 ? "" : "s"}
+              {tenantNombre} — {plantillas.length} plantilla{plantillas.length === 1 ? "" : "s"} cargada{plantillas.length === 1 ? "" : "s"}
             </p>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default async function PlantillasBoletoPage({
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-start gap-2 text-sm text-blue-900">
           <Info size={16} className="text-blue-600 flex-shrink-0 mt-0.5" />
           <div>
-            <div><strong>CÃ³mo funciona:</strong> cargÃ¡ un archivo Word (.docx) por cada combinaciÃ³n de proyecto + modalidad + Ã­ndice. El archivo debe contener marcadores tipo <code className="bg-blue-100 px-1 rounded">{"{cliente_nombre}"}</code>, <code className="bg-blue-100 px-1 rounded">{"{precio_numero}"}</code>, etc. que el sistema reemplazarÃ¡ al generar el boleto.</div>
+            <div><strong>Cómo funciona:</strong> cargá un archivo Word (.docx) por cada combinación de proyecto + modalidad + índice. El archivo debe contener marcadores tipo <code className="bg-blue-100 px-1 rounded">{"{cliente_nombre}"}</code>, <code className="bg-blue-100 px-1 rounded">{"{precio_numero}"}</code>, etc. que el sistema reemplazará al generar el boleto.</div>
             <div className="mt-1">
               <Link href={`/plantillas-boleto/marcadores?t=${tenant}`} className="underline font-medium">
                 Ver lista completa de marcadores disponibles

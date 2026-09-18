@@ -15,7 +15,7 @@ const COND_IVA = [
   { v: "RNI", l: "Resp. No Inscripto" },
   { v: "EXTERIOR", l: "Exterior" },
 ];
-const ESTADOS_CIVIL = ["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a", "UniÃ³n convivencial", "Separado/a"];
+const ESTADOS_CIVIL = ["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a", "Unión convivencial", "Separado/a"];
 
 type Persona = any;
 
@@ -50,7 +50,7 @@ export function PersonaForm({
   const [actividad, setActividad] = useState(persona?.actividad || "");
   const [observaciones, setObservaciones] = useState(persona?.observaciones || "");
   const [activo, setActivo] = useState(persona?.activo !== false);
-  // FÃ­sica
+  // Física
   const [apellido, setApellido] = useState(persona?.apellido || "");
   const [nombre, setNombre] = useState(persona?.nombre || "");
   const [fechaNac, setFechaNac] = useState(persona?.fecha_nac || "");
@@ -58,7 +58,7 @@ export function PersonaForm({
   const [estadoCivil, setEstadoCivil] = useState(persona?.estado_civil || "");
   const [sujetoObligado, setSujetoObligado] = useState<boolean>(persona?.sujeto_obligado || false);
   const [sujetoExpuesto, setSujetoExpuesto] = useState<boolean>(persona?.sujeto_expuesto || false);
-  // JurÃ­dica
+  // Jurídica
   const [razonSocial, setRazonSocial] = useState(persona?.razon_social || "");
   const [inicioActividad, setInicioActividad] = useState(persona?.inicio_actividad || "");
   const [refNombre, setRefNombre] = useState(persona?.referente_nombre || "");
@@ -75,8 +75,8 @@ export function PersonaForm({
       if (!docNumero.trim()) { setError("Documento obligatorio"); return; }
       if (!apellido.trim() || !nombre.trim()) { setError("Apellido y nombre obligatorios"); return; }
     } else {
-      if (!razonSocial.trim()) { setError("RazÃ³n social obligatoria"); return; }
-      if (!cuit.trim() || cuit.replace(/[^0-9]/g, "").length < 10) { setError("El CUIT es obligatorio para persona jurÃ­dica"); return; }
+      if (!razonSocial.trim()) { setError("Razón social obligatoria"); return; }
+      if (!cuit.trim() || cuit.replace(/[^0-9]/g, "").length < 10) { setError("El CUIT es obligatorio para persona jurídica"); return; }
     }
 
     setSubmitting(true);
@@ -93,7 +93,7 @@ export function PersonaForm({
         actividad: actividad.trim() || null,
         observaciones: observaciones.trim() || null,
         activo,
-        // FÃ­sica
+        // Física
         apellido: tipo === "FISICA" ? apellido.trim() : null,
         nombre: tipo === "FISICA" ? nombre.trim() : null,
         fecha_nac: tipo === "FISICA" ? (fechaNac || null) : null,
@@ -101,7 +101,7 @@ export function PersonaForm({
         estado_civil: tipo === "FISICA" ? (estadoCivil || null) : null,
         sujeto_obligado: tipo === "FISICA" ? sujetoObligado : false,
         sujeto_expuesto: tipo === "FISICA" ? sujetoExpuesto : false,
-        // JurÃ­dica
+        // Jurídica
         razon_social: tipo === "JURIDICA" ? razonSocial.trim() : null,
         inicio_actividad: tipo === "JURIDICA" ? (inicioActividad || null) : null,
         referente_nombre: tipo === "JURIDICA" ? (refNombre.trim() || null) : null,
@@ -120,7 +120,7 @@ export function PersonaForm({
       router.push(`/personas?t=${tenant}`);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃ³n");
+      setError(err.message || "Error de conexión");
       setSubmitting(false);
     }
   }
@@ -145,11 +145,11 @@ export function PersonaForm({
         <div className="flex gap-3">
           <label className="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" checked={tipo === "FISICA"} onChange={() => setTipo("FISICA")} disabled={editando} />
-            <span className="text-sm font-medium">Persona FÃ­sica</span>
+            <span className="text-sm font-medium">Persona Física</span>
           </label>
           <label className="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" checked={tipo === "JURIDICA"} onChange={() => setTipo("JURIDICA")} disabled={editando} />
-            <span className="text-sm font-medium">Persona JurÃ­dica</span>
+            <span className="text-sm font-medium">Persona Jurídica</span>
           </label>
           {editando && <span className="text-xs text-slate-400 ml-2">(el tipo no se cambia al editar)</span>}
         </div>
@@ -195,7 +195,7 @@ export function PersonaForm({
           {!activo && (
             <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 mt-2 inline-flex items-start gap-1">
               <AlertTriangle size={12} className="mt-0.5" />
-              <span>Persona inactiva: no aparecerÃ¡ al cargar nuevas ventas. Las ventas existentes no se afectan.</span>
+              <span>Persona inactiva: no aparecerá al cargar nuevas ventas. Las ventas existentes no se afectan.</span>
             </div>
           )}
         </section>
@@ -237,7 +237,7 @@ function FisicaFields(p: any) {
           <div><label className={p.labelCls}>Documento *</label><input className={p.inputCls} value={p.docNumero} onChange={e => p.setDocNumero(e.target.value)} /></div>
           <div><label className={p.labelCls}>CUIL/CUIT</label><input className={p.inputCls} value={p.cuit} onChange={e => p.setCuit(e.target.value)} placeholder="00-00000000-0" /></div>
           <div><label className={p.labelCls}>Fecha nac.</label><input type="date" className={p.inputCls} value={p.fechaNac} onChange={e => p.setFechaNac(e.target.value)} /></div>
-          <div><label className={p.labelCls}>OcupaciÃ³n</label><input className={p.inputCls} value={p.profesion} onChange={e => p.setProfesion(e.target.value)} /></div>
+          <div><label className={p.labelCls}>Ocupación</label><input className={p.inputCls} value={p.profesion} onChange={e => p.setProfesion(e.target.value)} /></div>
           <div><label className={p.labelCls}>Actividad</label><input className={p.inputCls} value={p.actividad} onChange={e => p.setActividad(e.target.value)} /></div>
           <div>
             <label className={p.labelCls}>Estado civil</label>
@@ -247,7 +247,7 @@ function FisicaFields(p: any) {
             </select>
           </div>
           <div>
-            <label className={p.labelCls}>CondiciÃ³n IVA</label>
+            <label className={p.labelCls}>Condición IVA</label>
             <select className={p.inputCls + " bg-white"} value={p.condIva} onChange={e => p.setCondIva(e.target.value)}>
               {COND_IVA.map(c => <option key={c.v} value={c.v}>{c.l}</option>)}
             </select>
@@ -266,7 +266,7 @@ function FisicaFields(p: any) {
           </label>
           <label className="inline-flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={p.sujetoExpuesto} onChange={e => p.setSujetoExpuesto(e.target.checked)} />
-            <span className="text-sm">Persona expuesta polÃ­ticamente (PEP)</span>
+            <span className="text-sm">Persona expuesta políticamente (PEP)</span>
           </label>
         </div>
       </section>
@@ -278,19 +278,19 @@ function JuridicaFields(p: any) {
   return (
     <>
       <section className="bg-white rounded-xl border border-slate-200 p-5">
-        <h2 className="font-semibold text-slate-900 mb-3">Datos de la organizaciÃ³n</h2>
+        <h2 className="font-semibold text-slate-900 mb-3">Datos de la organización</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="md:col-span-2"><label className={p.labelCls}>Nombre / OrganizaciÃ³n *</label><input className={p.inputCls} value={p.razonSocial} onChange={e => p.setRazonSocial(e.target.value)} /></div>
+          <div className="md:col-span-2"><label className={p.labelCls}>Nombre / Organización *</label><input className={p.inputCls} value={p.razonSocial} onChange={e => p.setRazonSocial(e.target.value)} /></div>
           <div><label className={p.labelCls}>CUIT *</label><input className={p.inputCls} value={p.cuit} onChange={e => p.setCuit(e.target.value)} placeholder="00-00000000-0" /></div>
           <div>
-            <label className={p.labelCls}>SituaciÃ³n impositiva</label>
+            <label className={p.labelCls}>Situación impositiva</label>
             <select className={p.inputCls + " bg-white"} value={p.condIva} onChange={e => p.setCondIva(e.target.value)}>
               {COND_IVA.map(c => <option key={c.v} value={c.v}>{c.l}</option>)}
             </select>
           </div>
           <div><label className={p.labelCls}>Inicio de actividades</label><input type="date" className={p.inputCls} value={p.inicioActividad} onChange={e => p.setInicioActividad(e.target.value)} /></div>
           <div><label className={p.labelCls}>Actividad</label><input className={p.inputCls} value={p.actividad} onChange={e => p.setActividad(e.target.value)} /></div>
-          {/* Documento opcional para jurÃ­dica: si va vacÃ­o, se usa el CUIT */}
+          {/* Documento opcional para jurídica: si va vacío, se usa el CUIT */}
           <div>
             <label className={p.labelCls}>Tipo doc. (opcional)</label>
             <select className={p.inputCls + " bg-white"} value={p.docTipo} onChange={e => p.setDocTipo(e.target.value)}>
@@ -299,14 +299,14 @@ function JuridicaFields(p: any) {
           </div>
           <div>
             <label className={p.labelCls}>Documento (opcional)</label>
-            <input className={p.inputCls} value={p.docNumero} onChange={e => p.setDocNumero(e.target.value)} placeholder="Si se deja vacÃ­o, se usa el CUIT" />
+            <input className={p.inputCls} value={p.docNumero} onChange={e => p.setDocNumero(e.target.value)} placeholder="Si se deja vacío, se usa el CUIT" />
           </div>
         </div>
       </section>
 
       <section className="bg-white rounded-xl border border-slate-200 p-5">
         <h2 className="font-semibold text-slate-900 mb-1">Referente</h2>
-        <p className="text-xs text-slate-500 mb-3">Opcional. Persona de contacto de la organizaciÃ³n.</p>
+        <p className="text-xs text-slate-500 mb-3">Opcional. Persona de contacto de la organización.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div><label className={p.labelCls}>Referente (nombre)</label><input className={p.inputCls} value={p.refNombre} onChange={e => p.setRefNombre(e.target.value)} /></div>
           <div><label className={p.labelCls}>Referente (cargo)</label><input className={p.inputCls} value={p.refCargo} onChange={e => p.setRefCargo(e.target.value)} /></div>
@@ -331,15 +331,15 @@ function DomicilioContacto(p: any) {
       <h2 className="font-semibold text-slate-900 mb-3">Domicilio y contacto</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div><label className={p.labelCls}>Domicilio (calle)</label><input className={p.inputCls} value={p.dirCalle} onChange={e => p.setDirCalle(e.target.value)} /></div>
-        <div><label className={p.labelCls}>NÃºmero</label><input className={p.inputCls} value={p.dirNumero} onChange={e => p.setDirNumero(e.target.value)} /></div>
+        <div><label className={p.labelCls}>Número</label><input className={p.inputCls} value={p.dirNumero} onChange={e => p.setDirNumero(e.target.value)} /></div>
         <div><label className={p.labelCls}>Barrio</label><input className={p.inputCls} value={p.dirBarrio} onChange={e => p.setDirBarrio(e.target.value)} /></div>
         <div><label className={p.labelCls}>Localidad</label><input className={p.inputCls} value={p.dirLocalidad} onChange={e => p.setDirLocalidad(e.target.value)} /></div>
         <div><label className={p.labelCls}>Provincia</label><input className={p.inputCls} value={p.dirProvincia} onChange={e => p.setDirProvincia(e.target.value)} /></div>
-        <div><label className={p.labelCls}>PaÃ­s</label><input className={p.inputCls} value={p.dirPais} onChange={e => p.setDirPais(e.target.value)} /></div>
+        <div><label className={p.labelCls}>País</label><input className={p.inputCls} value={p.dirPais} onChange={e => p.setDirPais(e.target.value)} /></div>
         <div><label className={p.labelCls}>Email</label><input type="email" className={p.inputCls} value={p.email} onChange={e => p.setEmail(e.target.value)} /></div>
         <div><label className={p.labelCls}>Email 2</label><input type="email" className={p.inputCls} value={p.emailAlt} onChange={e => p.setEmailAlt(e.target.value)} /></div>
-        <div><label className={p.labelCls}>TelÃ©fono</label><input className={p.inputCls} value={p.telefono} onChange={e => p.setTelefono(e.target.value)} placeholder="(000)-0000000" /></div>
-        <div><label className={p.labelCls}>TelÃ©fono 2</label><input className={p.inputCls} value={p.telefonoAlt} onChange={e => p.setTelefonoAlt(e.target.value)} placeholder="(000)-0000000" /></div>
+        <div><label className={p.labelCls}>Teléfono</label><input className={p.inputCls} value={p.telefono} onChange={e => p.setTelefono(e.target.value)} placeholder="(000)-0000000" /></div>
+        <div><label className={p.labelCls}>Teléfono 2</label><input className={p.inputCls} value={p.telefonoAlt} onChange={e => p.setTelefonoAlt(e.target.value)} placeholder="(000)-0000000" /></div>
       </div>
     </section>
   );

@@ -73,7 +73,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
       );
       if (nuevoLoteRes.rows.length === 0) throw new Error("Lote nuevo no encontrado");
       if (nuevoLoteRes.rows[0].estado !== "DISPONIBLE") {
-        throw new Error(`El nuevo lote no estÃ¡ DISPONIBLE (estado: ${nuevoLoteRes.rows[0].estado})`);
+        throw new Error(`El nuevo lote no está DISPONIBLE (estado: ${nuevoLoteRes.rows[0].estado})`);
       }
       await client.query(
         `UPDATE ${schema}.lotes SET estado = 'DISPONIBLE'::tenant_template.lote_estado
@@ -90,13 +90,13 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
       );
       await registrarHistorial(
         client, schema, id, "EN_CARGA", "EN_CARGA",
-        `Cambio de lote durante ediciÃ³n`, sessionLabel(session),
+        `Cambio de lote durante edición`, sessionLabel(session),
         { lote_anterior: loteActualId, lote_nuevo: body.lote_id }
       );
       nuevoLoteId = body.lote_id;
     }
 
-    // ParÃ¡metros del tenant
+    // Parámetros del tenant
     const tenantRes = await client.query(
       `SELECT COALESCE((config->>'porc_gravado')::numeric, 0) AS porc_gravado FROM shared.tenants WHERE slug = $1`,
       [body.tenant]
@@ -126,12 +126,12 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
       const c = cRes.rows[0];
       
       // Validar vigencia + aplicabilidad al tenant
-      if (!c.activo) throw new Error("El convenio estÃ¡ dado de baja");
+      if (!c.activo) throw new Error("El convenio está dado de baja");
       const hoy = new Date().toISOString().slice(0, 10);
       const fi = new Date(c.fecha_inicio).toISOString().slice(0, 10);
       const ff = new Date(c.fecha_fin).toISOString().slice(0, 10);
       if (hoy < fi || hoy > ff) {
-        throw new Error(`El convenio no estÃ¡ vigente (${fi} a ${ff})`);
+        throw new Error(`El convenio no está vigente (${fi} a ${ff})`);
       }
       const aplicables: string[] = c.tenants_aplicables || [];
       if (!aplicables.includes(body.tenant)) {

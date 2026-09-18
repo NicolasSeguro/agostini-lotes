@@ -31,7 +31,7 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
 
   const [tab, setTab] = useState<"datos" | "info">("datos");
 
-  // PestaÃ±a Datos
+  // Pestaña Datos
   const [razonSocial, setRazonSocial] = useState(fideicomiso.razon_social || "");
   const [nombreFantasia, setNombreFantasia] = useState(fideicomiso.nombre_fantasia || "");
   const [cuit, setCuit] = useState(fideicomiso.cuit || "");
@@ -45,7 +45,7 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
   const [telefono, setTelefono] = useState(df.telefono || "");
   const [email, setEmail] = useState(df.email || "");
 
-  // PestaÃ±a InformaciÃ³n
+  // Pestaña Información
   const ri = df.reg_inmobiliario || {};
   const [ri_circ, setRiCirc] = useState(ri.circunscripcion || "");
   const [ri_seccion, setRiSeccion] = useState(ri.seccion || "");
@@ -90,7 +90,7 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
 
   async function handleSubmit() {
     setError(null);
-    if (!razonSocial.trim()) { setError("RazÃ³n social obligatoria"); setTab("datos"); return; }
+    if (!razonSocial.trim()) { setError("Razón social obligatoria"); setTab("datos"); return; }
     if (!cuit.trim()) { setError("CUIT obligatorio"); setTab("datos"); return; }
 
     setSubmitting(true);
@@ -121,7 +121,7 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
       router.push("/fideicomisos");
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃ³n");
+      setError(err.message || "Error de conexión");
       setSubmitting(false);
     }
   }
@@ -156,17 +156,17 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
             tab === "info" ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-700"
           }`}
         >
-          InformaciÃ³n
+          Información
         </button>
       </div>
 
-      {/* PestaÃ±a Datos */}
+      {/* Pestaña Datos */}
       {tab === "datos" && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-slate-900">Datos principales</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>RazÃ³n social *</label>
+              <label className={labelCls}>Razón social *</label>
               <input className={inputCls} value={razonSocial} onChange={e => setRazonSocial(e.target.value)} />
             </div>
             <div>
@@ -174,11 +174,11 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
               <input className={inputCls} value={cuit} onChange={e => setCuit(e.target.value)} placeholder="00-00000000-0" />
             </div>
             <div>
-              <label className={labelCls}>Nombre fantasÃ­a</label>
+              <label className={labelCls}>Nombre fantasía</label>
               <input className={inputCls} value={nombreFantasia} onChange={e => setNombreFantasia(e.target.value)} />
             </div>
             <div>
-              <label className={labelCls}>CondiciÃ³n IVA</label>
+              <label className={labelCls}>Condición IVA</label>
               <select className={inputCls + " bg-white"} value={condIva} onChange={e => setCondIva(e.target.value)}>
                 {COND_IVA.map(c => <option key={c.v} value={c.v}>{c.l}</option>)}
               </select>
@@ -190,18 +190,18 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
             <div></div>
             <div className="md:col-span-2"><h3 className="text-sm font-semibold text-slate-700 mt-2">Domicilio legal</h3></div>
             <div><label className={labelCls}>Calle</label><input className={inputCls} value={domCalle} onChange={e => setDomCalle(e.target.value)} /></div>
-            <div><label className={labelCls}>NÃºmero</label><input className={inputCls} value={domNumero} onChange={e => setDomNumero(e.target.value)} /></div>
+            <div><label className={labelCls}>Número</label><input className={inputCls} value={domNumero} onChange={e => setDomNumero(e.target.value)} /></div>
             <div><label className={labelCls}>Localidad</label><input className={inputCls} value={domLocalidad} onChange={e => setDomLocalidad(e.target.value)} /></div>
             <div><label className={labelCls}>CP</label><input className={inputCls} value={domCp} onChange={e => setDomCp(e.target.value)} /></div>
             <div><label className={labelCls}>Provincia</label><input className={inputCls} value={domProvincia} onChange={e => setDomProvincia(e.target.value)} /></div>
             <div></div>
-            <div><label className={labelCls}>TelÃ©fono</label><input className={inputCls} value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="(000)-0000000" /></div>
+            <div><label className={labelCls}>Teléfono</label><input className={inputCls} value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="(000)-0000000" /></div>
             <div><label className={labelCls}>Email</label><input type="email" className={inputCls} value={email} onChange={e => setEmail(e.target.value)} /></div>
           </div>
         </div>
       )}
 
-      {/* PestaÃ±a InformaciÃ³n */}
+      {/* Pestaña Información */}
       {tab === "info" && (
         <div className="space-y-5">
           <h2 className="text-lg font-semibold text-slate-900">Datos fiscales y financieros</h2>
@@ -209,25 +209,25 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
           <section>
             <h3 className="text-sm font-semibold text-slate-700 mb-2">Reg. Inmobiliario</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div><label className={labelCls}>CircunscripciÃ³n</label><input className={inputCls} value={ri_circ} onChange={e => setRiCirc(e.target.value)} /></div>
-              <div><label className={labelCls}>SecciÃ³n</label><input className={inputCls} value={ri_seccion} onChange={e => setRiSeccion(e.target.value)} /></div>
+              <div><label className={labelCls}>Circunscripción</label><input className={inputCls} value={ri_circ} onChange={e => setRiCirc(e.target.value)} /></div>
+              <div><label className={labelCls}>Sección</label><input className={inputCls} value={ri_seccion} onChange={e => setRiSeccion(e.target.value)} /></div>
               <div><label className={labelCls}>Parcela</label><input className={inputCls} value={ri_parcela} onChange={e => setRiParcela(e.target.value)} /></div>
-              <div><label className={labelCls}>PadrÃ³n</label><input className={inputCls} value={ri_padron} onChange={e => setRiPadron(e.target.value)} /></div>
-              <div><label className={labelCls}>MatrÃ­cula</label><input className={inputCls} value={ri_matricula} onChange={e => setRiMatricula(e.target.value)} /></div>
+              <div><label className={labelCls}>Padrón</label><input className={inputCls} value={ri_padron} onChange={e => setRiPadron(e.target.value)} /></div>
+              <div><label className={labelCls}>Matrícula</label><input className={inputCls} value={ri_matricula} onChange={e => setRiMatricula(e.target.value)} /></div>
             </div>
           </section>
 
           <section>
             <h3 className="text-sm font-semibold text-slate-700 mb-2">Escritura</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div><label className={labelCls}>NÃºmero</label><input className={inputCls} value={esc_numero} onChange={e => setEscNumero(e.target.value)} /></div>
+              <div><label className={labelCls}>Número</label><input className={inputCls} value={esc_numero} onChange={e => setEscNumero(e.target.value)} /></div>
               <div><label className={labelCls}>Fecha</label><input type="date" className={inputCls} value={esc_fecha} onChange={e => setEscFecha(e.target.value)} /></div>
               <div className="md:col-span-2"><label className={labelCls}>Escribano</label><input className={inputCls} value={esc_escribano} onChange={e => setEscEscribano(e.target.value)} /></div>
             </div>
           </section>
 
           <section>
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">FiscalÃ­a 1</h3>
+            <h3 className="text-sm font-semibold text-slate-700 mb-2">Fiscalía 1</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div><label className={labelCls}>Folio</label><input className={inputCls} value={f1_folio} onChange={e => setF1Folio(e.target.value)} /></div>
               <div><label className={labelCls}>Acta</label><input className={inputCls} value={f1_acta} onChange={e => setF1Acta(e.target.value)} /></div>
@@ -237,7 +237,7 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
           </section>
 
           <section>
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">FiscalÃ­a 2</h3>
+            <h3 className="text-sm font-semibold text-slate-700 mb-2">Fiscalía 2</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div><label className={labelCls}>Asiento</label><input className={inputCls} value={f2_asiento} onChange={e => setF2Asiento(e.target.value)} /></div>
               <div><label className={labelCls}>Folio</label><input className={inputCls} value={f2_folio} onChange={e => setF2Folio(e.target.value)} /></div>
@@ -248,16 +248,16 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
           </section>
 
           <section>
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">CarÃ¡cter impositivo</h3>
+            <h3 className="text-sm font-semibold text-slate-700 mb-2">Carácter impositivo</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>CarÃ¡cter IVA</label>
+                <label className={labelCls}>Carácter IVA</label>
                 <select className={inputCls + " bg-white"} value={caracterIva} onChange={e => setCaracterIva(e.target.value)}>
                   {CARACTER_IVA.map(o => <option key={o} value={o}>{o || "Seleccionar..."}</option>)}
                 </select>
               </div>
               <div>
-                <label className={labelCls}>CarÃ¡cter Ganancias</label>
+                <label className={labelCls}>Carácter Ganancias</label>
                 <select className={inputCls + " bg-white"} value={caracterGanancias} onChange={e => setCaracterGanancias(e.target.value)}>
                   {CARACTER_GANANCIAS.map(o => <option key={o} value={o}>{o || "Seleccionar..."}</option>)}
                 </select>
@@ -290,7 +290,7 @@ export function FideicomisoForm({ fideicomiso }: { fideicomiso: any }) {
           </section>
 
           <section>
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">ObservaciÃ³n</h3>
+            <h3 className="text-sm font-semibold text-slate-700 mb-2">Observación</h3>
             <textarea rows={3} className={inputCls} value={observacion} onChange={e => setObservacion(e.target.value)} placeholder="Observaciones..." />
           </section>
         </div>

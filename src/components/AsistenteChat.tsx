@@ -30,13 +30,21 @@ export function AsistenteChat({
     const trimmed = text.trim();
     if (!trimmed || loading) return;
     setInput("");
-    setMsgs((m) => [...m, { role: "user", text: trimmed }]);
+    const next: Msg[] = [...msgs, { role: "user", text: trimmed }];
+    setMsgs(next);
     setLoading(true);
     try {
       const res = await fetch("/api/asistente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: trimmed, tenant }),
+        body: JSON.stringify({
+          message: trimmed,
+          tenant,
+          messages: next.slice(-10).map((m) => ({
+            role: m.role,
+            content: m.text,
+          })),
+        }),
       });
       const data = await res.json();
       setMsgs((m) => [

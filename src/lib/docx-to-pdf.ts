@@ -3,7 +3,7 @@
  * Requiere LibreOffice instalado en el server.
  * 
  * Estrategia:
- *  1. Guardar el buffer en un archivo temporal Ãºnico
+ *  1. Guardar el buffer en un archivo temporal único
  *  2. Ejecutar soffice --headless --convert-to pdf
  *  3. Leer el PDF resultante
  *  4. Limpiar archivos temporales
@@ -18,10 +18,10 @@ import { randomUUID } from "crypto";
 // Ruta del ejecutable de LibreOffice. Configurable por env var.
 const SOFFICE_PATH = process.env.LIBREOFFICE_PATH || "C:\\Program Files\\LibreOffice\\program\\soffice.exe";
 
-const TIMEOUT_MS = 60_000;  // 60s mÃ¡ximo por conversiÃ³n
+const TIMEOUT_MS = 60_000;  // 60s máximo por conversión
 
 export async function convertirDocxAPdf(docxBuffer: Buffer): Promise<Buffer> {
-  // Carpeta temporal Ãºnica para esta conversiÃ³n
+  // Carpeta temporal única para esta conversión
   const tempDir = join(tmpdir(), `boleto-${randomUUID()}`);
   if (!existsSync(tempDir)) {
     await mkdir(tempDir, { recursive: true });
@@ -54,13 +54,13 @@ export async function convertirDocxAPdf(docxBuffer: Buffer): Promise<Buffer> {
 
       const to = setTimeout(() => {
         proc.kill();
-        reject(new Error(`Timeout (${TIMEOUT_MS}ms) convirtiendo a PDF. Â¿LibreOffice estÃ¡ instalado en ${SOFFICE_PATH}?`));
+        reject(new Error(`Timeout (${TIMEOUT_MS}ms) convirtiendo a PDF. ¿LibreOffice está instalado en ${SOFFICE_PATH}?`));
       }, TIMEOUT_MS);
 
       proc.on("error", (err: any) => {
         clearTimeout(to);
         if (err.code === "ENOENT") {
-          reject(new Error(`LibreOffice no encontrado en ${SOFFICE_PATH}. Instalalo o configurÃ¡ LIBREOFFICE_PATH en .env.local`));
+          reject(new Error(`LibreOffice no encontrado en ${SOFFICE_PATH}. Instalalo o configurá LIBREOFFICE_PATH en .env.local`));
         } else {
           reject(err);
         }
@@ -71,14 +71,14 @@ export async function convertirDocxAPdf(docxBuffer: Buffer): Promise<Buffer> {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error(`LibreOffice fallÃ³ (exit ${code}). stderr: ${stderr || "(vacÃ­o)"} stdout: ${stdout || "(vacÃ­o)"}`));
+          reject(new Error(`LibreOffice falló (exit ${code}). stderr: ${stderr || "(vacío)"} stdout: ${stdout || "(vacío)"}`));
         }
       });
     });
 
     // 3. Leer el PDF
     if (!existsSync(pdfPath)) {
-      throw new Error("LibreOffice ejecutÃ³ OK pero no generÃ³ el PDF (archivo no encontrado)");
+      throw new Error("LibreOffice ejecutó OK pero no generó el PDF (archivo no encontrado)");
     }
     const pdf = await readFile(pdfPath);
     return pdf;

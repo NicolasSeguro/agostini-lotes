@@ -41,6 +41,7 @@ const GROUPS: { label: string; items: NavItem[] }[] = [
       { label: "Mora", href: "/mora", icon: AlertTriangle },
       { label: "Lotes", href: "/lotes", icon: Tag },
       { label: "Personas", href: "/personas", icon: Users },
+      { label: "Maestro", href: "/personas/maestro", icon: Users, global: true },
     ],
   },
   {
@@ -110,6 +111,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
+    if (href === "/personas") {
+      return (
+        pathname === "/personas" ||
+        (pathname.startsWith("/personas/") &&
+          !pathname.startsWith("/personas/maestro"))
+      );
+    }
     if (href.startsWith("/caja/")) return pathname.startsWith("/caja");
     return pathname.startsWith(href);
   }

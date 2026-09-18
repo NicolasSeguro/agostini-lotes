@@ -1,8 +1,9 @@
 import { AppShell } from "@/components/AppShell";
 import { query } from "@/lib/db";
 import Link from "next/link";
-import { Plus, Search, Handshake } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { ConveniosLista } from "./ConveniosLista";
+import { PageHeader, opsPrimaryBtn } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -62,31 +63,24 @@ export default async function ConveniosPage({
 
   return (
     <AppShell>
-      <div className="p-8 max-w-7xl">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Handshake className="text-brand-600" size={28} />
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">Convenios</h1>
-              <p className="text-slate-500 mt-1">
-                Acuerdos con entidades que dan beneficio en el precio de venta Â· {(convenios as any[]).length} convenio{(convenios as any[]).length === 1 ? "" : "s"}
-              </p>
-            </div>
-          </div>
-          <Link
-            href={`/convenios/nuevo?t=${tenant}`}
-            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg"
-          >
-            <Plus size={16} />
-            Nuevo Convenio
-          </Link>
-        </div>
+      <div className="p-6 md:p-10 max-w-7xl">
+        <PageHeader
+          kicker="Comercial"
+          title="Convenios"
+          description={`Acuerdos con entidades que dan beneficio en el precio de venta · ${(convenios as any[]).length} convenio${(convenios as any[]).length === 1 ? "" : "s"}`}
+          actions={
+            <Link href={`/convenios/nuevo?t=${tenant}`} className={opsPrimaryBtn}>
+              <Plus size={16} />
+              Nuevo convenio
+            </Link>
+          }
+        />
 
         {/* Filtros */}
         <form className="bg-white rounded-xl border border-slate-200 p-4 mb-6 flex gap-3 flex-wrap items-end">
           <input type="hidden" name="t" value={tenant} />
           <div className="flex-1 min-w-[200px]">
-            <label className="text-xs text-slate-600 mb-1 block">Buscar (razÃ³n social o CUIT)</label>
+            <label className="text-xs text-slate-600 mb-1 block">Buscar (razón social o CUIT)</label>
             <div className="relative">
               <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
               <input

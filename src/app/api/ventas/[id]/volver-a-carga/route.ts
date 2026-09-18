@@ -15,9 +15,9 @@ type Body = {
  * Vendedor lleva una venta CERRADA_PENDIENTE de vuelta a EN_CARGA para editarla.
  * Las cobranzas de anticipo se mantienen vivas (cuando vuelva a cerrar, se aplican).
  *
- * Solo se permite desde CERRADA_PENDIENTE (mientras el anticipo no estÃ¡ completo).
- * En CERRADA_CONFIRMADA o mÃ¡s allÃ¡, NO se permite (la venta ya iniciÃ³ el flujo de
- * aprobaciÃ³n y solo se puede modificar vÃ­a rechazo).
+ * Solo se permite desde CERRADA_PENDIENTE (mientras el anticipo no está completo).
+ * En CERRADA_CONFIRMADA o más allá, NO se permite (la venta ya inició el flujo de
+ * aprobación y solo se puede modificar vía rechazo).
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.VENTAS);
@@ -52,8 +52,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       client, schema, id,
       "CERRADA_PENDIENTE", "EN_CARGA",
       body.motivo?.trim()
-        ? `Vendedor reabriÃ³ venta para editar: ${body.motivo.trim()}`
-        : "Vendedor reabriÃ³ venta para editar", sessionLabel(session)
+        ? `Vendedor reabrió venta para editar: ${body.motivo.trim()}`
+        : "Vendedor reabrió venta para editar", sessionLabel(session)
     );
 
     await client.query("COMMIT");

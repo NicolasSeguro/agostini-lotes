@@ -58,7 +58,7 @@ export function LoteForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Precio por mÂ² calculado
+  // Precio por m² calculado
   const precioM2 = useMemo(() => {
     const pl = typeof precioLista === "number" ? precioLista : 0;
     const sup = typeof superficie === "number" ? superficie : 0;
@@ -70,8 +70,8 @@ export function LoteForm({
 
   async function handleSubmit() {
     setError(null);
-    if (!proyectoId) { setError("SeleccionÃ¡ un proyecto"); return; }
-    if (!numero.trim()) { setError("NÃºmero de lote obligatorio"); return; }
+    if (!proyectoId) { setError("Seleccioná un proyecto"); return; }
+    if (!numero.trim()) { setError("Número de lote obligatorio"); return; }
 
     setSubmitting(true);
     try {
@@ -95,7 +95,7 @@ export function LoteForm({
         tiene_luz: tieneLuz,
         tiene_cloacas: tieneCloacas,
         tiene_gas: tieneGas,
-        // geometrÃ­a dibujada en el mapa
+        // geometría dibujada en el mapa
         geom_json: geom || null,
       };
 
@@ -107,7 +107,7 @@ export function LoteForm({
       router.push(`/lotes?t=${tenant}&proy=${proyectoId}`);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃ³n");
+      setError(err.message || "Error de conexión");
       setSubmitting(false);
     }
   }
@@ -125,13 +125,13 @@ export function LoteForm({
 
       {bloqueadoPorVenta && (
         <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-3">
-          Este lote estÃ¡ {lote.estado}. PodÃ©s editar datos descriptivos, pero cambiar el precio o estado puede afectar ventas. ProcedÃ© con cuidado.
+          Este lote está {lote.estado}. Podés editar datos descriptivos, pero cambiar el precio o estado puede afectar ventas. Procedé con cuidado.
         </div>
       )}
 
-      {/* IdentificaciÃ³n */}
+      {/* Identificación */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
-        <h2 className="font-semibold text-slate-900 mb-3">IdentificaciÃ³n</h2>
+        <h2 className="font-semibold text-slate-900 mb-3">Identificación</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="md:col-span-3">
             <label className={labelCls}>Proyecto *</label>
@@ -141,9 +141,9 @@ export function LoteForm({
             {editando && <span className="text-xs text-slate-400">El proyecto no se cambia al editar.</span>}
           </div>
           <div><label className={labelCls}>Manzana</label><input className={inputCls} value={manzana} onChange={e => setManzana(e.target.value)} placeholder="Ej: 52" /></div>
-          <div><label className={labelCls}>NÃºmero de lote *</label><input className={inputCls} value={numero} onChange={e => setNumero(e.target.value)} placeholder="Ej: 5" /></div>
-          <div><label className={labelCls}>NÃºmero de padrÃ³n</label><input className={inputCls} value={numeroPadron} onChange={e => setNumeroPadron(e.target.value)} /></div>
-          <div><label className={labelCls}>MatrÃ­cula</label><input className={inputCls} value={matricula} onChange={e => setMatricula(e.target.value)} /></div>
+          <div><label className={labelCls}>Número de lote *</label><input className={inputCls} value={numero} onChange={e => setNumero(e.target.value)} placeholder="Ej: 5" /></div>
+          <div><label className={labelCls}>Número de padrón</label><input className={inputCls} value={numeroPadron} onChange={e => setNumeroPadron(e.target.value)} /></div>
+          <div><label className={labelCls}>Matrícula</label><input className={inputCls} value={matricula} onChange={e => setMatricula(e.target.value)} /></div>
           <div><label className={labelCls}>Zona</label><input className={inputCls} value={zona} onChange={e => setZona(e.target.value)} /></div>
           <div>
             <label className={labelCls}>Estado</label>
@@ -159,7 +159,7 @@ export function LoteForm({
         <h2 className="font-semibold text-slate-900 mb-3">Dimensiones</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
-            <label className={labelCls}>Superficie (mÂ²)</label>
+            <label className={labelCls}>Superficie (m²)</label>
             <input type="number" step="0.01" className={inputCls} value={superficie === "" ? "" : superficie} onChange={e => setSuperficie(e.target.value ? parseFloat(e.target.value) : "")} />
           </div>
           <div>
@@ -182,9 +182,9 @@ export function LoteForm({
             <MoneyInput value={precioLista} onChange={setPrecioLista} className={inputCls} />
           </div>
           <div>
-            <label className={labelCls}>Precio por mÂ² (auto)</label>
+            <label className={labelCls}>Precio por m² (auto)</label>
             <div className="w-full px-3 py-2 border border-slate-200 bg-slate-50 rounded-lg text-sm text-slate-700 font-medium">
-              {precioM2 > 0 ? precioM2.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }) : "â€”"}
+              {precioM2 > 0 ? precioM2.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }) : "—"}
             </div>
           </div>
           <div>
@@ -195,7 +195,7 @@ export function LoteForm({
             <label className={labelCls}>Moneda</label>
             <select className={inputCls + " bg-white"} value={moneda} onChange={e => setMoneda(e.target.value)}>
               <option value="ARS">ARS (Pesos)</option>
-              <option value="USD">USD (DÃ³lares)</option>
+              <option value="USD">USD (Dólares)</option>
             </select>
           </div>
         </div>
@@ -212,13 +212,13 @@ export function LoteForm({
         </div>
       </section>
 
-      {/* GeorreferenciaciÃ³n */}
+      {/* Georreferenciación */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
-        <h2 className="font-semibold text-slate-900 mb-1">GeorreferenciaciÃ³n</h2>
+        <h2 className="font-semibold text-slate-900 mb-1">Georreferenciación</h2>
         <p className="text-xs text-slate-500 mb-3">
-          DibujÃ¡ el contorno del lote en el mapa. El centro se calcula automÃ¡ticamente.
+          Dibujá el contorno del lote en el mapa. El centro se calcula automáticamente.
           {geom?.center && (
-            <span className="text-green-700"> Â· Centro actual: {geom.center.lat.toFixed(6)}, {geom.center.lng.toFixed(6)}</span>
+            <span className="text-green-700"> · Centro actual: {geom.center.lat.toFixed(6)}, {geom.center.lng.toFixed(6)}</span>
           )}
         </p>
         <MapaLote
@@ -236,7 +236,7 @@ export function LoteForm({
             onClick={() => setGeom(null)}
             className="mt-2 text-xs text-red-600 hover:text-red-700 underline"
           >
-            Quitar geometrÃ­a
+            Quitar geometría
           </button>
         )}
       </section>

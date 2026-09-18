@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const detalleOmitidos: { id: string; motivo: string }[] = [];
 
     for (const item of body.cambios) {
-      // ValidaciÃ³n defensiva: revalidamos estado DISPONIBLE dentro de la transacciÃ³n
+      // Validación defensiva: revalidamos estado DISPONIBLE dentro de la transacción
       const r = await client.query(
         `SELECT estado::text AS estado, precio_lista, superficie_m2 
          FROM ${schema}.lotes WHERE id = $1::uuid FOR UPDATE`,
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Armar SET dinÃ¡mico
+      // Armar SET dinámico
       const sets: string[] = [];
       const params: any[] = [item.id];
       let idx = 2;
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
       if (sets.length === 0) continue;
 
-      // Recalcular precio_x_m2 si cambiÃ³ precio_lista o superficie_m2
+      // Recalcular precio_x_m2 si cambió precio_lista o superficie_m2
       const precioNuevo = valoresAplicados.precio_lista !== undefined
         ? Number(valoresAplicados.precio_lista)
         : Number(r.rows[0].precio_lista);

@@ -3,6 +3,7 @@ import { ProyectoAcciones } from "@/components/ProyectoAcciones";
 import { query, getSchema, loadTenants } from "@/lib/db";
 import Link from "next/link";
 import { Plus, MapPin } from "lucide-react";
+import { PageHeader, opsPrimaryBtn, opsTableWrap } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -53,34 +54,30 @@ export default async function ProyectosPage({
 
   return (
     <AppShell>
-      <div className="p-8 max-w-7xl">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Proyectos</h1>
-            <p className="text-slate-500 mt-1">
-              {tenantNombre} â€” {proyectos.length} proyecto{proyectos.length === 1 ? "" : "s"}
-            </p>
-          </div>
-          <Link
-            href={`/proyectos/nuevo?t=${tenant}`}
-            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-          >
-            <Plus size={16} />
-            Nuevo Proyecto
-          </Link>
-        </div>
+      <div className="p-6 md:p-10 max-w-7xl">
+        <PageHeader
+          kicker={tenantNombre}
+          title="Proyectos"
+          description={`${proyectos.length} proyecto${proyectos.length === 1 ? "" : "s"}`}
+          actions={
+            <Link href={`/proyectos/nuevo?t=${tenant}`} className={opsPrimaryBtn}>
+              <Plus size={16} />
+              Nuevo proyecto
+            </Link>
+          }
+        />
 
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className={opsTableWrap}>
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">CÃ³digo</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Código</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Nombre</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Estado</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">UbicaciÃ³n</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Ubicación</th>
                 <th className="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">Mapa</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Lotes (disp.)</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">AcciÃ³n</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -97,13 +94,13 @@ export default async function ProyectosPage({
                     )}
                   </td>
                   <td className="px-4 py-3 text-sm text-slate-600">
-                    {p.localidad ? `${p.localidad}${p.provincia ? `, ${p.provincia}` : ""}` : <span className="text-slate-400">â€”</span>}
+                    {p.localidad ? `${p.localidad}${p.provincia ? `, ${p.provincia}` : ""}` : <span className="text-slate-400">—</span>}
                   </td>
                   <td className="px-4 py-3 text-center">
                     {p.centro_lat && p.centro_lng ? (
                       <MapPin size={16} className="inline text-green-600" />
                     ) : (
-                      <span className="text-slate-300 text-xs">â€”</span>
+                      <span className="text-slate-300 text-xs">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-sm text-slate-700">
@@ -126,7 +123,7 @@ export default async function ProyectosPage({
               {proyectos.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
-                    No hay proyectos. CreÃ¡ el primero con el botÃ³n de arriba.
+                    No hay proyectos. Creá el primero con el botón de arriba.
                   </td>
                 </tr>
               )}

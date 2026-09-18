@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, AlertCircle, Plus, AlertTriangle } from "lucide-react";
 import { BarraPendientes } from "@/components/BarraPendientes";
 import { AsignarIndiceButton } from "@/components/AsignarIndiceButton";
+import { PageHeader, opsPrimaryBtn } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -229,23 +230,18 @@ export default async function VentasPage({
 
   return (
     <AppShell>
-      <div className="p-8 max-w-7xl">
-        <div className="mb-6 flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Ventas</h1>
-            <p className="text-slate-500 mt-1">
-              {tenantNombre} Ã¢â‚¬â€ {formatNumber(total)} venta{total === 1 ? "" : "s"}
-              {(proyectoId || estado || ajuste || search || soloMora || indiceFalta) && " (filtradas)"}
-            </p>
-          </div>
-          <Link
-            href={`/ventas/nueva?t=${tenant}`}
-            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition flex-shrink-0"
-          >
-            <Plus size={16} />
-            Nueva Venta
-          </Link>
-        </div>
+      <div className="p-6 md:p-10 max-w-7xl">
+        <PageHeader
+          kicker={tenantNombre}
+          title="Ventas"
+          description={`${formatNumber(total)} venta${total === 1 ? "" : "s"}${(proyectoId || estado || ajuste || search || soloMora || indiceFalta) ? " (filtradas)" : ""}`}
+          actions={
+            <Link href={`/ventas/nueva?t=${tenant}`} className={opsPrimaryBtn}>
+              <Plus size={16} />
+              Nueva venta
+            </Link>
+          }
+        />
 
         {/* Barra de pendientes en el workflow */}
         <BarraPendientes tenant={tenant} />
@@ -453,7 +449,7 @@ export default async function VentasPage({
                       <td className="px-4 py-3 text-sm">
                         <Link href={`/personas/${v.persona_id}?t=${tenant}`} className="text-slate-900 hover:text-brand-700 block max-w-[260px]">
                           <div className="line-clamp-2 leading-tight">
-                            {v.comprador || "Ã¢â‚¬â€"}
+                            {v.comprador || "—"}
                           </div>
                           {v.cant_titulares > 1 && (
                             <div className="text-xs text-slate-500 mt-0.5">
@@ -491,12 +487,12 @@ export default async function VentasPage({
                             {v.cuotas_vencidas}
                           </span>
                         ) : (
-                          <span className="text-slate-300 text-xs">Ã¢â‚¬â€</span>
+                          <span className="text-slate-300 text-xs">—</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-700">
                         {v.indice_ajuste === "NINGUNO" ? (
-                          <span className="text-slate-400">Ã¢â‚¬â€</span>
+                          <span className="text-slate-400">—</span>
                         ) : (
                           <span className="px-2 py-0.5 bg-slate-100 rounded text-xs">
                             {v.indice_ajuste}
@@ -532,7 +528,7 @@ export default async function VentasPage({
           {totalPages > 1 && (
             <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
               <div className="text-sm text-slate-600">
-                PÃƒÂ¡gina {page} de {totalPages}
+                PÍƒ¡gina {page} de {totalPages}
               </div>
               <div className="flex gap-2">
                 {page > 1 && (

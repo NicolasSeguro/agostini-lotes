@@ -36,7 +36,7 @@ export default async function BoletosPage({
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Boletos</h1>
             <p className="text-slate-500 mt-1">
-              {tenantNombre} â€” GeneraciÃ³n de boletos de compraventa para ventas contabilizadas
+              {tenantNombre} — Generación de boletos de compraventa para ventas contabilizadas
             </p>
           </div>
         </div>

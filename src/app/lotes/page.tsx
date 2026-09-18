@@ -3,6 +3,7 @@ import { query, getSchema, TENANTS } from "@/lib/db";
 import { formatMoney, formatNumber } from "@/lib/utils";
 import Link from "next/link";
 import { Search, MapPin, Plus, Pencil, Download, Upload } from "lucide-react";
+import { PageHeader, opsOutlineBtn, opsPrimaryBtn } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -135,67 +136,61 @@ export default async function LotesPage({
 
   return (
     <AppShell>
-      <div className="p-8 max-w-7xl">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Lotes</h1>
-            <p className="text-slate-500 mt-1">
-              {tenantNombre} â€” {formatNumber(total)} lote{total === 1 ? "" : "s"}
-              {(proyectoId || estado || search) && " (filtrados)"}
-            </p>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <a
-              href={`/api/lotes/exportar?t=${tenant}${proyectoId ? `&proy=${proyectoId}` : ""}${estado ? `&estado=${estado}` : ""}${search ? `&q=${encodeURIComponent(search)}` : ""}`}
-              className="inline-flex items-center gap-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-              title="Exportar lotes filtrados a Excel"
-            >
-              <Download size={16} />
-              Exportar Excel
-            </a>
-            <Link
-              href={`/lotes/importar?t=${tenant}`}
-              className="inline-flex items-center gap-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-              title="Importar Excel editado"
-            >
-              <Upload size={16} />
-              Importar Excel
-            </Link>
-            <Link
-              href={`/lotes/mapa?t=${tenant}${proyectoId ? `&proy=${proyectoId}` : ""}`}
-              className="inline-flex items-center gap-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-            >
-              <MapPin size={16} />
-              Ver en mapa
-            </Link>
-            <Link
-              href={`/lotes/nuevo?t=${tenant}${proyectoId ? `&proy=${proyectoId}` : ""}`}
-              className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-            >
-              <Plus size={16} />
-              Nuevo Lote
-            </Link>
-          </div>
-        </div>
+      <div className="p-6 md:p-10 max-w-7xl">
+        <PageHeader
+          kicker={tenantNombre}
+          title="Lotes"
+          description={`${formatNumber(total)} lote${total === 1 ? "" : "s"}${(proyectoId || estado || search) ? " (filtrados)" : ""}`}
+          actions={
+            <>
+              <a
+                href={`/api/lotes/exportar?t=${tenant}${proyectoId ? `&proy=${proyectoId}` : ""}${estado ? `&estado=${estado}` : ""}${search ? `&q=${encodeURIComponent(search)}` : ""}`}
+                className={opsOutlineBtn}
+                title="Exportar lotes filtrados a Excel"
+              >
+                <Download size={16} />
+                Exportar
+              </a>
+              <Link href={`/lotes/importar?t=${tenant}`} className={opsOutlineBtn}>
+                <Upload size={16} />
+                Importar
+              </Link>
+              <Link
+                href={`/lotes/mapa?t=${tenant}${proyectoId ? `&proy=${proyectoId}` : ""}`}
+                className={opsOutlineBtn}
+              >
+                <MapPin size={16} />
+                Mapa
+              </Link>
+              <Link
+                href={`/lotes/nuevo?t=${tenant}${proyectoId ? `&proy=${proyectoId}` : ""}`}
+                className={opsPrimaryBtn}
+              >
+                <Plus size={16} />
+                Nuevo lote
+              </Link>
+            </>
+          }
+        />
 
         {/* Filtros */}
         <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">
           <form className="space-y-3">
             <input type="hidden" name="t" value={tenant} />
 
-            {/* BÃºsqueda */}
+            {/* Búsqueda */}
             <div className="relative">
               <Search size={18} className="absolute left-3 top-2.5 text-slate-400" />
               <input
                 type="text"
                 name="q"
                 defaultValue={search}
-                placeholder="Buscar por nÃºmero de lote, manzana, padrÃ³n..."
+                placeholder="Buscar por número de lote, manzana, padrón..."
                 className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               />
             </div>
 
-            {/* Filtros en lÃ­nea */}
+            {/* Filtros en línea */}
             <div className="flex flex-wrap gap-3 items-center">
               <div>
                 <label className="text-xs text-slate-500 mb-1 block">Proyecto</label>
@@ -274,7 +269,7 @@ export default async function LotesPage({
                     Comprador actual
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    AcciÃ³n
+                    Acción
                   </th>
                 </tr>
               </thead>
@@ -290,7 +285,7 @@ export default async function LotesPage({
                           </div>
                           <div className="text-xs text-slate-500">
                             {l.proyecto_nombre}
-                            {l.manzana && ` Â· Mz ${l.manzana}`}
+                            {l.manzana && ` · Mz ${l.manzana}`}
                           </div>
                         </Link>
                       </td>
@@ -300,10 +295,10 @@ export default async function LotesPage({
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-700">
-                        {l.superficie_m2 ? `${formatNumber(l.superficie_m2)} mÂ²` : "â€”"}
+                        {l.superficie_m2 ? `${formatNumber(l.superficie_m2)} m²` : "—"}
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-700">
-                        {l.zona || "â€”"}
+                        {l.zona || "—"}
                       </td>
                       <td className="px-4 py-3 text-sm text-right text-slate-900 font-medium">
                         {formatMoney(l.precio_lista)}
@@ -312,7 +307,7 @@ export default async function LotesPage({
                         {l.comprador_actual ? (
                           <span className="line-clamp-1 max-w-[220px]">{l.comprador_actual}</span>
                         ) : (
-                          <span className="text-slate-400">â€”</span>
+                          <span className="text-slate-400">—</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -340,7 +335,7 @@ export default async function LotesPage({
           {totalPages > 1 && (
             <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
               <div className="text-sm text-slate-600">
-                PÃ¡gina {page} de {totalPages}
+                Página {page} de {totalPages}
               </div>
               <div className="flex gap-2">
                 {page > 1 && (

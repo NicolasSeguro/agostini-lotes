@@ -7,7 +7,7 @@ import { query, getSchema } from "@/lib/db";
  * GET /api/boletos/listado
  * Filtros opcionales:
  *  - t (tenant)
- *  - q (bÃºsqueda por nombre/CUIT/DNI titular)
+ *  - q (búsqueda por nombre/CUIT/DNI titular)
  *  - desde, hasta (fecha YYYY-MM-DD - filtra por fecha_boleto o fecha_contabilizada)
  *  - proyecto_id
  *  - emitido: "si" / "no" / "" (todos)
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const schema = getSchema(tenant);
     if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
-    // ConstrucciÃ³n de WHERE dinÃ¡mico
+    // Construcción de WHERE dinámico
     const conds: string[] = ["v.estado::text = 'CONTABILIZADA'"];
     const params: any[] = [];
     let idx = 1;

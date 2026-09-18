@@ -1,9 +1,9 @@
 import { AppShell } from "@/components/AppShell";
-import { query, getSchema, TENANTS } from "@/lib/db";
-import { formatMoney } from "@/lib/utils";
+import { query, getSchema, TENANTS, loadTenants } from "@/lib/db";
 import Link from "next/link";
 import { Search, AlertCircle, Plus } from "lucide-react";
 import { PersonaAcciones } from "@/components/PersonaAcciones";
+import { PageHeader, opsOutlineBtn, opsPanel, opsPrimaryBtn, opsTableWrap } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -92,7 +92,11 @@ export default async function PersonasPage({
   const page = parseInt(params.page || "1");
   const offset = (page - 1) * 50;
 
-  const tenantNombre = TENANTS.find((t) => t.slug === tenant)?.nombre || "?";
+  const tenants = await loadTenants();
+  const tenantNombre =
+    tenants.find((t) => t.slug === tenant)?.nombre ||
+    TENANTS.find((t) => t.slug === tenant)?.nombre ||
+    tenant;
   const { personas, total, limit } = await getPersonas(tenant, search, soloMora, offset);
   const totalPages = Math.ceil(total / limit);
 
@@ -110,26 +114,25 @@ export default async function PersonasPage({
 
   return (
     <AppShell>
-      <div className="p-8 max-w-7xl">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Personas</h1>
-            <p className="text-slate-500 mt-1">
-              {tenantNombre} â€” {total.toLocaleString("es-AR")} persona{total === 1 ? "" : "s"}
-              {(search || soloMora) && " (filtradas)"}
-            </p>
-          </div>
-          <Link
-            href={`/personas/nuevo?t=${tenant}`}
-            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-          >
-            <Plus size={16} />
-            Nueva Persona
-          </Link>
-        </div>
+      <div className="p-6 md:p-10 max-w-7xl">
+        <PageHeader
+          kicker={tenantNombre}
+          title="Personas"
+          description={`${total.toLocaleString("es-AR")} persona${total === 1 ? "" : "s"}${(search || soloMora) ? " (filtradas)" : ""}`}
+          actions={
+            <>
+              <Link href="/personas/maestro" className={opsOutlineBtn}>
+                Maestro / duplicados
+              </Link>
+              <Link href={`/personas/nuevo?t=${tenant}`} className={opsPrimaryBtn}>
+                <Plus size={16} />
+                Nueva persona
+              </Link>
+            </>
+          }
+        />
 
-        {/* Filtros */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">
+        <div className={opsPanel}>
           <form className="space-y-3">
             <input type="hidden" name="t" value={tenant} />
             <div className="relative">
@@ -138,7 +141,7 @@ export default async function PersonasPage({
                 type="text"
                 name="q"
                 defaultValue={search}
-                placeholder="Buscar por nombre, apellido, razÃ³n social, CUIT o DNI..."
+                placeholder="Buscar por nombre, apellido, razón social, CUIT o DNI..."
                 className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               />
             </div>
@@ -179,14 +182,13 @@ export default async function PersonasPage({
           </form>
         </div>
 
-        {/* Tabla */}
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className={opsTableWrap}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Apellido y Nombre / RazÃ³n Social
+                    Apellido y Nombre / Razón Social
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Tipo
@@ -204,7 +206,7 @@ export default async function PersonasPage({
                     Ventas
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    AcciÃ³n
+                    Acción
                   </th>
                 </tr>
               </thead>
@@ -222,7 +224,7 @@ export default async function PersonasPage({
                         <div className="font-medium text-slate-900">
                           {p.razon_social ||
                             `${p.apellido || ""}, ${p.nombre || ""}`.trim().replace(/^,\s*|,\s*$/g, "") ||
-                            "â€”"}
+                            "—"}
                         </div>
                       </Link>
                     </td>
@@ -234,17 +236,17 @@ export default async function PersonasPage({
                             : "bg-slate-100 text-slate-700"
                         }`}
                       >
-                        {p.tipo === "JURIDICA" ? "JurÃ­dica" : "FÃ­sica"}
+                        {p.tipo === "JURIDICA" ? "Jurídica" : "Física"}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div className="text-slate-700">
-                        {p.cuit || p.doc_numero || "â€”"}
+                        {p.cuit || p.doc_numero || "—"}
                       </div>
                       <div className="text-xs text-slate-500">{p.doc_tipo}</div>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <div className="text-slate-700">{p.telefono || "â€”"}</div>
+                      <div className="text-slate-700">{p.telefono || "—"}</div>
                       {p.email && (
                         <div className="text-xs text-slate-500 truncate max-w-[200px]">
                           {p.email}
@@ -262,7 +264,7 @@ export default async function PersonasPage({
                           Con mora
                         </span>
                       ) : (
-                        <span className="text-slate-300 text-xs">â€”</span>
+                        <span className="text-slate-300 text-xs">—</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -271,7 +273,7 @@ export default async function PersonasPage({
                           {p.ventas_count}
                         </span>
                       ) : (
-                        <span className="text-slate-400 text-sm">â€”</span>
+                        <span className="text-slate-400 text-sm">—</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -280,7 +282,7 @@ export default async function PersonasPage({
                         personaId={p.id}
                         activo={p.activo !== false}
                         ventasCount={Number(p.ventas_count) || 0}
-                        nombre={p.razon_social || `${p.apellido || ""}, ${p.nombre || ""}`.trim().replace(/^,\s*|,\s*$/g, "") || "â€”"}
+                        nombre={p.razon_social || `${p.apellido || ""}, ${p.nombre || ""}`.trim().replace(/^,\s*|,\s*$/g, "") || "—"}
                       />
                     </td>
                   </tr>
@@ -296,11 +298,11 @@ export default async function PersonasPage({
             </table>
           </div>
 
-          {/* PaginaciÃ³n */}
+          {/* Paginación */}
           {totalPages > 1 && (
             <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
               <div className="text-sm text-slate-600">
-                PÃ¡gina {page} de {totalPages}
+                Página {page} de {totalPages}
               </div>
               <div className="flex gap-2">
                 {page > 1 && (

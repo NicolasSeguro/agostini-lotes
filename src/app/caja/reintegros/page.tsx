@@ -1,8 +1,9 @@
 import { AppShell } from "@/components/AppShell";
 import { query, getSchema, TENANTS } from "@/lib/db";
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle, ClipboardList } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { ReintegrosLista } from "./ReintegrosLista";
+import { PageHeader } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -63,29 +64,24 @@ export default async function ReintegrosPage({
 
   return (
     <AppShell>
-      <div className="p-8 max-w-6xl">
+      <div className="p-6 md:p-10 max-w-6xl">
         <Link
           href={`/ventas?t=${tenant}`}
-          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-6"
+          className="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-ink mb-4"
         >
           <ArrowLeft size={16} />
           Volver a Ventas
         </Link>
-
-        <div className="mb-6 flex items-center gap-3">
-          <ClipboardList className="text-purple-600" size={28} />
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Reintegros pendientes</h1>
-            <p className="text-slate-500 mt-1">
-              {tenantNombre} Â· {(reintegros as any[]).length} solicitud{(reintegros as any[]).length === 1 ? "" : "es"}
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          kicker={tenantNombre}
+          title="Reintegros pendientes"
+          description={`${(reintegros as any[]).length} solicitud${(reintegros as any[]).length === 1 ? "" : "es"} de anulación con reintegro.`}
+        />
 
         {(reintegros as any[]).length === 0 ? (
           <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
             <div className="text-green-700 font-medium">No hay reintegros pendientes</div>
-            <div className="text-xs text-green-600 mt-1">Cuando un vendedor solicite anulaciÃ³n con reintegro, aparecerÃ¡ acÃ¡.</div>
+            <div className="text-xs text-green-600 mt-1">Cuando un vendedor solicite anulación con reintegro, aparecerá acá.</div>
           </div>
         ) : (
           <ReintegrosLista tenant={tenant} reintegros={reintegros as any[]} />

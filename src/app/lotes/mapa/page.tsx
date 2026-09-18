@@ -36,7 +36,7 @@ async function getLotes(tenant: string, proyectoId: string | null) {
   }
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  // Lotes con geometrÃ­a
+  // Lotes con geometría
   const conGeom = await query(
     `
     SELECT 
@@ -112,7 +112,7 @@ export default async function MapaPage({
               <h1 className="text-3xl font-bold text-slate-900">Mapa de Lotes</h1>
               <p className="text-slate-500 mt-1">
                 {tenantNombre}
-                {proyectoActual && ` Â· ${proyectoActual.nombre}`}
+                {proyectoActual && ` · ${proyectoActual.nombre}`}
               </p>
             </div>
           </div>
@@ -153,9 +153,9 @@ export default async function MapaPage({
         ) : datos.conGeom.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
             <MapPin className="mx-auto text-slate-300 mb-3" size={48} />
-            <div className="text-slate-600 font-medium mb-1">NingÃºn lote tiene geometrÃ­a cargada todavÃ­a</div>
+            <div className="text-slate-600 font-medium mb-1">Ningún lote tiene geometría cargada todavía</div>
             <p className="text-sm text-slate-500 mb-4">
-              EditÃ¡ un lote y dibujÃ¡ su contorno en el mapa para verlo acÃ¡.
+              Editá un lote y dibujá su contorno en el mapa para verlo acá.
             </p>
             <Link
               href={`/lotes?t=${tenant}${proyectoId ? `&proy=${proyectoId}` : ""}`}

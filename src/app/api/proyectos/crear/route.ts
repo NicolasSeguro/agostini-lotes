@@ -29,12 +29,12 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
-  if (!body.codigo || !body.codigo.trim()) return NextResponse.json({ error: "CÃ³digo requerido" }, { status: 400 });
+  if (!body.codigo || !body.codigo.trim()) return NextResponse.json({ error: "Código requerido" }, { status: 400 });
   if (!body.nombre || !body.nombre.trim()) return NextResponse.json({ error: "Nombre requerido" }, { status: 400 });
 
   const estado = body.estado || "EN_OBRA";
   if (!ESTADOS_VALIDOS.includes(estado)) {
-    return NextResponse.json({ error: `Estado invÃ¡lido: ${estado}` }, { status: 400 });
+    return NextResponse.json({ error: `Estado inválido: ${estado}` }, { status: 400 });
   }
 
   const schema = getSchema(body.tenant);
@@ -43,13 +43,13 @@ export async function POST(req: NextRequest) {
   const pool = getPool();
   const client = await pool.connect();
   try {
-    // Validar cÃ³digo Ãºnico
+    // Validar código único
     const dup = await client.query(
       `SELECT id FROM ${schema}.proyectos WHERE UPPER(codigo) = UPPER($1) LIMIT 1`,
       [body.codigo.trim()]
     );
     if (dup.rows.length > 0) {
-      return NextResponse.json({ error: `Ya existe un proyecto con el cÃ³digo ${body.codigo}` }, { status: 409 });
+      return NextResponse.json({ error: `Ya existe un proyecto con el código ${body.codigo}` }, { status: 409 });
     }
 
     // Armar config JSONB

@@ -40,7 +40,7 @@ export function ModalCrearPersona({
     setError(null);
 
     if (!docNumero.trim()) {
-      setError("NÃºmero de documento es obligatorio");
+      setError("Número de documento es obligatorio");
       return;
     }
     if (tipo === "FISICA" && (!apellido.trim() || !nombre.trim())) {
@@ -48,7 +48,7 @@ export function ModalCrearPersona({
       return;
     }
     if (tipo === "JURIDICA" && !razonSocial.trim()) {
-      setError("RazÃ³n social es obligatoria");
+      setError("Razón social es obligatoria");
       return;
     }
 
@@ -80,20 +80,20 @@ export function ModalCrearPersona({
         let msg = data.error || "Error al crear persona";
         if (data.sql_detail) msg += ` (${data.sql_detail})`;
         if (data.existing_id) {
-          msg = `${data.error}. Â¿QuerÃ©s seleccionar la persona existente?`;
+          msg = `${data.error}. ¿Querés seleccionar la persona existente?`;
         }
         setError(msg);
         setSubmitting(false);
         return;
       }
       if (!data.persona || !data.persona.id) {
-        setError("La persona se creÃ³ pero la respuesta del servidor no es vÃ¡lida. RevisÃ¡ la consola del servidor.");
+        setError("La persona se creó pero la respuesta del servidor no es válida. Revisá la consola del servidor.");
         setSubmitting(false);
         return;
       }
       onCreated(data.persona);
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃ³n");
+      setError(err.message || "Error de conexión");
       setSubmitting(false);
     }
   }
@@ -117,7 +117,7 @@ export function ModalCrearPersona({
                 checked={tipo === "FISICA"}
                 onChange={() => setTipo("FISICA")}
               />
-              <span className="text-sm">Persona FÃ­sica</span>
+              <span className="text-sm">Persona Física</span>
             </label>
             <label className="inline-flex items-center gap-2 cursor-pointer">
               <input
@@ -125,11 +125,11 @@ export function ModalCrearPersona({
                 checked={tipo === "JURIDICA"}
                 onChange={() => setTipo("JURIDICA")}
               />
-              <span className="text-sm">Persona JurÃ­dica</span>
+              <span className="text-sm">Persona Jurídica</span>
             </label>
           </div>
 
-          {/* Datos segÃºn tipo */}
+          {/* Datos según tipo */}
           {tipo === "FISICA" ? (
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -153,7 +153,7 @@ export function ModalCrearPersona({
             </div>
           ) : (
             <div>
-              <label className="text-xs text-slate-600 mb-1 block">RazÃ³n social *</label>
+              <label className="text-xs text-slate-600 mb-1 block">Razón social *</label>
               <input
                 type="text"
                 value={razonSocial}
@@ -183,7 +183,7 @@ export function ModalCrearPersona({
               </select>
             </div>
             <div className="col-span-2">
-              <label className="text-xs text-slate-600 mb-1 block">NÃºmero *</label>
+              <label className="text-xs text-slate-600 mb-1 block">Número *</label>
               <input
                 type="text"
                 value={docNumero}
@@ -205,7 +205,7 @@ export function ModalCrearPersona({
               />
             </div>
             <div>
-              <label className="text-xs text-slate-600 mb-1 block">CondiciÃ³n IVA</label>
+              <label className="text-xs text-slate-600 mb-1 block">Condición IVA</label>
               <select
                 value={condIva}
                 onChange={(e) => setCondIva(e.target.value)}
@@ -234,7 +234,7 @@ export function ModalCrearPersona({
               />
             </div>
             <div>
-              <label className="text-xs text-slate-600 mb-1 block">TelÃ©fono</label>
+              <label className="text-xs text-slate-600 mb-1 block">Teléfono</label>
               <input
                 type="text"
                 value={telefono}
@@ -244,7 +244,7 @@ export function ModalCrearPersona({
             </div>
           </div>
 
-          {/* DirecciÃ³n */}
+          {/* Dirección */}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
               <label className="text-xs text-slate-600 mb-1 block">Calle</label>
@@ -256,7 +256,7 @@ export function ModalCrearPersona({
               />
             </div>
             <div>
-              <label className="text-xs text-slate-600 mb-1 block">NÃºmero</label>
+              <label className="text-xs text-slate-600 mb-1 block">Número</label>
               <input
                 type="text"
                 value={direccionNumero}

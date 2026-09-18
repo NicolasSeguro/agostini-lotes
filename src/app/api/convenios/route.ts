@@ -9,7 +9,7 @@ import { validarCuit } from "@/lib/cuit-validator";
  *   ?activo=true/false (default: all)
  *   ?q=texto (busca en razon_social o cuit)
  *
- * Devuelve listado con conteo de ventas asociadas (para saber si se puede borrar fÃ­sico).
+ * Devuelve listado con conteo de ventas asociadas (para saber si se puede borrar físico).
  */
 export async function GET(req: NextRequest) {
   const authz = await requireRole(ROLES.ALL);
@@ -72,12 +72,12 @@ export async function POST(req: NextRequest) {
 
   // Validaciones
   if (!body.razon_social || body.razon_social.trim().length < 2) {
-    return NextResponse.json({ error: "RazÃ³n social requerida" }, { status: 400 });
+    return NextResponse.json({ error: "Razón social requerida" }, { status: 400 });
   }
   
   const cuitVal = validarCuit(body.cuit || "");
   if (!cuitVal.valido) {
-    return NextResponse.json({ error: `CUIT invÃ¡lido: ${cuitVal.error}` }, { status: 400 });
+    return NextResponse.json({ error: `CUIT inválido: ${cuitVal.error}` }, { status: 400 });
   }
   
   if (!body.fecha_inicio || !body.fecha_fin) {
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
   }
   
   if (!["PORCENTAJE", "MONTO_FIJO"].includes(body.tipo_beneficio)) {
-    return NextResponse.json({ error: "tipo_beneficio invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "tipo_beneficio inválido" }, { status: 400 });
   }
   
   const valor = parseFloat(body.valor_beneficio);

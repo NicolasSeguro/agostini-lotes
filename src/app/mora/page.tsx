@@ -3,6 +3,7 @@ import { query, getSchema, loadTenants, TENANTS } from "@/lib/db";
 import { calcularScoreMora, estadioMora } from "@/lib/mora-score";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader, opsTableWrap } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -80,18 +81,18 @@ export default async function MoraPage({
 
   return (
     <AppShell>
-      <div className="p-6 md:p-8 max-w-6xl">
-        <h1 className="text-3xl font-bold text-stone-900">Mora</h1>
-        <p className="text-stone-500 mt-1 mb-6">
-          Priorizacion de gestiones en {tenantNombre}. El score replica la
-          heuristica de CuotaFacil sobre cuotas reales de Postgres.
-        </p>
+      <div className="p-6 md:p-10 max-w-6xl">
+        <PageHeader
+          kicker={tenantNombre}
+          title="Mora"
+          description="Priorización de gestiones. El score replica la heurística de CuotaFacil sobre cuotas reales de Postgres."
+        />
         {error && (
           <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 mb-4">
             {error}
           </div>
         )}
-        <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white">
+        <div className={`${opsTableWrap} overflow-x-auto`}>
           <table className="min-w-full text-sm">
             <thead className="bg-cream-50 text-left text-stone-500">
               <tr>

@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePublicApiKey } from "@/lib/api-key";
 import { getSchema, query, loadTenants } from "@/lib/db";
+import { expirarReservasVencidas } from "@/lib/reservas-web";
 
 export async function GET(req: NextRequest) {
   const denied = requirePublicApiKey(req);
   if (denied) return denied;
 
   const desarrollo = req.nextUrl.searchParams.get("desarrollo") || "";
+  const includeAll = req.nextUrl.searchParams.get("include_all") === "1";
   await loadTenants();
   let schema: string;
   try {
@@ -14,6 +16,8 @@ export async function GET(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "desarrollo invalido" }, { status: 400 });
   }
+
+  await expirarReservasVencidas(schema);
 
   const rows = await query(
     `
@@ -27,6 +31,7 @@ export async function GET(req: NextRequest) {
       p.nombre AS proyecto
     FROM ${schema}.lotes l
     JOIN ${schema}.proyectos p ON p.id = l.proyecto_id
+    ${includeAll ? "" : "WHERE l.estado = 'DISPONIBLE'"}
     ORDER BY p.nombre, l.manzana, l.numero
     LIMIT 5000
     `
@@ -34,6 +39,7 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     desarrollo,
+    disponibles: !includeAll,
     lotes: rows,
   });
 }

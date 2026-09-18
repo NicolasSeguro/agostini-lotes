@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     );
     if (loteRes.rows.length === 0) throw new Error("Lote no encontrado");
     if (loteRes.rows[0].estado !== "DISPONIBLE") {
-      throw new Error(`El lote no estÃ¡ disponible (estado actual: ${loteRes.rows[0].estado})`);
+      throw new Error(`El lote no está disponible (estado actual: ${loteRes.rows[0].estado})`);
     }
     const proyectoId = loteRes.rows[0].proyecto_id;
 
@@ -107,12 +107,12 @@ export async function POST(req: NextRequest) {
       );
       if (cRes.rows.length === 0) throw new Error("Convenio no encontrado");
       const c = cRes.rows[0];
-      if (!c.activo) throw new Error("El convenio estÃ¡ dado de baja");
+      if (!c.activo) throw new Error("El convenio está dado de baja");
       const hoy = new Date().toISOString().slice(0, 10);
       const fi = new Date(c.fecha_inicio).toISOString().slice(0, 10);
       const ff = new Date(c.fecha_fin).toISOString().slice(0, 10);
       if (hoy < fi || hoy > ff) {
-        throw new Error(`El convenio no estÃ¡ vigente (${fi} a ${ff})`);
+        throw new Error(`El convenio no está vigente (${fi} a ${ff})`);
       }
       const aplicables: string[] = c.tenants_aplicables || [];
       if (!aplicables.includes(body.tenant)) {

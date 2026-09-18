@@ -3,15 +3,15 @@
 import { useState, useEffect, ChangeEvent } from "react";
 
 /**
- * Input numÃ©rico con formato Argentino:
+ * Input numérico con formato Argentino:
  *   - punto "." = separador de miles
  *   - coma "," = separador decimal
  *
- * Ejemplos vÃ¡lidos al tipear:
- *   "10000000"        â†’ muestra "10.000.000"
- *   "10000000,5"      â†’ muestra "10.000.000,5"
- *   "10000000,50"     â†’ muestra "10.000.000,50"
- *   "10.000.000"      â†’ muestra "10.000.000"   (mantiene formato)
+ * Ejemplos válidos al tipear:
+ *   "10000000"        → muestra "10.000.000"
+ *   "10000000,5"      → muestra "10.000.000,5"
+ *   "10000000,50"     → muestra "10.000.000,50"
+ *   "10.000.000"      → muestra "10.000.000"   (mantiene formato)
  *
  * Internamente trabaja con number puro.
  */
@@ -33,7 +33,7 @@ export function MoneyInput({
   const [display, setDisplay] = useState<string>(() => numberToDisplay(value));
   const [focused, setFocused] = useState(false);
 
-  // Cuando cambia value desde afuera y NO estÃ¡ focuseado, sync el display
+  // Cuando cambia value desde afuera y NO está focuseado, sync el display
   useEffect(() => {
     if (!focused) {
       setDisplay(numberToDisplay(value));
@@ -49,19 +49,19 @@ export function MoneyInput({
       return;
     }
     
-    // 1) Quitar todo lo que no sea dÃ­gito, punto o coma
+    // 1) Quitar todo lo que no sea dígito, punto o coma
     let cleaned = raw.replace(/[^\d.,]/g, "");
     
     // 2) Quitar todos los puntos (son separadores de miles, no aportan valor)
     let sinPuntos = cleaned.replace(/\./g, "");
     
-    // 3) Si hay mÃ¡s de una coma, dejar solo la primera
+    // 3) Si hay más de una coma, dejar solo la primera
     const coma = sinPuntos.indexOf(",");
     if (coma !== -1) {
       sinPuntos = sinPuntos.substring(0, coma + 1) + sinPuntos.substring(coma + 1).replace(/,/g, "");
     }
     
-    // 4) Convertir a nÃºmero: cambiar la coma por punto (formato JS)
+    // 4) Convertir a número: cambiar la coma por punto (formato JS)
     const paraNumero = sinPuntos.replace(",", ".");
     const num = parseFloat(paraNumero);
     
@@ -74,7 +74,7 @@ export function MoneyInput({
     // 5) Formatear de vuelta para mostrar: parte entera con puntos, parte decimal tal cual
     const [parteEntera, parteDecimal] = sinPuntos.split(",");
     
-    // La parte entera puede tener un cero al inicio o estar vacÃ­a
+    // La parte entera puede tener un cero al inicio o estar vacía
     let enteroFormateado = "";
     if (parteEntera === "" || parteEntera === undefined) {
       enteroFormateado = "0";
@@ -88,7 +88,7 @@ export function MoneyInput({
     // Reconstruir el display
     let nuevoDisplay = enteroFormateado;
     if (sinPuntos.includes(",")) {
-      // Conservar la parte decimal tal como el usuario la estÃ¡ escribiendo
+      // Conservar la parte decimal tal como el usuario la está escribiendo
       nuevoDisplay = enteroFormateado + "," + (parteDecimal || "");
     }
     
@@ -123,9 +123,9 @@ export function MoneyInput({
 
 /**
  * Convierte un number a string formateado en estilo Argentino.
- * 10000000      â†’ "10.000.000"
- * 10000000.5    â†’ "10.000.000,5"
- * 10000000.50   â†’ "10.000.000,50"
+ * 10000000      → "10.000.000"
+ * 10000000.5    → "10.000.000,5"
+ * 10000000.50   → "10.000.000,50"
  */
 function numberToDisplay(v: number | ""): string {
   if (v === "" || v === null || v === undefined) return "";

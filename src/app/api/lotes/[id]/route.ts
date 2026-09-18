@@ -42,12 +42,12 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   const schema = getSchema(body.tenant);
   if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
-  if (!body.numero || !body.numero.trim()) return NextResponse.json({ error: "NÃºmero requerido" }, { status: 400 });
+  if (!body.numero || !body.numero.trim()) return NextResponse.json({ error: "Número requerido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
   try {
-    // Si el lote estÃ¡ VENDIDO/ESCRITURADO, no permitir cambiar datos crÃ­ticos (precio, estado)
+    // Si el lote está VENDIDO/ESCRITURADO, no permitir cambiar datos críticos (precio, estado)
     const actual = await client.query(
       `SELECT estado::text AS estado FROM ${schema}.lotes WHERE id = $1::uuid`, [id]
     );

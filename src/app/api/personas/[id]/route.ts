@@ -52,7 +52,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
 }
 
 /**
- * PUT /api/personas/[id]  â€” editar persona
+ * PUT /api/personas/[id]  — editar persona
  */
 export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.VENTAS);
@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
 
   if (body.tipo === "JURIDICA") {
     if (!body.cuit || body.cuit.replace(/[^0-9]/g, "").length < 10) {
-      return NextResponse.json({ error: "El CUIT es obligatorio para persona jurÃ­dica" }, { status: 400 });
+      return NextResponse.json({ error: "El CUIT es obligatorio para persona jurídica" }, { status: 400 });
     }
     if (!body.doc_numero || !body.doc_numero.trim()) {
       body.doc_numero = body.cuit.replace(/[^0-9]/g, "");
@@ -76,14 +76,14 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
     }
   } else {
     if (!body.doc_numero || body.doc_numero.trim().length < 5) {
-      return NextResponse.json({ error: "NÃºmero de documento invÃ¡lido" }, { status: 400 });
+      return NextResponse.json({ error: "Número de documento inválido" }, { status: 400 });
     }
   }
   if (body.tipo === "FISICA" && (!body.apellido || !body.nombre)) {
     return NextResponse.json({ error: "Apellido y nombre obligatorios" }, { status: 400 });
   }
   if (body.tipo === "JURIDICA" && !body.razon_social) {
-    return NextResponse.json({ error: "RazÃ³n social obligatoria" }, { status: 400 });
+    return NextResponse.json({ error: "Razón social obligatoria" }, { status: 400 });
   }
 
   const pool = getPool();
@@ -138,8 +138,8 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
 
 /**
  * DELETE /api/personas/[id]?t=tenant&fisico=true
- *  - sin fisico: baja lÃ³gica (activo = false)
- *  - con fisico=true: borrado fÃ­sico, solo si no tiene ventas asociadas
+ *  - sin fisico: baja lógica (activo = false)
+ *  - con fisico=true: borrado físico, solo si no tiene ventas asociadas
  */
 export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.VENTAS);
@@ -162,7 +162,7 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
 
     if (fisico) {
       if (ventasCount > 0) {
-        return NextResponse.json({ error: `No se puede eliminar: tiene ${ventasCount} venta(s) asociada(s). UsÃ¡ desactivar.` }, { status: 400 });
+        return NextResponse.json({ error: `No se puede eliminar: tiene ${ventasCount} venta(s) asociada(s). Usá desactivar.` }, { status: 400 });
       }
       // Borrar roles primero (FK)
       await client.query(`DELETE FROM ${schema}.persona_roles WHERE persona_id = $1::uuid`, [id]);
@@ -171,7 +171,7 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
       return NextResponse.json({ ok: true, eliminado: "fisico" });
     }
 
-    // Baja lÃ³gica
+    // Baja lógica
     const res = await client.query(
       `UPDATE ${schema}.personas SET activo = false, updated_at = NOW() WHERE id = $1::uuid AND activo = true RETURNING id`,
       [id]

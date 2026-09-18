@@ -138,24 +138,24 @@ export async function GET(req: NextRequest) {
 
   XLSX.utils.book_append_sheet(wb, ws, "Lotes");
 
-  // Hoja "Instrucciones" para que el usuario sepa quÃ© se puede modificar
+  // Hoja "Instrucciones" para que el usuario sepa qué se puede modificar
   const instrucciones = [
     ["INSTRUCCIONES PARA IMPORTAR"],
     [""],
     ["1. NO modifiques la columna 'id'. Es la clave para identificar cada lote."],
     ["2. NO modifiques 'proyecto', 'manzana', 'numero', 'numero_padron', 'estado'."],
     ["   Estas columnas son informativas y no se actualizan al reimportar."],
-    ["3. Al reimportar SOLO se aplicarÃ¡n cambios sobre lotes en estado DISPONIBLE."],
-    ["   Los lotes con otro estado serÃ¡n omitidos y reportados en el preview."],
+    ["3. Al reimportar SOLO se aplicarán cambios sobre lotes en estado DISPONIBLE."],
+    ["   Los lotes con otro estado serán omitidos y reportados en el preview."],
     ["4. Campos modificables:"],
     ["   - superficie_m2, frente_ml, fondo_ml"],
     ["   - zona"],
-    ["   - precio_lista (el principal motivo de esta exportaciÃ³n)"],
+    ["   - precio_lista (el principal motivo de esta exportación)"],
     ["   - coeficiente, moneda (ARS/USD), matricula"],
-    ["   - tiene_agua, tiene_luz, tiene_cloacas, tiene_gas (ponÃ© SI o NO)"],
-    ["5. El campo 'precio_x_m2' se recalcula automÃ¡ticamente a partir de precio_lista / superficie_m2."],
+    ["   - tiene_agua, tiene_luz, tiene_cloacas, tiene_gas (poné SI o NO)"],
+    ["5. El campo 'precio_x_m2' se recalcula automáticamente a partir de precio_lista / superficie_m2."],
     ["6. NO borres filas, NO cambies el orden de las columnas, NO renombres las columnas."],
-    ["7. Al reimportar verÃ¡s un preview con los cambios antes de aplicarlos."],
+    ["7. Al reimportar verás un preview con los cambios antes de aplicarlos."],
   ];
   const wsInstr = XLSX.utils.aoa_to_sheet(instrucciones);
   wsInstr["!cols"] = [{ wch: 90 }];

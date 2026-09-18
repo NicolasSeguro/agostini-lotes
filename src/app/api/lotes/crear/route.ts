@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.proyecto_id) return NextResponse.json({ error: "Proyecto requerido" }, { status: 400 });
-  if (!body.numero || !body.numero.trim()) return NextResponse.json({ error: "NÃºmero de lote requerido" }, { status: 400 });
+  if (!body.numero || !body.numero.trim()) return NextResponse.json({ error: "Número de lote requerido" }, { status: 400 });
 
   const schema = getSchema(body.tenant);
   if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       [body.proyecto_id, body.numero.trim(), body.manzana?.trim() || null]
     );
     if (dup.rows.length > 0) {
-      return NextResponse.json({ error: "Ya existe un lote con esa manzana y nÃºmero en el proyecto" }, { status: 409 });
+      return NextResponse.json({ error: "Ya existe un lote con esa manzana y número en el proyecto" }, { status: 409 });
     }
 
     const res = await client.query(

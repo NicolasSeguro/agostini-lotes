@@ -102,28 +102,28 @@ function formatMoney(n: number): string {
 }
 
 function formatDate(d: any): string {
-  if (!d) return "â€”";
+  if (!d) return "—";
   try {
     return new Date(d).toLocaleDateString("es-AR");
   } catch {
-    return "â€”";
+    return "—";
   }
 }
 
 function formatDateTime(d: any): string {
-  if (!d) return "â€”";
+  if (!d) return "—";
   try {
     return new Date(d).toLocaleString("es-AR");
   } catch {
-    return "â€”";
+    return "—";
   }
 }
 
 const ESTADO_INFO: Record<string, { label: string; color: string }> = {
   EN_CARGA:               { label: "En carga", color: "bg-slate-100 text-slate-700 border-slate-300" },
   CERRADA_PENDIENTE:      { label: "Esperando cobro de anticipo", color: "bg-blue-100 text-blue-700 border-blue-300" },
-  CERRADA_CONFIRMADA:     { label: "Pendiente autorizaciÃ³n Comercial", color: "bg-cyan-100 text-cyan-700 border-cyan-300" },
-  AUTORIZADA:             { label: "Pendiente contabilizaciÃ³n", color: "bg-amber-100 text-amber-700 border-amber-300" },
+  CERRADA_CONFIRMADA:     { label: "Pendiente autorización Comercial", color: "bg-cyan-100 text-cyan-700 border-cyan-300" },
+  AUTORIZADA:             { label: "Pendiente contabilización", color: "bg-amber-100 text-amber-700 border-amber-300" },
   CONTABILIZADA:          { label: "Contabilizada", color: "bg-green-100 text-green-700 border-green-300" },
   RECHAZADA_COMERCIAL:    { label: "Rechazada (Comercial)", color: "bg-red-100 text-red-700 border-red-300" },
   RECHAZADA_CONTABILIDAD: { label: "Rechazada (Contabilidad)", color: "bg-red-100 text-red-700 border-red-300" },
@@ -187,21 +187,21 @@ export default async function VentaDetallePage({
                 {venta.requiere_aut_desc_fin && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-300">
                     <AlertTriangle size={12} />
-                    Requiere autorizaciÃ³n descuento
+                    Requiere autorización descuento
                   </span>
                 )}
               </div>
               <div className="text-sm text-slate-600">
-                {tenantNombre} Â· {venta.proyecto_nombre} Â·{" "}
+                {tenantNombre} · {venta.proyecto_nombre} ·{" "}
                 {venta.lote_manzana ? `M${venta.lote_manzana}-` : ""}L{venta.lote_numero}
-                {venta.numero_padron && ` (PadrÃ³n ${venta.numero_padron})`}
+                {venta.numero_padron && ` (Padrón ${venta.numero_padron})`}
               </div>
             </div>
             <GenerarBoletoBoton tenant={tenant} ventaId={venta.id} estado={venta.estado} />
           </div>
         </div>
 
-        {/* Acciones contextuales segÃºn estado */}
+        {/* Acciones contextuales según estado */}
         <DetalleVentaActions
           tenant={tenant}
           venta={{
@@ -226,7 +226,7 @@ export default async function VentaDetallePage({
           }}
         />
 
-        {/* Resumen econÃ³mico */}
+        {/* Resumen económico */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 mt-6">
           <div className="bg-white rounded-xl border border-slate-200 p-4">
             <div className="text-xs text-slate-500">Precio boleto</div>
@@ -355,9 +355,9 @@ export default async function VentaDetallePage({
           </div>
         </div>
 
-        {/* DescomposiciÃ³n fiscal */}
+        {/* Descomposición fiscal */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
-          <h2 className="font-semibold text-slate-900 mb-3">DescomposiciÃ³n fiscal</h2>
+          <h2 className="font-semibold text-slate-900 mb-3">Descomposición fiscal</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <div className="text-xs text-slate-500">Capital gravado</div>

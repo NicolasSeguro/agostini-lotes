@@ -15,11 +15,11 @@ type Body = {
   cond_iva?: string;
   fecha_nac?: string | null;
   estado_civil?: string | null;
-  profesion?: string | null;        // "OcupaciÃ³n" en la pantalla
+  profesion?: string | null;        // "Ocupación" en la pantalla
   actividad?: string | null;
   sujeto_obligado?: boolean;
   sujeto_expuesto?: boolean;
-  inicio_actividad?: string | null;  // jurÃ­dicas
+  inicio_actividad?: string | null;  // jurídicas
   email?: string;
   email_alt?: string;
   telefono?: string;
@@ -30,7 +30,7 @@ type Body = {
   direccion_localidad?: string;
   direccion_provincia?: string;
   direccion_pais?: string;
-  // Referente (jurÃ­dicas)
+  // Referente (jurídicas)
   referente_nombre?: string | null;
   referente_doc_tipo?: string | null;
   referente_doc_numero?: string | null;
@@ -47,12 +47,12 @@ export async function POST(req: NextRequest) {
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
 
-  // NormalizaciÃ³n de identificaciÃ³n:
+  // Normalización de identificación:
   // - FISICA: requiere doc_numero
   // - JURIDICA: requiere CUIT; si no hay documento, se usa el CUIT como doc_numero
   if (body.tipo === "JURIDICA") {
     if (!body.cuit || body.cuit.replace(/[^0-9]/g, "").length < 10) {
-      return NextResponse.json({ error: "El CUIT es obligatorio para persona jurÃ­dica" }, { status: 400 });
+      return NextResponse.json({ error: "El CUIT es obligatorio para persona jurídica" }, { status: 400 });
     }
     if (!body.doc_numero || !body.doc_numero.trim()) {
       // Usar CUIT (sin guiones) como documento
@@ -61,14 +61,14 @@ export async function POST(req: NextRequest) {
     }
   } else {
     if (!body.doc_numero || body.doc_numero.trim().length < 5) {
-      return NextResponse.json({ error: "NÃºmero de documento invÃ¡lido (mÃ­nimo 5 caracteres)" }, { status: 400 });
+      return NextResponse.json({ error: "Número de documento inválido (mínimo 5 caracteres)" }, { status: 400 });
     }
   }
   if (body.tipo === "FISICA" && (!body.apellido || !body.nombre)) {
-    return NextResponse.json({ error: "Apellido y nombre son obligatorios para persona fÃ­sica" }, { status: 400 });
+    return NextResponse.json({ error: "Apellido y nombre son obligatorios para persona física" }, { status: 400 });
   }
   if (body.tipo === "JURIDICA" && !body.razon_social) {
-    return NextResponse.json({ error: "RazÃ³n social es obligatoria para persona jurÃ­dica" }, { status: 400 });
+    return NextResponse.json({ error: "Razón social es obligatoria para persona jurídica" }, { status: 400 });
   }
 
   const schema = getSchema(body.tenant);
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
         `INSERT INTO ${schema}.persona_roles (persona_id, rol) VALUES ($1, 'CLIENTE'::shared.persona_rol) ON CONFLICT DO NOTHING`,
         [persona.id]
       );
-    } catch { /* no crÃ­tico */ }
+    } catch { /* no crítico */ }
 
     return NextResponse.json({
       ok: true,

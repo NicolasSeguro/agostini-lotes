@@ -19,7 +19,7 @@ type Body = {
  * POST /api/ventas/[id]/contabilizar
  * 
  * Admin A contabiliza una venta AUTORIZADA. Acciones:
- *   1. Confirma todas las cobranzas BORRADOR de anticipo â†’ CONFIRMADA
+ *   1. Confirma todas las cobranzas BORRADOR de anticipo → CONFIRMADA
  *   2. Genera el plan de cuotas (N cuotas con cuota_base actual)
  *   3. Pasa lote a VENDIDO
  *   4. Pasa venta a CONTABILIZADA
@@ -60,22 +60,22 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       throw new Error("La venta no tiene fecha de primer vencimiento");
     }
 
-    // 3) Obtener parÃ¡metros del tenant
+    // 3) Obtener parámetros del tenant
     const tenantConfig = await client.query(
       `SELECT COALESCE((config->>'porc_gravado')::numeric, 0) AS porc_gravado FROM shared.tenants WHERE slug = $1`,
       [body.tenant]
     );
     const porcGravado = parseFloat(tenantConfig.rows[0]?.porc_gravado || 0);
 
-    // 4) Calcular descomposiciÃ³n de cada cuota
+    // 4) Calcular descomposición de cada cuota
     const cantCuotas = parseInt(venta.cant_cuotas);
     const cuotaBase = parseFloat(venta.cuota_base);
     const sistema = venta.sistema_amort; // FRANCES o FIJO_SIN_INTERES
     const tasaMensual = parseFloat(venta.tasa_interes_mensual || 0) / 100;
     
-    // Para FrancÃ©s: calcular porcentaje de interÃ©s del primer pago para descomponer
-    // (en FrancÃ©s cada cuota tiene proporciÃ³n distinta capital/interÃ©s pero por simplicidad
-    //  vamos a descomponer cada cuota individualmente con sus nÃºmeros)
+    // Para Francés: calcular porcentaje de interés del primer pago para descomponer
+    // (en Francés cada cuota tiene proporción distinta capital/interés pero por simplicidad
+    //  vamos a descomponer cada cuota individualmente con sus números)
     
     const fechasVto = generarFechasVencimiento(fechaPrimerVto, cantCuotas);
     const hoyStr = new Date().toISOString().slice(0, 10);
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     
     // 6) Generar cuotas
     if (sistema === "FRANCES" && tasaMensual > 0) {
-      // En FrancÃ©s: tabla de amortizaciÃ³n clÃ¡sica
+      // En Francés: tabla de amortización clásica
       let saldoCapital = parseFloat(venta.precio_total) - parseFloat(venta.anticipo);
       
       for (let i = 0; i < cantCuotas; i++) {
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
         saldoCapital -= capitalCuota;
       }
     } else {
-      // Ajustable (FIJO_SIN_INTERES): todas las cuotas iguales, sin interÃ©s
+      // Ajustable (FIJO_SIN_INTERES): todas las cuotas iguales, sin interés
       const desc = descomponerCuota(cuotaBase, porcGravado, 0);
       
       for (let i = 0; i < cantCuotas; i++) {
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       }
     }
 
-    // 7) Confirmar cobranzas de anticipo (BORRADOR â†’ CONFIRMADA)
+    // 7) Confirmar cobranzas de anticipo (BORRADOR → CONFIRMADA)
     const cobranzasConfirmadas = await client.query(
       `UPDATE ${schema}.cobranzas
        SET estado = 'CONFIRMADA'::tenant_template.cobranza_estado,

@@ -47,7 +47,7 @@ export function MapaCentroProyecto({ initialLat, initialLng, onChange }: Props) 
         );
         L.control.layers({ "Satelital": satelital, "Calles": calles }, {}).addTo(map);
 
-        // Ãcono Leaflet por defecto necesita arreglo manual con bundlers
+        // Ícono Leaflet por defecto necesita arreglo manual con bundlers
         const iconUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png";
         const iconRetinaUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png";
         const shadowUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png";
@@ -87,7 +87,7 @@ export function MapaCentroProyecto({ initialLat, initialLng, onChange }: Props) 
         setTimeout(() => map.invalidateSize(), 200);
       } catch (err: any) {
         console.error("[MapaCentroProyecto]", err);
-        setError("No se pudo cargar el mapa. VerificÃ¡ la conexiÃ³n.");
+        setError("No se pudo cargar el mapa. Verificá la conexión.");
       }
     }
     initMap();
@@ -116,7 +116,7 @@ export function MapaCentroProyecto({ initialLat, initialLng, onChange }: Props) 
       </div>
       <div className="mt-2 flex items-center justify-between gap-3 text-xs">
         <p className="text-slate-500">
-          Click en el mapa para marcar el centro del proyecto. PodÃ©s arrastrar el marcador para ajustarlo.
+          Click en el mapa para marcar el centro del proyecto. Podés arrastrar el marcador para ajustarlo.
         </p>
         {coords && (
           <div className="flex items-center gap-2 text-slate-700">

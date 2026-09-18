@@ -15,15 +15,15 @@ type Body = {
  * POST /api/ventas/[id]/rechazar
  *
  * Rechaza venta:
- *   - CERRADA_CONFIRMADA â†’ RECHAZADA_COMERCIAL  (Gerente Comercial)
- *   - AUTORIZADA         â†’ RECHAZADA_CONTABILIDAD (Admin A)
+ *   - CERRADA_CONFIRMADA → RECHAZADA_COMERCIAL  (Gerente Comercial)
+ *   - AUTORIZADA         → RECHAZADA_CONTABILIDAD (Admin A)
  *
  * Las cobranzas NO se anulan (se mantienen vivas para que el vendedor
- * decida quÃ© hacer).
+ * decida qué hacer).
  *
- * CRÃTICO: Si Admin A rechaza una venta que tenÃ­a reclasificaciÃ³n de anticipo
- * a descuento comercial, se REVIERTE automÃ¡ticamente antes de cambiar el estado.
- * AsÃ­ el vendedor recibe la venta como la cargÃ³ (con anticipo, sin descuento
+ * CRÍTICO: Si Admin A rechaza una venta que tenía reclasificación de anticipo
+ * a descuento comercial, se REVIERTE automáticamente antes de cambiar el estado.
+ * Así el vendedor recibe la venta como la cargó (con anticipo, sin descuento
  * comercial). Esto se aplica solo en CONTABILIDAD porque Comercial no puede
  * haber reclasificado (eso solo lo hace Admin A en estado AUTORIZADA).
  */
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.motivo || body.motivo.trim().length < 3) {
-    return NextResponse.json({ error: "Motivo obligatorio (mÃ­nimo 3 caracteres)" }, { status: 400 });
+    return NextResponse.json({ error: "Motivo obligatorio (mínimo 3 caracteres)" }, { status: 400 });
   }
   if (!["COMERCIAL", "CONTABILIDAD"].includes(body.rol)) {
     return NextResponse.json({ error: "Rol invalido" }, { status: 400 });
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       ? "RECHAZADA_COMERCIAL"
       : "RECHAZADA_CONTABILIDAD";
 
-    // Si es Admin A y la venta tiene reclasificaciÃ³n â†’ revertir primero
+    // Si es Admin A y la venta tiene reclasificación → revertir primero
     let infoReversion: any = null;
     if (body.rol === "CONTABILIDAD") {
       const reversion = await revertirReclasificacionInterno(
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     );
 
     const motivoHistorial = infoReversion
-      ? `Rechazo (${body.rol}): ${body.motivo.trim()}. Se revirtiÃ³ reclasificaciÃ³n de $${infoReversion.monto_revertido.toLocaleString("es-AR")}`
+      ? `Rechazo (${body.rol}): ${body.motivo.trim()}. Se revirtió reclasificación de $${infoReversion.monto_revertido.toLocaleString("es-AR")}`
       : `Rechazo (${body.rol}): ${body.motivo.trim()}`;
 
     await registrarHistorial(

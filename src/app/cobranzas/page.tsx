@@ -3,6 +3,7 @@ import { query, getSchema, TENANTS } from "@/lib/db";
 import { formatMoney, formatNumber, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Search, AlertCircle, Plus } from "lucide-react";
+import { PageHeader, opsPrimaryBtn } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -161,22 +162,18 @@ export default async function CobranzasPage({
 
   return (
     <AppShell>
-      <div className="p-8 max-w-7xl">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Cobranzas</h1>
-            <p className="text-slate-500 mt-1">
-              {tenantNombre} — del {formatDate(desde)} al {formatDate(hasta)}
-            </p>
-          </div>
-          <Link
-            href={`/cobranzas/nueva?t=${tenant}`}
-            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm"
-          >
-            <Plus size={18} />
-            Nueva Cobranza
-          </Link>
-        </div>
+      <div className="p-6 md:p-10 max-w-7xl">
+        <PageHeader
+          kicker={tenantNombre}
+          title="Cobranzas"
+          description={`Del ${formatDate(desde)} al ${formatDate(hasta)}`}
+          actions={
+            <Link href={`/cobranzas/nueva?t=${tenant}`} className={opsPrimaryBtn}>
+              <Plus size={18} />
+              Nueva cobranza
+            </Link>
+          }
+        />
 
         {/* Filtros */}
         <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">

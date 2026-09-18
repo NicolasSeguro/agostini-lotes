@@ -23,7 +23,7 @@ export function PersonaAcciones({
   const [error, setError] = useState<string | null>(null);
 
   async function desactivar() {
-    if (!confirm(`Â¿Desactivar a "${nombre}"? No aparecerÃ¡ al cargar nuevas ventas. Las ventas existentes no se afectan.`)) return;
+    if (!confirm(`¿Desactivar a "${nombre}"? No aparecerá al cargar nuevas ventas. Las ventas existentes no se afectan.`)) return;
     setProcessing(true);
     try {
       const res = await fetch(`/api/personas/${personaId}?t=${tenant}`, { method: "DELETE" });
@@ -52,7 +52,7 @@ export function PersonaAcciones({
   }
 
   async function eliminar() {
-    if (!confirm(`Â¿ELIMINAR PERMANENTEMENTE a "${nombre}"? Esta acciÃ³n no se puede deshacer.`)) return;
+    if (!confirm(`¿ELIMINAR PERMANENTEMENTE a "${nombre}"? Esta acción no se puede deshacer.`)) return;
     setProcessing(true);
     try {
       const res = await fetch(`/api/personas/${personaId}?t=${tenant}&fisico=true`, { method: "DELETE" });
@@ -77,7 +77,7 @@ export function PersonaAcciones({
         disabled={processing}
         role="switch"
         aria-checked={activo}
-        title={activo ? "Activa â€” clic para desactivar" : "Inactiva â€” clic para activar"}
+        title={activo ? "Activa — clic para desactivar" : "Inactiva — clic para activar"}
         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${
           activo ? "bg-green-500" : "bg-slate-300"
         }`}

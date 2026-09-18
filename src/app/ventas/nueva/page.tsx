@@ -54,7 +54,7 @@ export default async function NuevaVentaPage({
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900">Nueva Venta</h1>
           <p className="text-slate-500 mt-1">
-            {tenantNombre} Â· Porcentaje gravado: {(porcGravado * 100).toFixed(0)}%
+            {tenantNombre} · Porcentaje gravado: {(porcGravado * 100).toFixed(0)}%
           </p>
         </div>
 

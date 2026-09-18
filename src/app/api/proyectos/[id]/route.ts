@@ -43,11 +43,11 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   const schema = getSchema(body.tenant);
   if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
-  if (!body.codigo || !body.codigo.trim()) return NextResponse.json({ error: "CÃ³digo requerido" }, { status: 400 });
+  if (!body.codigo || !body.codigo.trim()) return NextResponse.json({ error: "Código requerido" }, { status: 400 });
   if (!body.nombre || !body.nombre.trim()) return NextResponse.json({ error: "Nombre requerido" }, { status: 400 });
 
   const estado = body.estado || "EN_OBRA";
-  if (!ESTADOS_VALIDOS.includes(estado)) return NextResponse.json({ error: `Estado invÃ¡lido: ${estado}` }, { status: 400 });
+  if (!ESTADOS_VALIDOS.includes(estado)) return NextResponse.json({ error: `Estado inválido: ${estado}` }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -56,7 +56,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
       `SELECT id FROM ${schema}.proyectos WHERE UPPER(codigo) = UPPER($1) AND id != $2::uuid LIMIT 1`,
       [body.codigo.trim(), id]
     );
-    if (dup.rows.length > 0) return NextResponse.json({ error: "Ya existe otro proyecto con ese cÃ³digo" }, { status: 409 });
+    if (dup.rows.length > 0) return NextResponse.json({ error: "Ya existe otro proyecto con ese código" }, { status: 409 });
 
     // Mergear config: traer la actual, sobrescribir solo el tope si vino
     const actual = await client.query(`SELECT config FROM ${schema}.proyectos WHERE id = $1::uuid`, [id]);
@@ -101,8 +101,8 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
 
 /**
  * DELETE:
- *  - sin fisico: baja lÃ³gica (activo=false)
- *  - fisico=true: borrado fÃ­sico solo si no tiene lotes
+ *  - sin fisico: baja lógica (activo=false)
+ *  - fisico=true: borrado físico solo si no tiene lotes
  */
 export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.ADMIN_ONLY);
@@ -124,7 +124,7 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
 
     if (fisico) {
       if (lotesCount > 0) {
-        return NextResponse.json({ error: `No se puede eliminar: tiene ${lotesCount} lote(s). UsÃ¡ desactivar.` }, { status: 400 });
+        return NextResponse.json({ error: `No se puede eliminar: tiene ${lotesCount} lote(s). Usá desactivar.` }, { status: 400 });
       }
       const res = await client.query(`DELETE FROM ${schema}.proyectos WHERE id = $1::uuid RETURNING id`, [id]);
       if (res.rows.length === 0) return NextResponse.json({ error: "No encontrado" }, { status: 404 });

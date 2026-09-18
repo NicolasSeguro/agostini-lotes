@@ -67,7 +67,7 @@ export function ReintegrosLista({ tenant, reintegros }: { tenant: string; reinte
       router.refresh();
       setSubmitting(false);
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃ³n");
+      setError(err.message || "Error de conexión");
       setSubmitting(false);
     }
   }
@@ -86,9 +86,9 @@ export function ReintegrosLista({ tenant, reintegros }: { tenant: string; reinte
                   >
                     Venta #{r.nro}
                   </Link>
-                  <span className="text-xs text-slate-500">Â·</span>
+                  <span className="text-xs text-slate-500">·</span>
                   <span className="text-sm text-slate-600">{r.proyecto_nombre}</span>
-                  <span className="text-xs text-slate-500">Â·</span>
+                  <span className="text-xs text-slate-500">·</span>
                   <span className="text-sm text-slate-600">
                     {r.lote_manzana ? `M${r.lote_manzana}-` : ""}L{r.lote_numero}
                   </span>
@@ -183,14 +183,14 @@ function ModalProcesar({ tenant, venta, onClose, onCall, submitting, error }: an
   const requiereBanco = ["TRANSFERENCIA", "CHEQUE_COMUN", "CHEQUE_DIFERIDO"].includes(medio);
 
   return (
-    <ModalWrap title={`Procesar reintegro Â· Venta #${venta.nro}`} onClose={onClose}>
+    <ModalWrap title={`Procesar reintegro · Venta #${venta.nro}`} onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
         <div className="text-xs bg-purple-50 border border-purple-200 rounded p-2 space-y-1">
           <div className="font-medium text-purple-900">Al procesar:</div>
-          <div>â€¢ Se crea {venta.cobranzas_count} orden{venta.cobranzas_count === 1 ? "" : "es"} de pago (numeraciÃ³n propia)</div>
-          <div>â€¢ La{venta.cobranzas_count === 1 ? "" : "s"} cobranza{venta.cobranzas_count === 1 ? "" : "s"} pasa{venta.cobranzas_count === 1 ? "" : "n"} a ANULADA</div>
-          <div>â€¢ La venta queda ANULADA</div>
-          <div>â€¢ El lote vuelve a DISPONIBLE</div>
+          <div>"¢ Se crea {venta.cobranzas_count} orden{venta.cobranzas_count === 1 ? "" : "es"} de pago (numeración propia)</div>
+          <div>"¢ La{venta.cobranzas_count === 1 ? "" : "s"} cobranza{venta.cobranzas_count === 1 ? "" : "s"} pasa{venta.cobranzas_count === 1 ? "" : "n"} a ANULADA</div>
+          <div>"¢ La venta queda ANULADA</div>
+          <div>"¢ El lote vuelve a DISPONIBLE</div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 rounded p-3">
@@ -214,10 +214,10 @@ function ModalProcesar({ tenant, venta, onClose, onCall, submitting, error }: an
             >
               <option value="EFECTIVO">Efectivo</option>
               <option value="TRANSFERENCIA">Transferencia</option>
-              <option value="CHEQUE_COMUN">Cheque comÃºn</option>
+              <option value="CHEQUE_COMUN">Cheque común</option>
               <option value="CHEQUE_DIFERIDO">Cheque diferido</option>
               <option value="MERCADOPAGO">MercadoPago</option>
-              <option value="COMPENSACION">CompensaciÃ³n</option>
+              <option value="COMPENSACION">Compensación</option>
             </select>
           </div>
           <div>
@@ -243,7 +243,7 @@ function ModalProcesar({ tenant, venta, onClose, onCall, submitting, error }: an
               />
             </div>
             <div>
-              <label className="text-xs text-slate-600 mb-1 block">NÂ° operaciÃ³n / cheque</label>
+              <label className="text-xs text-slate-600 mb-1 block">N° operación / cheque</label>
               <input
                 type="text"
                 value={numOp}
@@ -272,8 +272,8 @@ function ModalProcesar({ tenant, venta, onClose, onCall, submitting, error }: an
             className="mt-0.5"
           />
           <span className="text-xs text-amber-900">
-            Confirmo que entreguÃ© <strong>{formatMoney(venta.monto_total_reintegrar)}</strong> al cliente <strong>{venta.comprador}</strong>.
-            Esta operaciÃ³n no se puede revertir.
+            Confirmo que entregué <strong>{formatMoney(venta.monto_total_reintegrar)}</strong> al cliente <strong>{venta.comprador}</strong>.
+            Esta operación no se puede revertir.
           </span>
         </label>
 
@@ -298,10 +298,10 @@ function ModalRechazarReintegro({ tenant, venta, onClose, onCall, submitting, er
   }
 
   return (
-    <ModalWrap title={`Rechazar reintegro Â· Venta #${venta.nro}`} onClose={onClose}>
+    <ModalWrap title={`Rechazar reintegro · Venta #${venta.nro}`} onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
         <div className="text-xs bg-amber-50 border border-amber-200 rounded p-2">
-          La venta volverÃ¡ al estado anterior (rechazada). El vendedor verÃ¡ tu motivo y podrÃ¡ decidir quÃ© hacer (corregir, reintentar o volver a solicitar anulaciÃ³n).
+          La venta volverá al estado anterior (rechazada). El vendedor verá tu motivo y podrá decidir qué hacer (corregir, reintentar o volver a solicitar anulación).
         </div>
 
         <div>
@@ -313,7 +313,7 @@ function ModalRechazarReintegro({ tenant, venta, onClose, onCall, submitting, er
             onChange={(e) => setMotivo(e.target.value)}
             rows={4}
             autoFocus
-            placeholder="Â¿Por quÃ© no podÃ©s procesar el reintegro? (ej: cliente no se presentÃ³, datos incompletos...)"
+            placeholder="¿Por qué no podés procesar el reintegro? (ej: cliente no se presentó, datos incompletos...)"
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
           />
         </div>

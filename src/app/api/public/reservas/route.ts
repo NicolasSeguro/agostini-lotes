@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePublicApiKey } from "@/lib/api-key";
 import { getSchema, getPool, loadTenants } from "@/lib/db";
+import { expirarReservasVencidas } from "@/lib/reservas-web";
 
 type Body = {
   desarrollo: string;
@@ -35,6 +36,8 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "desarrollo invalido" }, { status: 400 });
   }
+
+  await expirarReservasVencidas(schema);
 
   const ttl = Math.min(Math.max(body.ttl_horas || 48, 1), 168);
   const pool = getPool();

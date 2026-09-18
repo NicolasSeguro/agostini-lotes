@@ -1,5 +1,5 @@
 /**
- * ConversiÃ³n de nÃºmeros a letras (espaÃ±ol Argentina).
+ * Conversión de números a letras (español Argentina).
  * Para boletos de compraventa: importes en pesos.
  * Soporta hasta billones.
  */
@@ -7,9 +7,9 @@
 const UNIDADES = ["", "UNO", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE"];
 const ESPECIALES = {
   10: "DIEZ", 11: "ONCE", 12: "DOCE", 13: "TRECE", 14: "CATORCE", 15: "QUINCE",
-  16: "DIECISÃ‰IS", 17: "DIECISIETE", 18: "DIECIOCHO", 19: "DIECINUEVE",
-  20: "VEINTE", 21: "VEINTIUNO", 22: "VEINTIDÃ“S", 23: "VEINTITRÃ‰S", 24: "VEINTICUATRO",
-  25: "VEINTICINCO", 26: "VEINTISÃ‰IS", 27: "VEINTISIETE", 28: "VEINTIOCHO", 29: "VEINTINUEVE",
+  16: "DIECISÉIS", 17: "DIECISIETE", 18: "DIECIOCHO", 19: "DIECINUEVE",
+  20: "VEINTE", 21: "VEINTIUNO", 22: "VEINTIDÓS", 23: "VEINTITRÉS", 24: "VEINTICUATRO",
+  25: "VEINTICINCO", 26: "VEINTISÉIS", 27: "VEINTISIETE", 28: "VEINTIOCHO", 29: "VEINTINUEVE",
 } as Record<number, string>;
 const DECENAS = ["", "DIEZ", "VEINTE", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"];
 const CENTENAS = ["", "CIENTO", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS",
@@ -63,7 +63,7 @@ export function numeroALetras(n: number): string {
     const millones = Math.floor(entero / 1_000_000);
     const resto = entero % 1_000_000;
     let parteM: string;
-    if (millones === 1) parteM = "UN MILLÃ“N";
+    if (millones === 1) parteM = "UN MILLÓN";
     else parteM = milesALetras(millones) + " MILLONES";
     if (resto === 0) return parteM;
     return parteM + " " + milesALetras(resto);
@@ -92,7 +92,7 @@ export function montoALetras(n: number): string {
   return resultado;
 }
 
-/** Formato de nÃºmero con separadores AR: 35000000 â†’ "35.000.000" */
+/** Formato de número con separadores AR: 35000000 → "35.000.000" */
 export function formatNumero(n: number, decimales = 0): string {
   return Number(n).toLocaleString("es-AR", { 
     minimumFractionDigits: decimales,
@@ -100,7 +100,7 @@ export function formatNumero(n: number, decimales = 0): string {
   });
 }
 
-/** Formato de fecha YYYY-MM-DD o Date â†’ "DD/MM/YYYY" */
+/** Formato de fecha YYYY-MM-DD o Date → "DD/MM/YYYY" */
 export function formatFecha(fecha: string | Date | null): string {
   if (!fecha) return "";
   const d = typeof fecha === "string" ? new Date(fecha + (fecha.length === 10 ? "T00:00:00" : "")) : fecha;
@@ -110,7 +110,7 @@ export function formatFecha(fecha: string | Date | null): string {
   return `${dd}/${mm}/${yy}`;
 }
 
-/** DÃ­a del mes con guiÃ³n "10" */
+/** Día del mes con guión "10" */
 export function diaDelMes(fecha: string | Date | null): string {
   if (!fecha) return "";
   const d = typeof fecha === "string" ? new Date(fecha + (fecha.length === 10 ? "T00:00:00" : "")) : fecha;

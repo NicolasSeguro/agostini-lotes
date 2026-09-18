@@ -76,7 +76,7 @@ export function GenerarBoletoBoton({
       if (sugerida) setSeleccionada(sugerida.id);
       else if (data.plantillas.length > 0) setSeleccionada(data.plantillas[0].id);
     } catch (e: any) {
-      setError(e.message || "Error de conexiÃ³n");
+      setError(e.message || "Error de conexión");
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export function GenerarBoletoBoton({
       if (!res.ok) {
         let data: any;
         try { data = await res.json(); } catch { data = {}; }
-        setError((data.error || "Error al generar boleto") + (data.hint ? ` â€” ${data.hint}` : ""));
+        setError((data.error || "Error al generar boleto") + (data.hint ? ` — ${data.hint}` : ""));
         return;
       }
       const blob = await res.blob();
@@ -111,7 +111,7 @@ export function GenerarBoletoBoton({
       window.URL.revokeObjectURL(url);
       setOpen(false);
     } catch (e: any) {
-      setError(e.message || "Error de conexiÃ³n");
+      setError(e.message || "Error de conexión");
     } finally {
       setGenerando(false);
     }
@@ -134,7 +134,7 @@ export function GenerarBoletoBoton({
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col">
             <div className="p-5 border-b border-slate-200 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900">Generar Boleto</h2>
-              <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-slate-700 text-xl">Ã—</button>
+              <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-slate-700 text-xl">×</button>
             </div>
 
             <div className="p-5 overflow-y-auto">
@@ -153,7 +153,7 @@ export function GenerarBoletoBoton({
                     </p>
                   )}
                   <p className="text-xs text-slate-500 mb-3">
-                    TenÃ©s que subir las plantillas de boleto para este proyecto en el ABM.
+                    Tenés que subir las plantillas de boleto para este proyecto en el ABM.
                   </p>
                   <a
                     href={`/plantillas-boleto?t=${tenant}`}
@@ -172,7 +172,7 @@ export function GenerarBoletoBoton({
                   )}
                   <p className="text-sm text-slate-600 mb-3">
                     {proyectoNombre && <>Proyecto: <strong>{proyectoNombre}</strong>. </>}
-                    ElegÃ­ la plantilla a usar. La sugerida segÃºn los datos de la venta estÃ¡ marcada con <CheckCircle2 size={14} className="inline text-green-600" />.
+                    Elegí la plantilla a usar. La sugerida según los datos de la venta está marcada con <CheckCircle2 size={14} className="inline text-green-600" />.
                   </p>
                   <div className="space-y-2">
                     {plantillas.map(p => (

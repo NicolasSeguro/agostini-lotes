@@ -73,8 +73,8 @@ export function PlantillasBoletoCliente({
 
   async function subir() {
     setError(null); setResultado(null);
-    if (!proyectoId) { setError("SeleccionÃ¡ un proyecto"); return; }
-    if (!file) { setError("SeleccionÃ¡ un archivo .docx"); return; }
+    if (!proyectoId) { setError("Seleccioná un proyecto"); return; }
+    if (!file) { setError("Seleccioná un archivo .docx"); return; }
     if (!nombre.trim()) { setError("Nombre obligatorio"); return; }
 
     setSubmitting(true);
@@ -99,14 +99,14 @@ export function PlantillasBoletoCliente({
       setDescripcion("");
       router.refresh();
     } catch (e: any) {
-      setError(e.message || "Error de conexiÃ³n");
+      setError(e.message || "Error de conexión");
     } finally {
       setSubmitting(false);
     }
   }
 
   async function eliminar(id: string, nombrePlantilla: string) {
-    if (!confirm(`Â¿Eliminar la plantilla "${nombrePlantilla}"?`)) return;
+    if (!confirm(`¿Eliminar la plantilla "${nombrePlantilla}"?`)) return;
     try {
       const res = await fetch(`/api/plantillas-boleto/${id}?t=${tenant}`, { method: "DELETE" });
       const data = await res.json();
@@ -135,22 +135,22 @@ export function PlantillasBoletoCliente({
         </select>
       </div>
 
-      {/* Estado actual por combinaciÃ³n */}
+      {/* Estado actual por combinación */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="p-4 border-b border-slate-200">
           <h2 className="font-semibold text-slate-900">Plantillas configuradas para este proyecto</h2>
           <p className="text-xs text-slate-500 mt-1">
-            Cada combinaciÃ³n de modalidad / Ã­ndice tiene una plantilla. SubÃ­ o reemplazÃ¡ cada una.
+            Cada combinación de modalidad / índice tiene una plantilla. Subí o reemplazá cada una.
           </p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-2 text-left text-xs text-slate-500 font-medium uppercase">CombinaciÃ³n</th>
+                <th className="px-4 py-2 text-left text-xs text-slate-500 font-medium uppercase">Combinación</th>
                 <th className="px-4 py-2 text-left text-xs text-slate-500 font-medium uppercase">Estado</th>
                 <th className="px-4 py-2 text-left text-xs text-slate-500 font-medium uppercase">Archivo</th>
-                <th className="px-4 py-2 text-right text-xs text-slate-500 font-medium uppercase">AcciÃ³n</th>
+                <th className="px-4 py-2 text-right text-xs text-slate-500 font-medium uppercase">Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -169,7 +169,7 @@ export function PlantillasBoletoCliente({
                       )}
                     </td>
                     <td className="px-4 py-2 text-slate-600 text-xs">
-                      {p ? `${p.archivo_nombre} (${(p.archivo_size / 1024).toFixed(1)} KB)` : "â€”"}
+                      {p ? `${p.archivo_nombre} (${(p.archivo_size / 1024).toFixed(1)} KB)` : "—"}
                     </td>
                     <td className="px-4 py-2 text-right">
                       {p && (
@@ -204,7 +204,7 @@ export function PlantillasBoletoCliente({
         <h2 className="font-semibold text-slate-900 mb-3">Subir / reemplazar plantilla</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className={labelCls}>CombinaciÃ³n *</label>
+            <label className={labelCls}>Combinación *</label>
             <select className={inputCls + " bg-white"} value={comboIdx} onChange={e => setComboIdx(parseInt(e.target.value))}>
               {COMBINACIONES.map((c, i) => (
                 <option key={c.label} value={i}>{c.label}</option>
@@ -216,7 +216,7 @@ export function PlantillasBoletoCliente({
             <input className={inputCls} value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Ej: Boleto Contado Nogal" />
           </div>
           <div className="md:col-span-2">
-            <label className={labelCls}>DescripciÃ³n (opcional)</label>
+            <label className={labelCls}>Descripción (opcional)</label>
             <input className={inputCls} value={descripcion} onChange={e => setDescripcion(e.target.value)} />
           </div>
           <div className="md:col-span-2">

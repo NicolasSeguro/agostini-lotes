@@ -58,7 +58,7 @@ export function ProyectoForm({
 
   async function handleSubmit() {
     setError(null);
-    if (!codigo.trim()) { setError("CÃ³digo obligatorio"); return; }
+    if (!codigo.trim()) { setError("Código obligatorio"); return; }
     if (!nombre.trim()) { setError("Nombre obligatorio"); return; }
 
     setSubmitting(true);
@@ -87,7 +87,7 @@ export function ProyectoForm({
       router.push(`/proyectos?t=${tenant}`);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Error de conexiÃ³n");
+      setError(err.message || "Error de conexión");
       setSubmitting(false);
     }
   }
@@ -108,12 +108,12 @@ export function ProyectoForm({
 
       <h1 className="text-3xl font-bold text-slate-900">{editando ? "Editar Proyecto" : "Nuevo Proyecto"}</h1>
 
-      {/* IdentificaciÃ³n */}
+      {/* Identificación */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
-        <h2 className="font-semibold text-slate-900 mb-3">IdentificaciÃ³n</h2>
+        <h2 className="font-semibold text-slate-900 mb-3">Identificación</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className={labelCls}>CÃ³digo *</label>
+            <label className={labelCls}>Código *</label>
             <input className={inputCls} value={codigo} onChange={e => setCodigo(e.target.value)} placeholder="Ej: JAC-01" />
           </div>
           <div>
@@ -143,11 +143,11 @@ export function ProyectoForm({
         </div>
       </section>
 
-      {/* UbicaciÃ³n */}
+      {/* Ubicación */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
-        <h2 className="font-semibold text-slate-900 mb-3">UbicaciÃ³n</h2>
+        <h2 className="font-semibold text-slate-900 mb-3">Ubicación</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-          <div className="md:col-span-3"><label className={labelCls}>DirecciÃ³n</label><input className={inputCls} value={direccion} onChange={e => setDireccion(e.target.value)} /></div>
+          <div className="md:col-span-3"><label className={labelCls}>Dirección</label><input className={inputCls} value={direccion} onChange={e => setDireccion(e.target.value)} /></div>
           <div><label className={labelCls}>Localidad</label><input className={inputCls} value={localidad} onChange={e => setLocalidad(e.target.value)} /></div>
           <div><label className={labelCls}>Provincia</label><input className={inputCls} value={provincia} onChange={e => setProvincia(e.target.value)} /></div>
         </div>
@@ -155,9 +155,9 @@ export function ProyectoForm({
         <MapaCentroProyecto initialLat={centroLat} initialLng={centroLng} onChange={onCentroChange} />
       </section>
 
-      {/* ConfiguraciÃ³n */}
+      {/* Configuración */}
       <section className="bg-white rounded-xl border border-slate-200 p-5">
-        <h2 className="font-semibold text-slate-900 mb-3">ConfiguraciÃ³n</h2>
+        <h2 className="font-semibold text-slate-900 mb-3">Configuración</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label className={labelCls}>Tope desc. financiero (%)</label>
@@ -168,7 +168,7 @@ export function ProyectoForm({
               onChange={e => setTopeDescFin(e.target.value ? parseFloat(e.target.value) : "")}
               placeholder="10.00"
             />
-            <p className="text-xs text-slate-400 mt-1">Por encima de este valor, el descuento financiero requiere autorizaciÃ³n.</p>
+            <p className="text-xs text-slate-400 mt-1">Por encima de este valor, el descuento financiero requiere autorización.</p>
           </div>
         </div>
       </section>
@@ -183,7 +183,7 @@ export function ProyectoForm({
           {!activo && (
             <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 mt-2 inline-flex items-start gap-1">
               <AlertTriangle size={12} className="mt-0.5" />
-              <span>Proyecto inactivo: no aparecerÃ¡ al cargar nuevas ventas. Las existentes no se afectan.</span>
+              <span>Proyecto inactivo: no aparecerá al cargar nuevas ventas. Las existentes no se afectan.</span>
             </div>
           )}
         </section>

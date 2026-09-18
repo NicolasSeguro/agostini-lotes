@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
 /**
  * PUT /api/convenios/[id]
  * Edita un convenio. Las ventas asociadas YA congelaron sus valores,
- * asÃ­ que la ediciÃ³n solo afecta a futuras ventas que usen este convenio.
+ * así que la edición solo afecta a futuras ventas que usen este convenio.
  */
 export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.ADMIN_ONLY);
@@ -52,12 +52,12 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
   
   if (!body.razon_social || body.razon_social.trim().length < 2) {
-    return NextResponse.json({ error: "RazÃ³n social requerida" }, { status: 400 });
+    return NextResponse.json({ error: "Razón social requerida" }, { status: 400 });
   }
   
   const cuitVal = validarCuit(body.cuit || "");
   if (!cuitVal.valido) {
-    return NextResponse.json({ error: `CUIT invÃ¡lido: ${cuitVal.error}` }, { status: 400 });
+    return NextResponse.json({ error: `CUIT inválido: ${cuitVal.error}` }, { status: 400 });
   }
   
   if (!body.fecha_inicio || !body.fecha_fin) {
@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   }
   
   if (!["PORCENTAJE", "MONTO_FIJO"].includes(body.tipo_beneficio)) {
-    return NextResponse.json({ error: "tipo_beneficio invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "tipo_beneficio inválido" }, { status: 400 });
   }
   
   const valor = parseFloat(body.valor_beneficio);
@@ -131,8 +131,8 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
 /**
  * DELETE /api/convenios/[id]?fisico=true
  *
- * Sin parÃ¡metro: baja lÃ³gica (activo = false). Permitido incluso con ventas asociadas.
- * Con ?fisico=true: borrado fÃ­sico. Solo si NO hay ventas asociadas.
+ * Sin parámetro: baja lógica (activo = false). Permitido incluso con ventas asociadas.
+ * Con ?fisico=true: borrado físico. Solo si NO hay ventas asociadas.
  */
 export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.ADMIN_ONLY);
@@ -159,7 +159,7 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
     if (fisico) {
       if (ventasCount > 0) {
         return NextResponse.json({ 
-          error: `No se puede eliminar: tiene ${ventasCount} venta(s) asociada(s). Usar baja lÃ³gica.` 
+          error: `No se puede eliminar: tiene ${ventasCount} venta(s) asociada(s). Usar baja lógica.` 
         }, { status: 400 });
       }
       const res = await client.query(
@@ -172,7 +172,7 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
       return NextResponse.json({ ok: true, eliminado: "fisico" });
     }
     
-    // Baja lÃ³gica
+    // Baja lógica
     const res = await client.query(
       `UPDATE shared.convenios 
        SET activo = false, updated_at = NOW()

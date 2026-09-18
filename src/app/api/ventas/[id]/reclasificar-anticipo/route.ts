@@ -22,16 +22,16 @@ type Body = {
  * 
  * Efectos:
  *   1. Inserta registro en tabla descuentos_comerciales por el monto reclasificado
- *   2. Si la reclasificaciÃ³n es TOTAL: las cobranzas BORRADOR/CONFIRMADA pasan a RECLASIFICADA
- *   3. Si la reclasificaciÃ³n es PARCIAL: se divide la cobranza mÃ¡s grande
- *      - El monto reclasificado se quita de las cobranzas (estado RECLASIFICADA o reducciÃ³n de monto)
+ *   2. Si la reclasificación es TOTAL: las cobranzas BORRADOR/CONFIRMADA pasan a RECLASIFICADA
+ *   3. Si la reclasificación es PARCIAL: se divide la cobranza más grande
+ *      - El monto reclasificado se quita de las cobranzas (estado RECLASIFICADA o reducción de monto)
  *      - Queda como cobranza activa el resto
  *   4. Actualiza venta: descuento_comercial += monto, anticipo -= monto
  *      (precio_total = precio_lista - desc_fin - desc_comercial)
- *   5. cuota_base e indicadores fiscales se RECALCULAN porque cambiÃ³ precio_total
+ *   5. cuota_base e indicadores fiscales se RECALCULAN porque cambió precio_total
  * 
  * NOTA: NO cambia el estado de la venta. Sigue siendo AUTORIZADA.
- *       La contabilizaciÃ³n se hace despuÃ©s como paso separado.
+ *       La contabilización se hace después como paso separado.
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const authz = await requireRole(ROLES.CONTABILIDAD);
@@ -91,17 +91,17 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     
     const totalCobradoActual = cobranzas.reduce((s, c) => s + parseFloat(c.monto_total), 0);
     if (Math.abs(totalCobradoActual - anticipoVenta) > 0.02) {
-      // Esto solo deberÃ­a pasar si los datos estÃ¡n inconsistentes
+      // Esto solo debería pasar si los datos están inconsistentes
       console.warn(
         `Inconsistencia: anticipo venta=${anticipoVenta}, total cobrado=${totalCobradoActual}`
       );
     }
 
-    // 4) Reclasificar â€” algoritmo:
+    // 4) Reclasificar — algoritmo:
     //   Recorrer cobranzas (de mayor a menor monto), 
     //   restando del monto_a_reclasificar.
-    //   - Si la cobranza cabe entera en lo que falta â†’ cambiar estado a RECLASIFICADA
-    //   - Si la cobranza es mayor que lo que falta â†’ reducir su monto (split)
+    //   - Si la cobranza cabe entera en lo que falta → cambiar estado a RECLASIFICADA
+    //   - Si la cobranza es mayor que lo que falta → reducir su monto (split)
     let restanteReclasificar = body.monto_reclasificar;
     const cobranzasAfectadas: any[] = [];
     
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
         await client.query(
           `UPDATE ${schema}.cobranzas
            SET monto_total = $2,
-               observaciones = COALESCE(observaciones, '') || ' [Reducida de $' || $3 || ' por reclasificaciÃ³n parcial]'
+               observaciones = COALESCE(observaciones, '') || ' [Reducida de $' || $3 || ' por reclasificación parcial]'
            WHERE id = $1::uuid`,
           [cob.id, montoNuevo, montoCob.toFixed(2)]
         );
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     }
 
     // 5) Insertar registro en descuentos_comerciales
-    const cobranzaPrincipal = cobranzas[0]; // referencia para auditorÃ­a
+    const cobranzaPrincipal = cobranzas[0]; // referencia para auditoría
     await client.query(
       `INSERT INTO ${schema}.descuentos_comerciales
          (venta_id, monto, cobranza_original_id, autorizado_por_label, fecha, observaciones)
@@ -185,7 +185,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     const nuevoAnticipo = anticipoVenta - body.monto_reclasificar;
     const nuevoPrecioTotal = precioLista - descFin - nuevoDescCom;
     
-    // Recalcular descomposiciÃ³n IVA del nuevo precio total
+    // Recalcular descomposición IVA del nuevo precio total
     const tenantConfig = await client.query(
       `SELECT COALESCE((config->>'porc_gravado')::numeric, 0) AS porc_gravado FROM shared.tenants WHERE slug = $1`,
       [body.tenant]
@@ -215,7 +215,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       "AUTORIZADA", "AUTORIZADA",
-      `ReclasificaciÃ³n de anticipo: $${body.monto_reclasificar.toLocaleString("es-AR")} a descuento comercial`, sessionLabel(session),
+      `Reclasificación de anticipo: $${body.monto_reclasificar.toLocaleString("es-AR")} a descuento comercial`, sessionLabel(session),
       {
         monto_reclasificado: body.monto_reclasificar,
         cobranzas_afectadas: cobranzasAfectadas,

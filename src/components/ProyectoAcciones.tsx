@@ -23,7 +23,7 @@ export function ProyectoAcciones({
 
   async function toggle() {
     if (activo) {
-      if (!confirm(`Â¿Desactivar "${nombre}"? No aparecerÃ¡ al cargar nuevas ventas. Lotes y ventas existentes no se afectan.`)) return;
+      if (!confirm(`¿Desactivar "${nombre}"? No aparecerá al cargar nuevas ventas. Lotes y ventas existentes no se afectan.`)) return;
     }
     setProcessing(true);
     try {
@@ -65,7 +65,7 @@ export function ProyectoAcciones({
   }
 
   async function eliminar() {
-    if (!confirm(`Â¿ELIMINAR PERMANENTEMENTE el proyecto "${nombre}"? Esta acciÃ³n no se puede deshacer.`)) return;
+    if (!confirm(`¿ELIMINAR PERMANENTEMENTE el proyecto "${nombre}"? Esta acción no se puede deshacer.`)) return;
     setProcessing(true);
     try {
       const res = await fetch(`/api/proyectos/${proyectoId}?t=${tenant}&fisico=true`, { method: "DELETE" });
@@ -85,7 +85,7 @@ export function ProyectoAcciones({
         disabled={processing}
         role="switch"
         aria-checked={activo}
-        title={activo ? "Activo â€” clic para desactivar" : "Inactivo â€” clic para activar"}
+        title={activo ? "Activo — clic para desactivar" : "Inactivo — clic para activar"}
         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${
           activo ? "bg-green-500" : "bg-slate-300"
         }`}

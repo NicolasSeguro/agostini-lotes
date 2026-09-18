@@ -42,8 +42,8 @@ export function MapaProyectoCliente({
   lotes: LoteMapa[];
   proyectoCentro?: { lat: number; lng: number } | null;
 }) {
-  // Estado: quÃ© categorÃ­as estÃ¡n visibles. Set vacÃ­o = ver todas.
-  // Por simetrÃ­a con la leyenda clickeable, mantengo el set con las activas.
+  // Estado: qué categorías están visibles. Set vacío = ver todas.
+  // Por simetría con la leyenda clickeable, mantengo el set con las activas.
   const [activas, setActivas] = useState<Set<string>>(new Set(CATEGORIAS.map(c => c.key)));
 
   function toggle(cat: string) {

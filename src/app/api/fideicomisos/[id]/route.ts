@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.razon_social || !body.razon_social.trim()) {
-    return NextResponse.json({ error: "RazÃ³n social requerida" }, { status: 400 });
+    return NextResponse.json({ error: "Razón social requerida" }, { status: 400 });
   }
   if (!body.cuit || !body.cuit.trim()) {
     return NextResponse.json({ error: "CUIT requerido" }, { status: 400 });
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
 
   const condIva = body.cond_iva || "RI";
   if (!COND_IVA_VALIDOS.includes(condIva)) {
-    return NextResponse.json({ error: `CondiciÃ³n IVA invÃ¡lida: ${condIva}` }, { status: 400 });
+    return NextResponse.json({ error: `Condición IVA inválida: ${condIva}` }, { status: 400 });
   }
 
   const isUuid = /^[0-9a-f-]{36}$/i.test(id);
@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   const pool = getPool();
   const client = await pool.connect();
   try {
-    // Domicilio fiscal (reutiliza el JSONB existente; secciÃ³n "Domicilio legal" de la pantalla)
+    // Domicilio fiscal (reutiliza el JSONB existente; sección "Domicilio legal" de la pantalla)
     const domicilio = {
       calle: body.domicilio?.calle?.trim() || null,
       numero: body.domicilio?.numero?.trim() || null,
