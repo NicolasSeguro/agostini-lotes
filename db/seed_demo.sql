@@ -147,7 +147,7 @@ BEGIN
     ) VALUES
       ($1, 101, $7, CURRENT_DATE - 400, ''CONTABILIZADA'', 19500000, 19500000, 1950000, 0, 48, ''FIJO_SIN_INTERES'', ''CAC'', 0, 365625, CURRENT_DATE - 370, false, ''Cartera en mora — demo'', 10, ''ARS'', $13),
       ($2, 102, $8, CURRENT_DATE - 200, ''CONTABILIZADA'', 19800000, 19800000, 3960000, 0, 36, ''FIJO_SIN_INTERES'', ''CAC'', 0, 440000, CURRENT_DATE - 170, false, ''Al dia — demo'', 10, ''ARS'', $13),
-      ($3, 103, $9, CURRENT_DATE - 2, ''EN_CARGA'', 22000000, 22000000, 2200000, 0, 60, ''FIJO_SIN_INTERES'', ''CAC'', 0, 330000, CURRENT_DATE + 28, false, ''Espera autorizacion Laura'', 10, ''ARS'', $13),
+      ($3, 103, $9, CURRENT_DATE - 2, ''CERRADA_CONFIRMADA'', 22000000, 22000000, 2200000, 0, 60, ''FIJO_SIN_INTERES'', ''CAC'', 0, 330000, CURRENT_DATE + 28, false, ''Espera autorizacion Laura'', 10, ''ARS'', $13),
       ($4, 104, $10, CURRENT_DATE - 1, ''AUTORIZADA'', 19200000, 19200000, 1920000, 500000, 48, ''FIJO_SIN_INTERES'', ''CAC'', 0, 359375, CURRENT_DATE + 20, true, ''Autorizada, falta contabilidad'', 10, ''ARS'', $13),
       ($5, 105, $11, CURRENT_DATE - 5, ''RECHAZADA_COMERCIAL'', 18800000, 18800000, 0, 0, 48, ''FIJO_SIN_INTERES'', ''NINGUNO'', 0, NULL, NULL, false, ''Rechazo comercial demo'', 10, ''ARS'', $13),
       ($6, 106, $12, CURRENT_DATE - 20, ''PENDIENTE_REINTEGRO'', 18500000, 18500000, 1850000, 0, 12, ''FIJO_SIN_INTERES'', ''NINGUNO'', 0, NULL, NULL, false, ''Rescision netaeable demo'', 10, ''ARS'', $13)
@@ -164,8 +164,9 @@ BEGIN
     EXECUTE format('INSERT INTO %I.venta_historial (venta_id, estado_anterior, estado_nuevo, usuario_label, motivo) VALUES
       ($1, NULL, ''CONTABILIZADA'', ''Laura'', ''Carga inicial demo''),
       ($2, ''EN_CARGA'', ''AUTORIZADA'', ''Laura'', ''Autorizada''),
-      ($3, ''EN_CARGA'', ''RECHAZADA_COMERCIAL'', ''Laura'', ''No califica'')', sch)
-    USING v_mora, v_auth, v_rech;
+      ($3, ''EN_CARGA'', ''CERRADA_CONFIRMADA'', ''sistema'', ''Pendiente Laura''),
+      ($4, ''EN_CARGA'', ''RECHAZADA_COMERCIAL'', ''Laura'', ''No califica'')', sch)
+    USING v_mora, v_auth, v_carga, v_rech;
 
     -- 48 cuotas mora: 6 vencidas impagas, resto emitidas futuras, algunas pagas viejas
     FOR nro IN 1..48 LOOP

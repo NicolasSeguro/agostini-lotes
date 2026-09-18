@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Edit, CheckCircle2, XCircle, DollarSign, FileText, AlertTriangle, X, Calendar
 } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
+import { ROLES, roleAllowed, type Role } from "@/lib/roles";
 
 type Venta = {
   id: string;
@@ -47,6 +48,20 @@ export function DetalleVentaActions({
   const [modal, setModal] = useState<null | "cobrar" | "rechazar-comercial" | "rechazar-contab" | "reclasificar" | "contabilizar" | "corregir-rechazo" | "solicitar-anulacion" | "volver-a-carga">(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rol, setRol] = useState<Role | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.usuario?.rol) setRol(data.usuario.rol as Role);
+      })
+      .catch(() => {});
+  }, []);
+
+  const puedeGerencia = rol ? roleAllowed(rol, ROLES.GERENCIA) : false;
+  const puedeContabilidad = rol ? roleAllowed(rol, ROLES.CONTABILIDAD) : false;
+  const puedeCaja = rol ? roleAllowed(rol, ROLES.CAJA) : false;
 
   function closeModal() {
     if (submitting) return;
@@ -119,7 +134,7 @@ export function DetalleVentaActions({
           <div className="space-y-3">
             <div className="flex flex-wrap gap-3 items-center">
               <span className="text-sm text-slate-700 font-medium">Esperando cobro de anticipo</span>
-              {venta.anticipo > 0 && venta.anticipo_restante > 0 && (
+              {venta.anticipo > 0 && venta.anticipo_restante > 0 && puedeCaja && (
                 <button
                   onClick={() => setModal("cobrar")}
                   className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg"
@@ -127,6 +142,9 @@ export function DetalleVentaActions({
                   <DollarSign size={16} />
                   Cobrar anticipo
                 </button>
+              )}
+              {venta.anticipo > 0 && venta.anticipo_restante > 0 && rol && !puedeCaja && (
+                <span className="text-xs text-slate-500">Solo caja puede cobrar el anticipo.</span>
               )}
               <button
                 onClick={() => setModal("volver-a-carga")}
@@ -159,21 +177,29 @@ export function DetalleVentaActions({
               Pendiente autorización del Gerente Comercial
               {venta.requiere_aut_desc_fin && " (incluye descuento por encima del tope)"}
             </span>
-            <button
-              onClick={handleAutorizar}
-              disabled={submitting}
-              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50"
-            >
-              <CheckCircle2 size={16} />
-              Autorizar
-            </button>
-            <button
-              onClick={() => setModal("rechazar-comercial")}
-              className="inline-flex items-center gap-2 border border-red-300 text-red-700 hover:bg-red-50 text-sm font-medium px-4 py-2 rounded-lg"
-            >
-              <XCircle size={16} />
-              Rechazar
-            </button>
+            {puedeGerencia ? (
+              <>
+                <button
+                  onClick={handleAutorizar}
+                  disabled={submitting}
+                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50"
+                >
+                  <CheckCircle2 size={16} />
+                  Autorizar
+                </button>
+                <button
+                  onClick={() => setModal("rechazar-comercial")}
+                  className="inline-flex items-center gap-2 border border-red-300 text-red-700 hover:bg-red-50 text-sm font-medium px-4 py-2 rounded-lg"
+                >
+                  <XCircle size={16} />
+                  Rechazar
+                </button>
+              </>
+            ) : (
+              <span className="text-xs text-slate-500">
+                Solo Laura (gerencia) puede autorizar. Tu rol: {rol || "…"}.
+              </span>
+            )}
           </div>
         )}
 
@@ -181,13 +207,17 @@ export function DetalleVentaActions({
           <div className="space-y-2">
             <div className="flex flex-wrap gap-3 items-center">
               <span className="text-sm text-slate-700 font-medium">Pendiente contabilización</span>
-              <button
-                onClick={() => setModal("contabilizar")}
-                className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg"
-              >
-                <FileText size={16} />
-                Contabilizar
-              </button>
+              {puedeContabilidad ? (
+                <button
+                  onClick={() => setModal("contabilizar")}
+                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg"
+                >
+                  <FileText size={16} />
+                  Contabilizar
+                </button>
+              ) : (
+                <span className="text-xs text-slate-500">Solo contabilidad puede contabilizar.</span>
+              )}
               {venta.anticipo_cobrado > 0 && venta.total_descuentos_off_books === 0 && (
                 <button
                   onClick={() => setModal("reclasificar")}

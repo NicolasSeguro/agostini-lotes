@@ -45,6 +45,7 @@ const MORE: NavItem[] = [
   { label: "Convenios", href: "/convenios", icon: Handshake },
   { label: "Cuotas", href: "/cuotas", icon: Percent },
   { label: "Caja", href: "/caja/reintegros", icon: Wallet },
+  { label: "Boletos", href: "/plantillas-boleto", icon: FileText },
 ];
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {

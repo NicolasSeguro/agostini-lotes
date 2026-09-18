@@ -1,6 +1,15 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import {
+  type Role,
+  ROLES,
+  normalizeRole,
+  roleAllowed,
+} from "@/lib/roles";
+
+export type { Role };
+export { ROLES, normalizeRole, roleAllowed } from "@/lib/roles";
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
@@ -30,22 +39,11 @@ function secretKey(): Uint8Array {
 const COOKIE = "erp-session";
 const SESSION_HOURS = 8;
 
-export type Role = "ADMIN" | "ADMIN_B" | "VENDEDOR" | "CAJERO";
-
 export type SessionPayload = {
   userId: string;
   username: string;
   nombre: string;
   rol: Role;
-};
-
-export const ROLES = {
-  ALL: ["ADMIN", "ADMIN_B", "VENDEDOR", "CAJERO"] as Role[],
-  GERENCIA: ["ADMIN"] as Role[],
-  CONTABILIDAD: ["ADMIN", "ADMIN_B"] as Role[],
-  CAJA: ["ADMIN", "ADMIN_B", "CAJERO"] as Role[],
-  VENTAS: ["ADMIN", "ADMIN_B", "VENDEDOR"] as Role[],
-  ADMIN_ONLY: ["ADMIN"] as Role[],
 };
 
 export async function createSession(payload: SessionPayload): Promise<string> {
@@ -72,7 +70,7 @@ export async function getSession(): Promise<SessionPayload | null> {
       userId: (payload.userId as string) || "",
       username: payload.username as string,
       nombre: (payload.nombre as string) || (payload.username as string),
-      rol: (payload.rol as Role) || "ADMIN",
+      rol: normalizeRole(payload.rol as string),
     };
   } catch {
     return null;
@@ -92,7 +90,7 @@ export async function requireRole(
       response: NextResponse.json({ error: "No autenticado" }, { status: 401 }),
     };
   }
-  if (!roles.includes(session.rol)) {
+  if (!roleAllowed(session.rol, roles)) {
     return {
       ok: false,
       response: NextResponse.json(
