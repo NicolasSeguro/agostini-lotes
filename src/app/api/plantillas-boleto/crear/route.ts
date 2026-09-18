@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 
 const MODALIDADES = ["CONTADO", "CUOTAS", "FINANCIADO"];
 const INDICES = ["NINGUNO", "CAC", "CVS", "FIJO"];
 
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.ADMIN_ONLY);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   try {
     const formData = await req.formData();
     const tenant = String(formData.get("tenant") || "");
@@ -34,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
 
     const schema = getSchema(tenant);
-    if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+    if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
     const buffer = Buffer.from(await file.arrayBuffer());
 

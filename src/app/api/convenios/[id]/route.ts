@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getPool } from "@/lib/db";
 import { validarCuit } from "@/lib/cuit-validator";
 
@@ -7,6 +9,9 @@ import { validarCuit } from "@/lib/cuit-validator";
  * Devuelve un convenio + conteo de ventas asociadas.
  */
 export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   
   const rows = await query(
@@ -39,9 +44,12 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
  * asÃ­ que la ediciÃ³n solo afecta a futuras ventas que usen este convenio.
  */
 export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.ADMIN_ONLY);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: any;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
   
   if (!body.razon_social || body.razon_social.trim().length < 2) {
     return NextResponse.json({ error: "RazÃ³n social requerida" }, { status: 400 });
@@ -127,6 +135,9 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
  * Con ?fisico=true: borrado fÃ­sico. Solo si NO hay ventas asociadas.
  */
 export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.ADMIN_ONLY);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   const fisico = req.nextUrl.searchParams.get("fisico") === "true";
   

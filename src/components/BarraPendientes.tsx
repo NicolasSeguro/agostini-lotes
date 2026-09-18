@@ -84,7 +84,7 @@ export function BarraPendientes({ tenant }: { tenant: string }) {
       color: "from-red-50 to-red-50/50 border-red-200 text-red-700",
       iconColor: "text-red-500", icon: XCircle,
       href: `/ventas?t=${tenant}&estado=RECHAZADA_COMERCIAL,RECHAZADA_CONTABILIDAD`,
-      description: "Esperan decisiÃ³n del vendedor",
+      description: "Esperan decision del vendedor",
     },
     {
       label: "Reintegros pendientes", count: resumen.pendiente_reintegro,
@@ -111,7 +111,7 @@ export function BarraPendientes({ tenant }: { tenant: string }) {
       {totalAlerta > 0 && (
         <div>
           <div className="text-xs text-slate-500 uppercase tracking-wider mb-2 font-medium">
-            AtenciÃ³n
+            Atencion
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {cardsAlerta.map(c => <Tarjeta key={c.label} c={c} />)}
@@ -134,7 +134,7 @@ function Tarjeta({ c }: { c: any }) {
         <Icon size={18} className={c.iconColor} />
         <div className="flex items-center gap-2">
           {!!c.badge && c.badge > 0 && (
-            <span className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 bg-amber-200 text-amber-800 rounded font-medium" title="Requiere autorizaciÃ³n extra">
+            <span className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 bg-amber-200 text-amber-800 rounded font-medium" title="Requiere autorizacion extra">
               <AlertTriangle size={10} />
               {c.badge}
             </span>

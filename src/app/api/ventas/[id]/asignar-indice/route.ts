@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { registrarHistorial } from "@/lib/workflow-helpers";
 
@@ -24,6 +26,9 @@ type Body = {
  *   - Registra en venta_historial para auditoria.
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.CONTABILIDAD);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
 
@@ -52,7 +57,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
   }
 
-  const usuario = body.usuario || "admin";
+  const usuario = sessionLabel(session);
   const pool = getPool();
   const client = await pool.connect();
 

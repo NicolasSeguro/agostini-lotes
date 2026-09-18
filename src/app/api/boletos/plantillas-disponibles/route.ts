@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getSchema } from "@/lib/db";
 
 /**
@@ -7,13 +9,16 @@ import { query, getSchema } from "@/lib/db";
  * El proyecto de la venta se obtiene a travÃ©s del lote (la tabla ventas no tiene proyecto_id directo).
  */
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const sp = req.nextUrl.searchParams;
   const tenant = sp.get("t") || "jacaranda";
   const ventaId = sp.get("venta_id");
   if (!ventaId) return NextResponse.json({ error: "venta_id requerido" }, { status: 400 });
 
   const schema = getSchema(tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   // Traer datos clave de la venta a travÃ©s del lote (proyecto estÃ¡ en lotes, no en ventas)
   const v = await query(

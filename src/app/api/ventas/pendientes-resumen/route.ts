@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getSchema } from "@/lib/db";
 
 /**
@@ -7,12 +9,15 @@ import { query, getSchema } from "@/lib/db";
  * Contadores por estado para la barra de pendientes del listado.
  */
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const sp = req.nextUrl.searchParams;
   const tenant = sp.get("t") || "jacaranda";
   const schema = getSchema(tenant);
 
   if (!schema) {
-    return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
   }
 
   const rows = await query(

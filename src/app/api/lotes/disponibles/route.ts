@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getSchema } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const sp = req.nextUrl.searchParams;
   const tenant = sp.get("t") || "jacaranda";
   const proyectoId = sp.get("proyecto");
@@ -9,7 +14,7 @@ export async function GET(req: NextRequest) {
   const schema = getSchema(tenant);
 
   if (!schema) {
-    return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
   }
   if (!proyectoId) {
     return NextResponse.json({ error: "proyecto requerido" }, { status: 400 });
@@ -40,7 +45,7 @@ export async function GET(req: NextRequest) {
       COALESCE(manzana, ''),
       LENGTH(COALESCE(numero, '')),
       COALESCE(numero, '')
-    LIMIT 50
+    LIMIT 5000
     `,
     params
   );

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { registrarHistorial, getVentaParaTransicion } from "@/lib/workflow-helpers";
 
@@ -24,19 +26,22 @@ type Body = {
  *   4. El lote vuelve a DISPONIBLE
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.CAJA);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "JSON invalido" }, { status: 400 });
   }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.medio_pago) return NextResponse.json({ error: "Medio de pago requerido" }, { status: 400 });
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -71,7 +76,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
             banco_origen, numero_operacion,
             cobranza_origen_id, venta_id, concepto, observaciones, created_by_label)
          VALUES ($1::date, $2::uuid, $3, 'ARS', $4::tenant_template.medio_pago,
-                 $5, $6, $7::uuid, $8::uuid, 'REINTEGRO_ANULACION_VENTA', $9, 'admin')
+                 $5, $6, $7::uuid, $8::uuid, 'REINTEGRO_ANULACION_VENTA', $9, $10)
          RETURNING id, nro_orden`,
         [
           fechaEgreso,
@@ -82,7 +87,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
           body.numero_operacion || null,
           cob.id,
           id,
-          body.observaciones || `Reintegro por anulaciÃ³n de venta (motivo solicitud: ${venta.solicitud_reintegro_motivo || "â€”"})`,
+          body.observaciones || `Reintegro por anulacion de venta (motivo solicitud: ${venta.solicitud_reintegro_motivo || "—"})`,
+          sessionLabel(session),
         ]
       );
       
@@ -129,8 +135,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       "PENDIENTE_REINTEGRO", "ANULADA",
-      `Reintegro procesado por Caja. Total: $${totalReintegrado.toLocaleString("es-AR")}. ${egresosCreados.length} orden(es) de pago: ${egresosCreados.map(e => "#" + e.nro_orden).join(", ")}`,
-      "admin",
+      `Reintegro procesado por Caja. Total: $${totalReintegrado.toLocaleString("es-AR")}. ${egresosCreados.length} orden(es) de pago: ${egresosCreados.map(e => "#" + e.nro_orden).join(", ")}`, sessionLabel(session),
       {
         egresos: egresosCreados,
         total_reintegrado: totalReintegrado,

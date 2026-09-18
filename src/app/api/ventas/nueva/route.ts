@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { calcularVenta, CondicionesVenta } from "@/lib/venta-calc";
 
@@ -32,8 +34,11 @@ function mapSistemaAmort(s: "FRANCES" | "AJUSTABLE"): string {
 }
 
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.VENTAS);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   let body: Body;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.lote_id) return NextResponse.json({ error: "Lote requerido" }, { status: 400 });
@@ -60,7 +65,7 @@ export async function POST(req: NextRequest) {
   }
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -228,8 +233,8 @@ export async function POST(req: NextRequest) {
     await client.query(
       `INSERT INTO ${schema}.venta_historial
          (venta_id, estado_anterior, estado_nuevo, usuario_label, motivo)
-       VALUES ($1::uuid, NULL, 'EN_CARGA', 'admin', $2)`,
-      [ventaId, motivoVenta]
+       VALUES ($1::uuid, NULL, 'EN_CARGA', $3, $2)`,
+      [ventaId, motivoVenta, sessionLabel(session)]
     );
 
     await client.query("COMMIT");

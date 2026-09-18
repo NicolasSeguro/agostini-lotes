@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
+
+const sans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "ERP Agostini",
-  description: "Sistema de gestión Grupo Agostini",
+  description: "Sistema de gestion Grupo Agostini",
 };
 
 export default function RootLayout({
@@ -13,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body className={`${sans.variable} font-sans`}>{children}</body>
     </html>
   );
 }

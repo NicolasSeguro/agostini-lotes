@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getPool } from "@/lib/db";
 
 const COND_IVA_VALIDOS = ["RI", "MONO", "EXENTO", "CF", "NO_RESPONSABLE", "RNI", "EXTERIOR"];
@@ -8,6 +10,9 @@ const COND_IVA_VALIDOS = ["RI", "MONO", "EXENTO", "CF", "NO_RESPONSABLE", "RNI",
  * Trae el fideicomiso (shared.tenants) por id o slug.
  */
 export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
 
   // Aceptamos id (UUID) o slug
@@ -38,9 +43,12 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
  *  - JSONB datos_fiscales: todo el bloque registral/fiscal/bancario + telefono + email
  */
 export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.ADMIN_ONLY);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: any;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.razon_social || !body.razon_social.trim()) {
     return NextResponse.json({ error: "RazÃ³n social requerida" }, { status: 400 });

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { registrarHistorial, getVentaParaTransicion, totalAnticipoCobrado } from "@/lib/workflow-helpers";
 
@@ -23,18 +25,21 @@ type Body = {
  *                                          pasa a CERRADA_CONFIRMADA
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.CAJA);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "JSON invalido" }, { status: 400 });
   }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -127,8 +132,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       "EN_CARGA", estadoDestino,
-      mensajeHistorial,
-      "admin",
+      mensajeHistorial, sessionLabel(session),
       {
         anticipo_venta: anticipoVenta,
         anticipo_cobrado: anticipoCobrado,

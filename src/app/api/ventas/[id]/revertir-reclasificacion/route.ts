@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import {
   getVentaParaTransicion,
@@ -18,6 +20,9 @@ type Body = {
  * desde otros endpoints (ej: rechazar, anular).
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.CONTABILIDAD);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
   try {
@@ -45,7 +50,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       body.tenant,
       id,
       venta,
-      body.motivo || "Reversion manual de Admin A"
+      body.motivo || "Reversion manual de Admin A",
+      sessionLabel(session)
     );
 
     if (!resultado.tenia_reclasificacion) {

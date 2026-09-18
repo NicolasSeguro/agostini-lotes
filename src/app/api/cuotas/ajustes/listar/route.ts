@@ -1,5 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { query, getSchema } from "@/lib/db";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 
 /**
  * GET /api/cuotas/ajustes/listar
@@ -18,6 +20,9 @@ import { query, getSchema } from "@/lib/db";
  *   { ok: true, total: N, items: [...] }
  */
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   try {
     const sp = req.nextUrl.searchParams;
     const tenant = sp.get("t");

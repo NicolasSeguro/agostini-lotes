@@ -17,7 +17,7 @@ function getSecret(): Uint8Array {
 const SECRET = getSecret();
 const COOKIE = "erp-session";
 
-const PUBLIC_PATHS = ["/login", "/api/auth/login"];
+const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/public"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

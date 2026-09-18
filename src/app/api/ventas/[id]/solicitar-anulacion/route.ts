@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { registrarHistorial, getVentaParaTransicion } from "@/lib/workflow-helpers";
 
@@ -22,12 +24,15 @@ type Body = {
  * se anula directo (es un cambio futuro, por ahora exigimos cobranzas).
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.VENTAS);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "JSON invalido" }, { status: 400 });
   }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
@@ -36,7 +41,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   }
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -82,8 +87,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       await registrarHistorial(
         client, schema, id,
         venta.estado, "ANULADA",
-        `AnulaciÃ³n sin reintegro (sin anticipo cobrado): ${body.motivo.trim()}`,
-        "admin"
+        `AnulaciÃ³n sin reintegro (sin anticipo cobrado): ${body.motivo.trim()}`, sessionLabel(session)
       );
       
       await client.query("COMMIT");
@@ -105,8 +109,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       venta.estado, "PENDIENTE_REINTEGRO",
-      `Solicitud de anulaciÃ³n con reintegro: ${body.motivo.trim()}`,
-      "admin",
+      `Solicitud de anulaciÃ³n con reintegro: ${body.motivo.trim()}`, sessionLabel(session),
       { 
         monto_a_reintegrar: parseFloat(cobr.rows[0].total),
         cobranzas_activas: cobr.rows[0].cant,

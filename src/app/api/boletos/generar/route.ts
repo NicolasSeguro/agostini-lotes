@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { armarCompradoresBloque, TitularDatos } from "@/lib/compradores-bloque";
 import { numeroALetras, montoALetras, formatNumero, formatFecha, diaDelMes } from "@/lib/boleto-helpers";
@@ -12,8 +14,11 @@ import Docxtemplater from "docxtemplater";
  * Default: docx
  */
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.CONTABILIDAD);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   let body: any;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   const { tenant, venta_id, plantilla_id } = body;
   const formato: "docx" | "pdf" = body.formato === "pdf" ? "pdf" : "docx";
@@ -22,7 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   const schema = getSchema(tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -177,8 +182,8 @@ export async function POST(req: NextRequest) {
     try {
       await client.query(
         `INSERT INTO ${schema}.boletos_emitidos (venta_id, plantilla_id, generado_por, archivo_nombre, formato)
-         VALUES ($1::uuid, $2::uuid, 'admin', $3, $4)`,
-        [venta_id, plantilla_id, filename, formato]
+         VALUES ($1::uuid, $2::uuid, $5, $3, $4)`,
+        [venta_id, plantilla_id, filename, formato, sessionLabel(session)]
       );
     } catch (err: any) {
       console.error("[generar-boleto] No se pudo registrar emisiÃ³n:", err.message);

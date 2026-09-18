@@ -15,7 +15,7 @@ export async function registrarHistorial(
   estadoAnterior: string | null,
   estadoNuevo: string,
   motivo: string,
-  usuarioLabel: string = "admin",
+  usuarioLabel: string,
   metadata: Record<string, any> = {}
 ): Promise<void> {
   await client.query(
@@ -157,7 +157,8 @@ export async function revertirReclasificacionInterno(
   tenant: string,
   ventaId: string,
   venta: any,
-  motivo: string
+  motivo: string,
+  usuarioLabel: string
 ): Promise<{
   tenia_reclasificacion: boolean;
   monto_total: number;
@@ -260,7 +261,7 @@ export async function revertirReclasificacionInterno(
     client, schema, ventaId,
     venta.estado, venta.estado,
     `Reversion de reclasificacion: ${motivo}. Monto restaurado al anticipo: $${montoTotal.toLocaleString("es-AR")}`,
-    "admin",
+    usuarioLabel,
     {
       monto_revertido: montoTotal,
       cobranzas_restauradas: cobranzasRestauradas,

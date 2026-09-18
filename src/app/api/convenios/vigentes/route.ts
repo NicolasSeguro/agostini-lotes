@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query } from "@/lib/db";
 
 /**
@@ -10,6 +12,9 @@ import { query } from "@/lib/db";
  * Para el dropdown del form de venta.
  */
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const sp = req.nextUrl.searchParams;
   const tenant = sp.get("t") || "jacaranda";
 

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getSchema } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const sp = req.nextUrl.searchParams;
   const tenant = sp.get("t") || "jacaranda";
   const search = sp.get("q") || "";

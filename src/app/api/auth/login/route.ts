@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSession, COOKIE_NAME } from "@/lib/auth";
+import { createSession, applySessionCookie } from "@/lib/auth";
 import { query } from "@/lib/db";
+import { allowAttempt, clientKey } from "@/lib/rate-limit";
 import bcrypt from "bcryptjs";
 
 type Usuario = {
@@ -24,6 +25,13 @@ type Usuario = {
  * para no filtrar info a un atacante.
  */
 export async function POST(req: NextRequest) {
+  if (!allowAttempt(`login:${clientKey(req)}`)) {
+    return NextResponse.json(
+      { error: "Demasiados intentos. Proba de nuevo en unos minutos." },
+      { status: 429 }
+    );
+  }
+
   let body: { username?: string; password?: string };
   try {
     body = await req.json();
@@ -98,6 +106,7 @@ export async function POST(req: NextRequest) {
 
   // Crear sesion JWT
   const token = await createSession({
+    userId: usuario.id,
     username: usuario.username,
     nombre: usuario.nombre,
     rol: usuario.rol,
@@ -112,13 +121,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  res.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 8,
-    path: "/",
-  });
-
-  return res;
+  return applySessionCookie(res, token);
 }

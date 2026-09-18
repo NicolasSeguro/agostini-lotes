@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { registrarHistorial, getVentaParaTransicion } from "@/lib/workflow-helpers";
 import { revertirReclasificacionInterno } from "@/lib/workflow-helpers";
@@ -26,20 +28,26 @@ type Body = {
  * haber reclasificado (eso solo lo hace Admin A en estado AUTORIZADA).
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.CONTABILIDAD);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.motivo || body.motivo.trim().length < 3) {
     return NextResponse.json({ error: "Motivo obligatorio (mÃ­nimo 3 caracteres)" }, { status: 400 });
   }
   if (!["COMERCIAL", "CONTABILIDAD"].includes(body.rol)) {
-    return NextResponse.json({ error: "Rol invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "Rol invalido" }, { status: 400 });
+  }
+  if (body.rol === "COMERCIAL" && session.rol !== "ADMIN") {
+    return NextResponse.json({ error: "No autorizado para rechazo comercial" }, { status: 403 });
   }
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -62,7 +70,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     if (body.rol === "CONTABILIDAD") {
       const reversion = await revertirReclasificacionInterno(
         client, schema, body.tenant, id, venta,
-        `ReversiÃ³n automÃ¡tica por rechazo de Admin A: ${body.motivo.trim()}`
+        `Reversion automatica por rechazo de Admin A: ${body.motivo.trim()}`,
+        sessionLabel(session)
       );
       if (reversion.tenia_reclasificacion) {
         infoReversion = {
@@ -94,8 +103,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       venta.estado, estadoRechazo,
-      motivoHistorial,
-      "admin",
+      motivoHistorial, sessionLabel(session),
       { rol: body.rol, motivo: body.motivo.trim(), reversion: infoReversion }
     );
 

@@ -12,6 +12,7 @@ out/
 build/
 
 # Misc OS
+*.tsbuildinfo
 .DS_Store
 *.pem
 .vscode/

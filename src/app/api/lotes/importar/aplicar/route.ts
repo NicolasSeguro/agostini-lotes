@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 
 const CAMPOS_VALIDOS = new Set([
@@ -13,8 +15,11 @@ type CambioInput = {
 };
 
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.CONTABILIDAD);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   let body: { tenant: string; cambios: CambioInput[] };
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!Array.isArray(body.cambios) || body.cambios.length === 0) {
@@ -22,7 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();

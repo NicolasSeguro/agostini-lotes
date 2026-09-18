@@ -5,6 +5,7 @@ import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
 import { DetalleVentaActions } from "@/components/DetalleVentaActions";
 import { GenerarBoletoBoton } from "@/components/GenerarBoletoBoton";
+import { VentaTimeline } from "@/components/VentaTimeline";
 
 export const dynamic = "force-dynamic";
 
@@ -373,25 +374,9 @@ export default async function VentaDetallePage({
           </div>
         </div>
 
-        {/* Historial */}
         {(historial as any[]).length > 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
-            <h2 className="font-semibold text-slate-900 mb-3">Historial de estados</h2>
-            <div className="space-y-2">
-              {(historial as any[]).map((h: any, idx: number) => (
-                <div key={idx} className="text-sm flex justify-between border-b border-slate-100 pb-2 last:border-0">
-                  <div className="flex-1">
-                    <span className="text-slate-500">{h.estado_anterior || "(inicio)"}</span>
-                    <span className="mx-2">â†’</span>
-                    <span className="font-medium text-slate-900">{h.estado_nuevo}</span>
-                    {h.motivo && <div className="text-xs text-slate-600 mt-0.5">{h.motivo}</div>}
-                  </div>
-                  <div className="text-xs text-slate-500 whitespace-nowrap ml-3">
-                    {h.usuario_label} Â· {formatDateTime(h.fecha)}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="mb-6">
+            <VentaTimeline eventos={historial as any[]} />
           </div>
         )}
 

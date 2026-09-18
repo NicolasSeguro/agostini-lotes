@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getSchema } from "@/lib/db";
 import * as XLSX from "xlsx";
 
@@ -58,6 +60,9 @@ function valoresIguales(a: any, b: any): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.CONTABILIDAD);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   try {
     const formData = await req.formData();
     const tenant = String(formData.get("tenant") || "");
@@ -67,7 +72,7 @@ export async function POST(req: NextRequest) {
     if (!file) return NextResponse.json({ error: "Archivo requerido" }, { status: 400 });
 
     const schema = getSchema(tenant);
-    if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+    if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
     // TamaÃ±o mÃ¡ximo razonable: 10 MB
     if (file.size > 10 * 1024 * 1024) {

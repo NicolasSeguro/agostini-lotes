@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getPool } from "@/lib/db";
 import { validarCuit } from "@/lib/cuit-validator";
 
@@ -10,6 +12,9 @@ import { validarCuit } from "@/lib/cuit-validator";
  * Devuelve listado con conteo de ventas asociadas (para saber si se puede borrar fÃ­sico).
  */
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const sp = req.nextUrl.searchParams;
   const activo = sp.get("activo");
   const q = (sp.get("q") || "").trim();
@@ -59,8 +64,11 @@ export async function GET(req: NextRequest) {
  * Crea un nuevo convenio.
  */
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.ADMIN_ONLY);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   let body: any;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   // Validaciones
   if (!body.razon_social || body.razon_social.trim().length < 2) {
@@ -104,7 +112,7 @@ export async function POST(req: NextRequest) {
          (razon_social, cuit, fecha_inicio, fecha_fin, tipo_beneficio, valor_beneficio,
           tenants_aplicables, observaciones, created_by_label)
        VALUES ($1, $2, $3::date, $4::date, $5::shared.convenio_tipo_beneficio, $6,
-               $7::jsonb, $8, 'admin')
+               $7::jsonb, $8, $9)
        RETURNING id`,
       [
         body.razon_social.trim(),
@@ -115,6 +123,7 @@ export async function POST(req: NextRequest) {
         valor,
         JSON.stringify(tenants),
         body.observaciones?.trim() || null,
+        sessionLabel(session),
       ]
     );
     

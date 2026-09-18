@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 
 type Body = {
@@ -20,8 +22,11 @@ type Body = {
 const ESTADOS_VALIDOS = ["EN_OBRA", "TERMINADO", "APROBADO"];
 
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.ADMIN_ONLY);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   let body: Body;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
   if (!body.codigo || !body.codigo.trim()) return NextResponse.json({ error: "CÃ³digo requerido" }, { status: 400 });
@@ -33,7 +38,7 @@ export async function POST(req: NextRequest) {
   }
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();

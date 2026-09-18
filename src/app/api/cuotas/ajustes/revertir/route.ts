@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getSchema } from "@/lib/db";
 
 /**
@@ -14,6 +16,9 @@ type Body = {
 };
 
 export async function POST(req: NextRequest) {
+  const authz = await requireRole(ROLES.CONTABILIDAD);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   let body: Body;
   try {
     body = await req.json();

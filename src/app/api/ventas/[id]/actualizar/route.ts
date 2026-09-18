@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { calcularVenta, CondicionesVenta } from "@/lib/venta-calc";
 import { registrarHistorial } from "@/lib/workflow-helpers";
@@ -27,9 +29,12 @@ function mapSistemaAmort(s: "FRANCES" | "AJUSTABLE"): string {
 }
 
 export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.VENTAS);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "JSON invalido" }, { status: 400 }); }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
 
@@ -39,7 +44,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   }
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -85,7 +90,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
       );
       await registrarHistorial(
         client, schema, id, "EN_CARGA", "EN_CARGA",
-        `Cambio de lote durante ediciÃ³n`, "admin",
+        `Cambio de lote durante ediciÃ³n`, sessionLabel(session),
         { lote_anterior: loteActualId, lote_nuevo: body.lote_id }
       );
       nuevoLoteId = body.lote_id;
@@ -211,8 +216,7 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
         client, schema, id, "EN_CARGA", "EN_CARGA",
         convenioData
           ? `Convenio aplicado: ${convenioData.razon_social} (${convenioData.tipo_beneficio === "PORCENTAJE" ? convenioData.valor_beneficio + "%" : "$" + convenioData.valor_beneficio})`
-          : "Convenio retirado de la venta",
-        "admin",
+          : "Convenio retirado de la venta", sessionLabel(session),
         { convenio_anterior: convenioActualId, convenio_nuevo: convenioData?.id || null }
       );
     }

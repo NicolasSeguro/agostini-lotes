@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { query, getSchema } from "@/lib/db";
 
 /**
@@ -11,6 +13,9 @@ import { query, getSchema } from "@/lib/db";
  *  - emitido: "si" / "no" / "" (todos)
  */
 export async function GET(req: NextRequest) {
+  const authz = await requireRole(ROLES.ALL);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   try {
     const sp = req.nextUrl.searchParams;
     const tenant = sp.get("t") || "jacaranda";
@@ -21,7 +26,7 @@ export async function GET(req: NextRequest) {
     const emitido = sp.get("emitido") || "";
 
     const schema = getSchema(tenant);
-    if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+    if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
     // ConstrucciÃ³n de WHERE dinÃ¡mico
     const conds: string[] = ["v.estado::text = 'CONTABILIZADA'"];

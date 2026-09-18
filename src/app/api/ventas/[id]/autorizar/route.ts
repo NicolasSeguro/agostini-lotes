@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 import { registrarHistorial, getVentaParaTransicion } from "@/lib/workflow-helpers";
 
@@ -14,18 +16,21 @@ type Body = {
  * Si la venta tenÃ­a requiere_aut_desc_fin = true, tambiÃ©n se autoriza el descuento extra.
  */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const authz = await requireRole(ROLES.GERENCIA);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id } = await ctx.params;
   let body: Body;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON invÃ¡lido" }, { status: 400 });
+    return NextResponse.json({ error: "JSON invalido" }, { status: 400 });
   }
 
   if (!body.tenant) return NextResponse.json({ error: "tenant requerido" }, { status: 400 });
 
   const schema = getSchema(body.tenant);
-  if (!schema) return NextResponse.json({ error: "Tenant invÃ¡lido" }, { status: 400 });
+  if (!schema) return NextResponse.json({ error: "Tenant invalido" }, { status: 400 });
 
   const pool = getPool();
   const client = await pool.connect();
@@ -54,8 +59,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     await registrarHistorial(
       client, schema, id,
       "CERRADA_CONFIRMADA", "AUTORIZADA",
-      body.observaciones || motivo,
-      "admin",
+      body.observaciones || motivo, sessionLabel(session),
       { autoriza_desc_fin: requeriaAuthDesc }
     );
 

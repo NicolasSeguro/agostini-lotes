@@ -1,7 +1,9 @@
 import { AppShell } from "@/components/AppShell";
-import { query, getSchema, TENANTS } from "@/lib/db";
+import { BarraPendientes } from "@/components/BarraPendientes";
+import { query, getSchema, TENANTS, loadTenants } from "@/lib/db";
 import { formatMoney, formatNumber } from "@/lib/utils";
 import { Users, Tag, FileText, TrendingUp, AlertCircle, Building2, Receipt } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +64,11 @@ export default async function DashboardPage({
 }) {
   const params = await searchParams;
   const tenant = params.t || "jacaranda";
-  const tenantNombre = TENANTS.find((t) => t.slug === tenant)?.nombre || "?";
+  const tenants = await loadTenants();
+  const tenantNombre =
+    tenants.find((t) => t.slug === tenant)?.nombre ||
+    TENANTS.find((t) => t.slug === tenant)?.nombre ||
+    "?";
 
   const stats = await getStats(tenant);
 
@@ -123,6 +129,17 @@ export default async function DashboardPage({
             Fideicomiso <span className="font-semibold">{tenantNombre}</span> —
             datos a la fecha
           </p>
+        </div>
+
+        <BarraPendientes tenant={tenant} />
+
+        <div className="mb-6">
+          <Link
+            href={`/mora?t=${tenant}`}
+            className="inline-flex items-center gap-2 text-sm text-brand-700 hover:underline"
+          >
+            Ver cartera en mora
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

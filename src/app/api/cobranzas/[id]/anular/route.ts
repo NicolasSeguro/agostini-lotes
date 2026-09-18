@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireRole, sessionLabel, ROLES } from "@/lib/auth";
+
 import { getSchema, getPool } from "@/lib/db";
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authz = await requireRole(ROLES.CAJA);
+  if (!authz.ok) return authz.response;
+  const session = authz.session;
   const { id: cobranzaId } = await params;
 
   let body: { tenant: string; reason: string };
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+    return NextResponse.json({ error: "JSON invalido" }, { status: 400 });
   }
 
   const schema = getSchema(body.tenant);
