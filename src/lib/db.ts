@@ -21,7 +21,7 @@ export function getPool(): Pool {
         process.env.NODE_ENV === "production" ||
         /railway\.(app|internal)|rlwy\.net/i.test(url);
       pool = new Pool({
-        connectionString: url,
+        connectionString: url.replace(/[?&]sslmode=[^&]*/gi, ""),
         ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
         max: 10,
       });
