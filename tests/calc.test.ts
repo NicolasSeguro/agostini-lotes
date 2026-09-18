@@ -51,6 +51,49 @@ describe("venta-calc", () => {
     expect(calc.capital_gr_total + calc.capital_ex_total + calc.iva_capital_total).toBeCloseTo(calc.precio_boleto, 1);
   });
 
+  it("descompone IVA del precio boleto (gravado + exento + IVA = boleto)", () => {
+    const calc = calcularVenta(
+      {
+        precio_lista: 121000,
+        desc_financiero: 0,
+        desc_comercial: 0,
+        anticipo: 0,
+        cant_cuotas: 10,
+        sistema_amort: "AJUSTABLE",
+        tasa_interes_mensual: 0,
+        fecha_primer_vto: "2026-10-10",
+      },
+      1,
+      0.1
+    );
+    expect(calc.precio_boleto).toBe(121000);
+    expect(calc.capital_ex_total).toBe(0);
+    expect(calc.capital_gr_total + calc.iva_capital_total).toBeCloseTo(121000, 1);
+    expect(calc.iva_capital_total).toBeCloseTo(calc.capital_gr_total * 0.21, 1);
+  });
+
+  it("parte gravada y exenta segun porc_gravado", () => {
+    const calc = calcularVenta(
+      {
+        precio_lista: 100000,
+        desc_financiero: 0,
+        desc_comercial: 0,
+        anticipo: 0,
+        cant_cuotas: 10,
+        sistema_amort: "AJUSTABLE",
+        tasa_interes_mensual: 0,
+        fecha_primer_vto: "2026-10-10",
+      },
+      0.5,
+      0.1
+    );
+    expect(calc.capital_ex_total).toBe(50000);
+    expect(calc.capital_gr_total + calc.iva_capital_total).toBeCloseTo(50000, 1);
+    expect(
+      calc.capital_gr_total + calc.capital_ex_total + calc.iva_capital_total
+    ).toBeCloseTo(100000, 1);
+  });
+
   it("calcula sistema frances y preview de cuotas", () => {
     const calc = calcularVenta(
       {
@@ -120,6 +163,84 @@ describe("cobranza-calc", () => {
       new Date("2026-01-20T12:00:00")
     );
     expect(saldo.capital_pendiente).toBe(0);
+  });
+
+  it("imputa en orden punitorios → interes → ajuste → capital", () => {
+    const cuotaConTodo = {
+      id: "c2",
+      numero: 1,
+      fecha_vto: "2026-01-01",
+      estado: "MORA",
+      cuota_base_actual: 15000,
+      capital_gr_orig: 8000,
+      capital_ex_orig: 0,
+      iva_capital_orig: 1680,
+      interes_gr_orig: 1000,
+      interes_ex_orig: 0,
+      iva_interes_orig: 210,
+    };
+    const saldo = calcularSaldoCuota(cuotaConTodo, [], new Date("2026-01-11T12:00:00"));
+    expect(saldo.interes_pendiente).toBeGreaterThan(0);
+    expect(saldo.ajuste_pendiente).toBeGreaterThan(0);
+    expect(saldo.punitorios_pendientes).toBeGreaterThan(0);
+
+    const soloPuni = calcularImputacion(saldo, saldo.punitorios_pendientes + saldo.iva_punitorios_pendientes);
+    expect(soloPuni.monto_interes).toBe(0);
+    expect(soloPuni.monto_ajuste).toBe(0);
+    expect(soloPuni.monto_capital).toBe(0);
+
+    const cubreHastaInteres = calcularImputacion(
+      saldo,
+      saldo.punitorios_pendientes +
+        saldo.iva_punitorios_pendientes +
+        saldo.interes_pendiente +
+        saldo.iva_interes_pendiente
+    );
+    expect(cubreHastaInteres.monto_ajuste).toBe(0);
+    expect(cubreHastaInteres.monto_capital).toBe(0);
+    expect(cubreHastaInteres.monto_interes).toBeGreaterThan(0);
+
+    const cubreHastaAjuste = calcularImputacion(
+      saldo,
+      saldo.punitorios_pendientes +
+        saldo.iva_punitorios_pendientes +
+        saldo.interes_pendiente +
+        saldo.iva_interes_pendiente +
+        saldo.ajuste_pendiente +
+        saldo.iva_ajuste_pendiente
+    );
+    expect(cubreHastaAjuste.monto_capital).toBe(0);
+    expect(cubreHastaAjuste.monto_ajuste).toBeGreaterThan(0);
+  });
+
+  it("el ajuste CAC aumenta el pendiente y revertir el coeficiente lo anula", () => {
+    const nominal = {
+      id: "c3",
+      numero: 1,
+      fecha_vto: "2026-06-10",
+      estado: "EMITIDA",
+      cuota_base_actual: 10000,
+      capital_gr_orig: 8264.46,
+      capital_ex_orig: 0,
+      iva_capital_orig: 1735.54,
+      interes_gr_orig: 0,
+      interes_ex_orig: 0,
+      iva_interes_orig: 0,
+    };
+    const sinAjuste = calcularSaldoCuota(nominal, [], new Date("2026-06-10T12:00:00"));
+    expect(sinAjuste.ajuste_pendiente).toBe(0);
+
+    const coeficiente = 1.012;
+    const conAjuste = calcularSaldoCuota(
+      { ...nominal, cuota_base_actual: Math.round(10000 * coeficiente * 100) / 100 },
+      [],
+      new Date("2026-06-10T12:00:00")
+    );
+    expect(conAjuste.ajuste_pendiente + conAjuste.iva_ajuste_pendiente).toBeGreaterThan(0);
+
+    const revertido = calcularSaldoCuota(nominal, [], new Date("2026-06-10T12:00:00"));
+    expect(revertido.ajuste_pendiente).toBe(0);
+    expect(revertido.cuota_id).toBe(sinAjuste.cuota_id);
   });
 });
 

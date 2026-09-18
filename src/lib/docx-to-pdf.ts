@@ -16,7 +16,11 @@ import { spawn } from "child_process";
 import { randomUUID } from "crypto";
 
 // Ruta del ejecutable de LibreOffice. Configurable por env var.
-const SOFFICE_PATH = process.env.LIBREOFFICE_PATH || "C:\\Program Files\\LibreOffice\\program\\soffice.exe";
+const SOFFICE_PATH =
+  process.env.LIBREOFFICE_PATH ||
+  (process.platform === "win32"
+    ? "C:\\Program Files\\LibreOffice\\program\\soffice.exe"
+    : "soffice");
 
 const TIMEOUT_MS = 60_000;  // 60s máximo por conversión
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSession, applySessionCookie } from "@/lib/auth";
+import { normalizeRole } from "@/lib/roles";
 import { query } from "@/lib/db";
 import { allowAttempt, clientKey } from "@/lib/rate-limit";
 import bcrypt from "bcryptjs";
@@ -9,7 +10,7 @@ type Usuario = {
   username: string;
   password_hash: string | null;
   nombre: string;
-  rol: "ADMIN" | "ADMIN_B" | "VENDEDOR" | "CAJERO";
+  rol: string;
   activo: boolean;
 };
 
@@ -105,11 +106,12 @@ export async function POST(req: NextRequest) {
   }
 
   // Crear sesion JWT
+  const rol = normalizeRole(usuario.rol);
   const token = await createSession({
     userId: usuario.id,
     username: usuario.username,
     nombre: usuario.nombre,
-    rol: usuario.rol,
+    rol,
   });
 
   const res = NextResponse.json({
@@ -117,7 +119,7 @@ export async function POST(req: NextRequest) {
     usuario: {
       username: usuario.username,
       nombre: usuario.nombre,
-      rol: usuario.rol,
+      rol,
     },
   });
 
