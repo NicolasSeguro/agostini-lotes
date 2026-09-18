@@ -21,7 +21,12 @@ function getSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-const SECRET = getSecret();
+let cachedSecret: Uint8Array | null = null;
+function secretKey(): Uint8Array {
+  if (!cachedSecret) cachedSecret = getSecret();
+  return cachedSecret;
+}
+
 const COOKIE = "erp-session";
 const SESSION_HOURS = 8;
 
@@ -53,7 +58,7 @@ export async function createSession(payload: SessionPayload): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_HOURS}h`)
-    .sign(SECRET);
+    .sign(secretKey());
   return token;
 }
 
@@ -62,7 +67,7 @@ export async function getSession(): Promise<SessionPayload | null> {
   const token = store.get(COOKIE)?.value;
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, secretKey());
     return {
       userId: (payload.userId as string) || "",
       username: payload.username as string,
