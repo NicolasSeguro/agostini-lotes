@@ -1,60 +1,20 @@
 import { AppShell } from "@/components/AppShell";
-import { BarraPendientes } from "@/components/BarraPendientes";
+import { AsistenteChat } from "@/components/AsistenteChat";
+import { getSession } from "@/lib/auth";
 import { query, getSchema, TENANTS, loadTenants } from "@/lib/db";
+import { getOpsSnapshot } from "@/lib/ops-snapshot";
+import { responderAsistente } from "@/lib/asistente";
 import { formatMoney, formatNumber } from "@/lib/utils";
-import { Users, Tag, FileText, TrendingUp, AlertCircle, Building2, Receipt } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-async function getStats(tenantSlug: string) {
-  const schema = getSchema(tenantSlug);
-
-  const [personas, lotes, ventas, cuotas, saldos, cobranzas] = await Promise.all([
-    query(`SELECT COUNT(*)::int AS total FROM ${schema}.personas`),
-    query(`
-      SELECT 
-        COUNT(*)::int AS total,
-        COUNT(*) FILTER (WHERE estado = 'DISPONIBLE')::int AS disponibles,
-        COUNT(*) FILTER (WHERE estado IN ('VENDIDO','ESCRITURADO'))::int AS vendidos,
-        COUNT(*) FILTER (WHERE estado = 'RESCINDIDO')::int AS rescindidos
-      FROM ${schema}.lotes
-    `),
-    query(`SELECT COUNT(*)::int AS total FROM ${schema}.ventas`),
-    query(`
-      SELECT 
-        COUNT(*)::int AS total,
-        COUNT(*) FILTER (WHERE estado IN ('EMITIDA','MORA','PAGA_PARCIAL'))::int AS pendientes,
-        COUNT(*) FILTER (WHERE estado = 'PAGA')::int AS pagas,
-        COUNT(*) FILTER (WHERE estado IN ('EMITIDA','MORA','PAGA_PARCIAL') AND fecha_vto < CURRENT_DATE)::int AS vencidas
-      FROM ${schema}.cuotas
-    `),
-    query(`
-      SELECT 
-        COALESCE(SUM(v.cuota_base *
-          (SELECT COUNT(*) FROM ${schema}.cuotas c
-           WHERE c.venta_id = v.id AND c.estado IN ('EMITIDA','MORA','PAGA_PARCIAL'))
-        ), 0)::numeric AS saldo_pendiente_ajustado,
-        COALESCE(SUM(v.precio_total), 0)::numeric AS cartera_total_nominal
-      FROM ${schema}.ventas v
-      WHERE v.cuota_base IS NOT NULL AND v.cuota_base > 0
-    `),
-    query(`
-      SELECT 
-        COUNT(*)::int AS total,
-        COALESCE(SUM(monto_total), 0)::numeric AS monto_total
-      FROM ${schema}.cobranzas
-    `),
-  ]);
-
-  return {
-    personas: personas[0].total,
-    lotes: lotes[0],
-    ventas: ventas[0].total,
-    cuotas: cuotas[0],
-    saldo: saldos[0],
-    cobranzas: cobranzas[0],
-  };
+function saludoHora(nombre: string) {
+  const h = new Date().getHours();
+  const first = nombre.split(" ")[0] || "";
+  if (h < 12) return `Buen día, ${first}`;
+  if (h < 19) return `Buenas tardes, ${first}`;
+  return `Buenas noches, ${first}`;
 }
 
 export default async function DashboardPage({
@@ -64,135 +24,185 @@ export default async function DashboardPage({
 }) {
   const params = await searchParams;
   const tenant = params.t || "jacaranda";
+  const session = await getSession();
   const tenants = await loadTenants();
   const tenantNombre =
     tenants.find((t) => t.slug === tenant)?.nombre ||
     TENANTS.find((t) => t.slug === tenant)?.nombre ||
-    "?";
+    tenant;
 
-  const stats = await getStats(tenant);
+  const snap = await getOpsSnapshot(tenant);
+  const schema = getSchema(tenant);
+  const tareas = [
+    snap.enCarga > 0 && {
+      label: `Autorizar ${snap.enCarga} venta${snap.enCarga === 1 ? "" : "s"} en carga`,
+      href: `/ventas?t=${tenant}&estado=EN_CARGA`,
+      tag: "Urgente",
+    },
+    snap.autorizadas > 0 && {
+      label: `Contabilizar ${snap.autorizadas} autorizada${snap.autorizadas === 1 ? "" : "s"}`,
+      href: `/ventas?t=${tenant}&estado=AUTORIZADA`,
+      tag: "Hoy",
+    },
+    snap.cuotasVencidas > 0 && {
+      label: `Revisar ${snap.cuotasVencidas} cuotas vencidas`,
+      href: `/mora?t=${tenant}`,
+      tag: "Urgente",
+    },
+    snap.reintegros > 0 && {
+      label: `Procesar ${snap.reintegros} reintegro${snap.reintegros === 1 ? "" : "s"}`,
+      href: `/caja/reintegros?t=${tenant}`,
+      tag: "Caja",
+    },
+  ].filter(Boolean) as { label: string; href: string; tag: string }[];
 
-  const cards = [
+  const kpis = [
     {
-      label: "Saldo pendiente ajustado",
-      value: formatMoney(stats.saldo.saldo_pendiente_ajustado),
-      icon: TrendingUp,
-      highlight: true,
-      desc: "Valor actualizado a hoy de cuotas no pagas",
+      label: "Saldo vencido",
+      value: formatMoney(snap.saldoPendiente),
+      hint: `${formatNumber(snap.cuotasVencidas)} cuotas`,
     },
     {
-      label: "Cobranzas históricas",
-      value: formatMoney(stats.cobranzas.monto_total),
-      icon: Receipt,
-      cobranzas: true,
-      desc: `${formatNumber(stats.cobranzas.total)} recibos registrados`,
-    },
-    {
-      label: "Cuotas vencidas",
-      value: formatNumber(stats.cuotas.vencidas),
-      icon: AlertCircle,
-      alert: true,
-      desc: "Con fecha de vencimiento pasada",
+      label: "Cobrado · mes",
+      value: formatMoney(snap.cobradoMes),
+      hint: "Cobranzas confirmadas",
     },
     {
       label: "Lotes disponibles",
-      value: formatNumber(stats.lotes.disponibles),
-      icon: Tag,
-      desc: `${stats.lotes.vendidos} vendidos · ${stats.lotes.rescindidos} rescindidos`,
+      value: formatNumber(snap.lotesDisponibles),
+      hint: `${formatNumber(snap.lotesVendidos)} vendidos`,
     },
     {
-      label: "Personas",
-      value: formatNumber(stats.personas),
-      icon: Users,
-      desc: "Total de personas en el sistema",
-    },
-    {
-      label: "Ventas activas",
-      value: formatNumber(stats.ventas),
-      icon: FileText,
-      desc: "Operaciones registradas",
-    },
-    {
-      label: "Cuotas",
-      value: `${formatNumber(stats.cuotas.pagas)} / ${formatNumber(stats.cuotas.total)}`,
-      icon: Building2,
-      desc: `${formatNumber(stats.cuotas.pendientes)} pendientes`,
+      label: "En espera",
+      value: formatNumber(snap.enCarga + snap.autorizadas + snap.reintegros),
+      hint: "Carga · contabilidad · reintegro",
     },
   ];
 
+  const briefing = responderAsistente("resumen del dia", snap);
+  const nombre = session?.nombre || "equipo";
+
+  let loteos = 0;
+  try {
+    const rows = await query<{ c: number }>(
+      `SELECT COUNT(*)::int AS c FROM ${schema}.proyectos WHERE activo = true`
+    );
+    loteos = rows[0]?.c || 0;
+  } catch {
+    loteos = 0;
+  }
+
   return (
     <AppShell>
-      <div className="p-8 max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-slate-500 mt-1">
-            Fideicomiso <span className="font-semibold">{tenantNombre}</span> —
-            datos a la fecha
-          </p>
+      <div className="p-6 md:p-10 max-w-6xl">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-stone-400">
+              {tenantNombre} · {loteos} proyecto{loteos === 1 ? "" : "s"}
+            </p>
+            <h1 className="font-serif text-4xl md:text-5xl text-ink mt-1 uppercase tracking-tight">
+              {saludoHora(nombre)}
+            </h1>
+            <p className="text-stone-500 mt-2 max-w-xl">
+              {snap.enCarga + snap.autorizadas + snap.reintegros} decisiones abiertas y{" "}
+              {snap.cuotasVencidas} cuotas en mora. El asistente ya leyó la cartera.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href={`/asistente?t=${tenant}`}
+              className="min-h-11 px-4 rounded-xl bg-ink text-cream-50 text-sm inline-flex items-center"
+            >
+              Preguntar al asistente
+            </Link>
+            <Link
+              href={`/ventas?t=${tenant}`}
+              className="min-h-11 px-4 rounded-xl border border-stone-200 bg-white text-sm inline-flex items-center"
+            >
+              Ver ventas
+            </Link>
+          </div>
         </div>
 
-        <BarraPendientes tenant={tenant} />
-
-        <div className="mb-6">
-          <Link
-            href={`/mora?t=${tenant}`}
-            className="inline-flex items-center gap-2 text-sm text-brand-700 hover:underline"
-          >
-            Ver cartera en mora
-          </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
+          {kpis.map((k) => (
+            <div
+              key={k.label}
+              className="rounded-2xl border border-stone-200/80 bg-white/80 p-5"
+            >
+              <div className="text-[11px] uppercase tracking-[0.16em] text-stone-400">
+                {k.label}
+              </div>
+              <div className="font-serif text-3xl text-ink mt-2">{k.value}</div>
+              <div className="text-xs text-stone-500 mt-1">{k.hint}</div>
+            </div>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {cards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <div
-                key={card.label}
-                className={`bg-white rounded-xl border p-6 ${
-                  card.highlight
-                    ? "border-brand-200 bg-gradient-to-br from-orange-50 to-amber-50"
-                    : card.cobranzas
-                    ? "border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50"
-                    : card.alert
-                    ? "border-red-200"
-                    : "border-slate-200"
-                }`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div
-                    className={`p-2 rounded-lg ${
-                      card.highlight
-                        ? "bg-brand-600 text-white"
-                        : card.cobranzas
-                        ? "bg-emerald-600 text-white"
-                        : card.alert
-                        ? "bg-red-100 text-red-600"
-                        : "bg-slate-100 text-slate-600"
-                    }`}
-                  >
-                    <Icon size={20} />
+        <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-4 mt-6">
+          <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-5">
+            <div className="text-[11px] uppercase tracking-[0.16em] text-stone-400">
+              Asistente operativo
+            </div>
+            <AsistenteChat tenant={tenant} saludo={briefing} />
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-5">
+              <div className="text-[11px] uppercase tracking-[0.16em] text-stone-400">
+                Alertas
+              </div>
+              <div className="mt-3 space-y-3">
+                {snap.moraClientes[0] && (
+                  <div>
+                    <div className="text-sm font-medium text-ink">
+                      {snap.moraClientes[0].cliente} — {snap.moraClientes[0].cuotas} cuotas
+                    </div>
+                    <div className="text-xs text-stone-500">
+                      {formatMoney(snap.moraClientes[0].saldo)} vencido
+                    </div>
+                    <Link href={`/mora?t=${tenant}`} className="text-xs text-brand-700 mt-1 inline-block">
+                      Ver cartera en mora
+                    </Link>
                   </div>
-                </div>
-                <div className="text-sm text-slate-600 mb-1">{card.label}</div>
-                <div className={`text-2xl font-bold mb-1 ${card.cobranzas ? "text-emerald-700" : "text-slate-900"}`}>
-                  {card.value}
-                </div>
-                {card.desc && (
-                  <div className="text-xs text-slate-500">{card.desc}</div>
+                )}
+                {snap.enCarga > 0 && (
+                  <div>
+                    <div className="text-sm font-medium text-ink">
+                      {snap.enCarga} venta{snap.enCarga === 1 ? "" : "s"} en carga
+                    </div>
+                    <div className="text-xs text-stone-500">
+                      Esperan autorización comercial
+                    </div>
+                  </div>
+                )}
+                {!snap.moraClientes.length && snap.enCarga === 0 && (
+                  <p className="text-sm text-stone-500">Sin alertas activas.</p>
                 )}
               </div>
-            );
-          })}
-        </div>
+            </div>
 
-        <div className="mt-8 bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="text-lg font-semibold mb-3">Estado del sistema</h2>
-          <p className="text-sm text-slate-600 leading-relaxed">
-            Tenés disponibles los módulos de <strong>Personas</strong>, <strong>Lotes</strong>,{" "}
-            <strong>Ventas</strong> y <strong>Cobranzas</strong> sobre los 4 fideicomisos
-            del grupo. Usá el selector de fideicomiso a la izquierda para cambiar entre
-            Jacaranda, Tipuana, Alisos y Boulevard.
-          </p>
+            <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-5">
+              <div className="text-[11px] uppercase tracking-[0.16em] text-stone-400">
+                Tareas del día
+              </div>
+              <ul className="mt-3 space-y-2">
+                {tareas.length === 0 && (
+                  <li className="text-sm text-stone-500">Nada urgente en este fideicomiso.</li>
+                )}
+                {tareas.map((t) => (
+                  <li key={t.href} className="flex items-center justify-between gap-2">
+                    <Link href={t.href} className="text-sm text-ink hover:underline">
+                      {t.label}
+                    </Link>
+                    <span className="text-[10px] uppercase tracking-wider text-stone-400">
+                      {t.tag}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </AppShell>

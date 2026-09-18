@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/AppShell";
 import { ProyectoAcciones } from "@/components/ProyectoAcciones";
-import { query, getSchema } from "@/lib/db";
+import { query, getSchema, loadTenants } from "@/lib/db";
 import Link from "next/link";
 import { Plus, MapPin } from "lucide-react";
 
@@ -23,6 +23,7 @@ const ESTADO_COLOR: Record<string, string> = {
 };
 
 async function getProyectos(tenant: string) {
+  await loadTenants();
   const schema = getSchema(tenant);
   if (!schema) return [];
   return await query(

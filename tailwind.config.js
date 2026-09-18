@@ -4,9 +4,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        ink: {
+          DEFAULT: "#16141f",
+          muted: "#24222e",
+          50: "#f6f4f1",
+        },
         cream: {
-          50: "#f7f3ee",
-          100: "#efe7dc",
+          50: "#f4efe6",
+          100: "#ebe3d6",
         },
         sage: {
           50: "#f3f7f5",

@@ -37,14 +37,14 @@ export default async function FideicomisosPage() {
         </div>
 
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 text-sm text-amber-900">
-          <strong>Nota:</strong> el alta de nuevos fideicomisos se realiza por script de migraciÃ³n. AcÃ¡ podÃ©s editar los existentes.
+          <strong>Nota:</strong> el alta de nuevos fideicomisos se realiza por script de migracion. Aca podes editar los existentes.
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">RazÃ³n social</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Razon social</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Slug</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">CUIT</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Cond. IVA</th>
@@ -58,7 +58,7 @@ export default async function FideicomisosPage() {
                 const df = f.datos_fiscales || {};
                 const tieneCompleto = !!(df.reg_inmobiliario?.matricula || df.escritura?.numero || df.banco?.cbu);
                 return (
-                  <tr key={f.id} className="hover:bg-slate-50 transition">
+                  <tr key={f.id || f.slug} className="hover:bg-slate-50 transition">
                     <td className="px-4 py-3 text-sm font-medium text-slate-900">{f.razon_social}</td>
                     <td className="px-4 py-3 text-sm font-mono text-slate-700">{f.slug}</td>
                     <td className="px-4 py-3 text-sm font-mono text-slate-700">{f.cuit}</td>

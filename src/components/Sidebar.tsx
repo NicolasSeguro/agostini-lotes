@@ -17,24 +17,46 @@ import {
   LogOut,
   ChevronDown,
   AlertTriangle,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Tenant = { slug: string; nombre: string };
 type Me = { username: string; nombre: string; rol: string };
 
-const NAV_ITEMS = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Fideicomisos", href: "/fideicomisos", icon: Landmark, global: true },
-  { label: "Personas", href: "/personas", icon: Users },
-  { label: "Proyectos", href: "/proyectos", icon: Building2 },
-  { label: "Lotes", href: "/lotes", icon: Tag },
-  { label: "Ventas", href: "/ventas", icon: FileText },
-  { label: "Convenios", href: "/convenios", icon: Handshake },
-  { label: "Cobranzas", href: "/cobranzas", icon: Receipt },
-  { label: "Mora", href: "/mora", icon: AlertTriangle },
-  { label: "Caja", href: "/caja/reintegros", icon: Wallet },
-  { label: "Cuotas", href: "/cuotas", icon: Percent },
+type NavItem = {
+  label: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+  global?: boolean;
+};
+
+const GROUPS: { label: string; items: NavItem[] }[] = [
+  {
+    label: "Operación",
+    items: [
+      { label: "Resumen", href: "/", icon: LayoutDashboard },
+      { label: "Ventas", href: "/ventas", icon: FileText },
+      { label: "Cobranzas", href: "/cobranzas", icon: Receipt },
+      { label: "Mora", href: "/mora", icon: AlertTriangle },
+      { label: "Lotes", href: "/lotes", icon: Tag },
+      { label: "Personas", href: "/personas", icon: Users },
+    ],
+  },
+  {
+    label: "Cartera",
+    items: [
+      { label: "Fideicomisos", href: "/fideicomisos", icon: Landmark, global: true },
+      { label: "Proyectos", href: "/proyectos", icon: Building2 },
+      { label: "Convenios", href: "/convenios", icon: Handshake },
+      { label: "Cuotas", href: "/cuotas", icon: Percent },
+      { label: "Caja", href: "/caja/reintegros", icon: Wallet },
+    ],
+  },
+  {
+    label: "Inteligencia",
+    items: [{ label: "Asistente", href: "/asistente", icon: Sparkles }],
+  },
 ];
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -92,89 +114,101 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     return pathname.startsWith(href);
   }
 
+  const initials = (me?.nombre || "A")
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
   return (
-    <aside className="w-64 bg-white text-stone-800 min-h-screen flex flex-col border-r border-stone-200/80">
-      <div className="p-6 border-b border-stone-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-sm">
-            <span className="text-white font-bold text-lg">A</span>
-          </div>
-          <div>
-            <div className="font-semibold">ERP Agostini</div>
-            <div className="text-xs text-stone-500">Grupo ADI</div>
-          </div>
+    <aside className="w-[248px] bg-ink text-stone-300 min-h-screen flex flex-col">
+      <div className="px-5 py-6">
+        <div className="text-[11px] tracking-[0.28em] text-stone-500">GRUPO ADI</div>
+        <div className="mt-1 font-serif text-[22px] text-cream-50 leading-none">
+          Agostini<span className="text-brand-400">.</span>
         </div>
+        <div className="text-[11px] tracking-[0.32em] text-stone-500 mt-1">OPS</div>
       </div>
 
-      <div className="px-4 pt-4 pb-2">
-        <div className="text-xs uppercase tracking-wider text-stone-400 mb-2 px-2">
-          Fideicomiso
-        </div>
-        <div className="relative">
-          <button
-            onClick={() => setTenantOpen(!tenantOpen)}
-            className="w-full flex items-center justify-between px-3 py-2.5 bg-cream-50 hover:bg-sage-50 rounded-xl text-sm transition border border-stone-200"
-          >
-            <span className="font-medium">{tenantNombre}</span>
-            <ChevronDown size={16} className={cn("transition", tenantOpen && "rotate-180")} />
-          </button>
-          {tenantOpen && (
-            <div className="absolute left-0 right-0 mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-10 border border-stone-200">
-              {tenants.map((t) => (
-                <button
-                  key={t.slug}
-                  onClick={() => changeTenant(t.slug)}
-                  className={cn(
-                    "w-full text-left px-3 py-2.5 hover:bg-cream-50 text-sm",
-                    t.slug === currentTenant && "bg-sage-50 text-sage-800 font-medium"
-                  )}
-                >
-                  {t.nombre}
-                </button>
-              ))}
+      <div className="px-4 pb-4">
+        <button
+          onClick={() => setTenantOpen(!tenantOpen)}
+          className="w-full flex items-center justify-between px-3 py-2.5 bg-ink-muted hover:bg-white/5 rounded-xl text-sm transition border border-white/10"
+        >
+          <span className="font-medium text-cream-50">{tenantNombre}</span>
+          <ChevronDown size={16} className={cn("transition", tenantOpen && "rotate-180")} />
+        </button>
+        {tenantOpen && (
+          <div className="mt-1 bg-ink-muted rounded-xl overflow-hidden border border-white/10">
+            {tenants.map((t) => (
+              <button
+                key={t.slug}
+                onClick={() => changeTenant(t.slug)}
+                className={cn(
+                  "w-full text-left px-3 py-2.5 hover:bg-white/5 text-sm",
+                  t.slug === currentTenant && "text-cream-50 font-medium"
+                )}
+              >
+                {t.nombre}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <nav className="flex-1 px-3 pb-4 space-y-5 overflow-y-auto">
+        {GROUPS.map((group) => (
+          <div key={group.label}>
+            <div className="px-3 mb-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500">
+              {group.label}
             </div>
-          )}
-        </div>
-      </div>
-
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(item.href);
-          const href = (item as { global?: boolean }).global
-            ? item.href
-            : `${item.href}?t=${currentTenant}`;
-          return (
-            <Link
-              key={item.label}
-              href={href}
-              onClick={onNavigate}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition min-h-11",
-                active
-                  ? "bg-brand-500 text-white shadow-sm"
-                  : "text-stone-600 hover:bg-cream-50"
-              )}
-            >
-              <Icon size={18} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
+                const href = item.global
+                  ? item.href
+                  : `${item.href}?t=${currentTenant}`;
+                return (
+                  <Link
+                    key={item.label}
+                    href={href}
+                    onClick={onNavigate}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition min-h-10",
+                      active
+                        ? "bg-cream-50 text-ink"
+                        : "text-stone-400 hover:text-cream-50 hover:bg-white/5"
+                    )}
+                  >
+                    <Icon size={16} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      <div className="p-4 border-t border-stone-100 space-y-2">
+      <div className="p-4 border-t border-white/10 space-y-2">
         {me && (
-          <div className="px-3 text-xs text-stone-500">
-            <div className="font-medium text-stone-700">{me.nombre}</div>
-            <div>{me.rol}</div>
+          <div className="flex items-center gap-3 px-1">
+            <div className="w-8 h-8 rounded-full bg-brand-600 text-white text-xs flex items-center justify-center">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm text-cream-50 truncate">{me.nombre}</div>
+              <div className="text-[11px] text-stone-500">{me.rol}</div>
+            </div>
           </div>
         )}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-600 hover:bg-cream-50 transition min-h-11"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-stone-400 hover:text-cream-50 hover:bg-white/5 transition min-h-10"
         >
-          <LogOut size={18} />
+          <LogOut size={16} />
           <span>Salir</span>
         </button>
       </div>

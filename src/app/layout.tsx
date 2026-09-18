@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Newsreader } from "next/font/google";
 import "./globals.css";
 
 const sans = DM_Sans({
@@ -7,9 +7,14 @@ const sans = DM_Sans({
   variable: "--font-sans",
 });
 
+const serif = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-serif",
+});
+
 export const metadata: Metadata = {
-  title: "ERP Agostini",
-  description: "Sistema de gestion Grupo Agostini",
+  title: "Agostini Ops",
+  description: "Panel de operaciones Grupo ADI",
 };
 
 export default function RootLayout({
@@ -19,7 +24,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${sans.variable} font-sans`}>{children}</body>
+      <body className={`${sans.variable} ${serif.variable} font-sans`}>
+        {children}
+      </body>
     </html>
   );
 }

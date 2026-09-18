@@ -3,21 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f7f3ee;
-  --fg: #3f3a36;
-  --brand: #d4785a;
-  --sage: #8fa89a;
-  --sky: #7a96b8;
+  --bg: #f4efe6;
+  --fg: #2a2622;
+  --brand: #c45c3e;
+  --ink: #16141f;
 }
 
 * {
-  border-color: #eadfd4;
+  border-color: #e6dccf;
 }
 
 html,
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
 }
