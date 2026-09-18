@@ -86,6 +86,18 @@ async function getLotes(
   return { lotes: lotes as any[], total: totalRes[0].total, limit: LIMIT };
 }
 
+async function getStock(tenantSlug: string) {
+  const schema = getSchema(tenantSlug);
+  const rows = await query<{ estado: string; n: number }>(`
+    SELECT estado::text AS estado, COUNT(*)::int AS n
+    FROM ${schema}.lotes
+    GROUP BY estado::text
+  `);
+  const map: Record<string, number> = {};
+  for (const r of rows) map[r.estado] = r.n;
+  return map;
+}
+
 const ESTADOS = [
   { value: "DISPONIBLE", label: "Disponible", color: "bg-green-100 text-green-700" },
   { value: "RESERVADO", label: "Reservado", color: "bg-amber-100 text-amber-700" },
@@ -113,9 +125,10 @@ export default async function LotesPage({
 
   const tenantNombre = TENANTS.find((t) => t.slug === tenant)?.nombre || "?";
 
-  const [proyectos, { lotes, total, limit }] = await Promise.all([
+  const [proyectos, { lotes, total, limit }, stock] = await Promise.all([
     getProyectos(tenant),
     getLotes(tenant, proyectoId, estado, search, offset),
+    getStock(tenant),
   ]);
 
   const totalPages = Math.ceil(total / limit);
@@ -172,6 +185,23 @@ export default async function LotesPage({
             </>
           }
         />
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+          {ESTADOS.filter((e) => e.value !== "RESCINDIDO").map((e) => (
+            <Link
+              key={e.value}
+              href={buildUrl({ estado: estado === e.value ? null : e.value, page: "1" })}
+              className={`rounded-2xl border p-4 ${
+                estado === e.value
+                  ? "border-ink bg-ink text-cream-50"
+                  : "border-stone-200/80 bg-white/80"
+              }`}
+            >
+              <div className="font-serif text-3xl">{stock[e.value] || 0}</div>
+              <div className="text-sm mt-1 opacity-80">{e.label}</div>
+            </Link>
+          ))}
+        </div>
 
         {/* Filtros */}
         <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6">

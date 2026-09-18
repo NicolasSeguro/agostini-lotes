@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
   }
 
   const snap = await getOpsSnapshot(tenant);
-  if (!hasAnthropicKey()) {
+  const conClaude = hasAnthropicKey();
+  if (!conClaude) {
     return NextResponse.json({
       reply: responderAsistente(message, snap),
       tenant,

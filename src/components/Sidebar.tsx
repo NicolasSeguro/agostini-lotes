@@ -17,7 +17,6 @@ import {
   LogOut,
   ChevronDown,
   AlertTriangle,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,33 +30,21 @@ type NavItem = {
   global?: boolean;
 };
 
-const GROUPS: { label: string; items: NavItem[] }[] = [
-  {
-    label: "Operación",
-    items: [
-      { label: "Resumen", href: "/", icon: LayoutDashboard },
-      { label: "Ventas", href: "/ventas", icon: FileText },
-      { label: "Cobranzas", href: "/cobranzas", icon: Receipt },
-      { label: "Mora", href: "/mora", icon: AlertTriangle },
-      { label: "Lotes", href: "/lotes", icon: Tag },
-      { label: "Personas", href: "/personas", icon: Users },
-      { label: "Maestro", href: "/personas/maestro", icon: Users, global: true },
-    ],
-  },
-  {
-    label: "Cartera",
-    items: [
-      { label: "Fideicomisos", href: "/fideicomisos", icon: Landmark, global: true },
-      { label: "Proyectos", href: "/proyectos", icon: Building2 },
-      { label: "Convenios", href: "/convenios", icon: Handshake },
-      { label: "Cuotas", href: "/cuotas", icon: Percent },
-      { label: "Caja", href: "/caja/reintegros", icon: Wallet },
-    ],
-  },
-  {
-    label: "Inteligencia",
-    items: [{ label: "Asistente", href: "/asistente", icon: Sparkles }],
-  },
+const PRIMARY: NavItem[] = [
+  { label: "Hoy", href: "/", icon: LayoutDashboard },
+  { label: "Ventas", href: "/ventas", icon: FileText },
+  { label: "Atrasos", href: "/mora", icon: AlertTriangle },
+  { label: "Cobrar", href: "/cobranzas", icon: Receipt },
+  { label: "Lotes", href: "/lotes", icon: Tag },
+  { label: "Personas", href: "/personas", icon: Users },
+];
+
+const MORE: NavItem[] = [
+  { label: "Fideicomisos", href: "/fideicomisos", icon: Landmark, global: true },
+  { label: "Proyectos", href: "/proyectos", icon: Building2 },
+  { label: "Convenios", href: "/convenios", icon: Handshake },
+  { label: "Cuotas", href: "/cuotas", icon: Percent },
+  { label: "Caja", href: "/caja/reintegros", icon: Wallet },
 ];
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -66,6 +53,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const searchParams = useSearchParams();
   const currentTenant = searchParams.get("t") || "jacaranda";
   const [tenantOpen, setTenantOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [tenants, setTenants] = useState<Tenant[]>([
     { slug: "jacaranda", nombre: "Jacaranda" },
     { slug: "tipuana", nombre: "Tipuana" },
@@ -110,17 +98,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   function isActive(href: string) {
-    if (href === "/") return pathname === "/";
-    if (href === "/personas") {
-      return (
-        pathname === "/personas" ||
-        (pathname.startsWith("/personas/") &&
-          !pathname.startsWith("/personas/maestro"))
-      );
-    }
+    if (href === "/") return pathname === "/" || pathname.startsWith("/asistente");
+    if (href === "/personas") return pathname.startsWith("/personas");
     if (href.startsWith("/caja/")) return pathname.startsWith("/caja");
     return pathname.startsWith(href);
   }
+
+  const moreActive = MORE.some((item) => isActive(item.href));
 
   const initials = (me?.nombre || "A")
     .split(" ")
@@ -129,14 +113,34 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     .join("")
     .toUpperCase();
 
+  function NavLink({ item }: { item: NavItem }) {
+    const Icon = item.icon;
+    const active = isActive(item.href);
+    const href = item.global ? item.href : `${item.href}?t=${currentTenant}`;
+    return (
+      <Link
+        href={href}
+        onClick={onNavigate}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition min-h-10",
+          active
+            ? "bg-cream-50 text-ink"
+            : "text-stone-400 hover:text-cream-50 hover:bg-white/5"
+        )}
+      >
+        <Icon size={16} />
+        <span>{item.label}</span>
+      </Link>
+    );
+  }
+
   return (
-    <aside className="w-[248px] bg-ink text-stone-300 min-h-screen flex flex-col">
+    <aside className="w-[232px] bg-ink text-stone-300 min-h-screen flex flex-col">
       <div className="px-5 py-6">
         <div className="text-[11px] tracking-[0.28em] text-stone-500">GRUPO ADI</div>
         <div className="mt-1 font-serif text-[22px] text-cream-50 leading-none">
           Agostini<span className="text-brand-400">.</span>
         </div>
-        <div className="text-[11px] tracking-[0.32em] text-stone-500 mt-1">OPS</div>
       </div>
 
       <div className="px-4 pb-4">
@@ -165,39 +169,25 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         )}
       </div>
 
-      <nav className="flex-1 px-3 pb-4 space-y-5 overflow-y-auto">
-        {GROUPS.map((group) => (
-          <div key={group.label}>
-            <div className="px-3 mb-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500">
-              {group.label}
-            </div>
-            <div className="space-y-0.5">
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                const href = item.global
-                  ? item.href
-                  : `${item.href}?t=${currentTenant}`;
-                return (
-                  <Link
-                    key={item.label}
-                    href={href}
-                    onClick={onNavigate}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition min-h-10",
-                      active
-                        ? "bg-cream-50 text-ink"
-                        : "text-stone-400 hover:text-cream-50 hover:bg-white/5"
-                    )}
-                  >
-                    <Icon size={16} />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+      <nav className="flex-1 px-3 pb-4 space-y-0.5 overflow-y-auto">
+        {PRIMARY.map((item) => (
+          <NavLink key={item.href} item={item} />
         ))}
+        <button
+          type="button"
+          onClick={() => setMoreOpen((v) => !v)}
+          className={cn(
+            "w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm min-h-10 mt-3",
+            moreActive
+              ? "text-cream-50"
+              : "text-stone-500 hover:text-cream-50 hover:bg-white/5"
+          )}
+        >
+          <span className="uppercase tracking-[0.16em] text-[10px]">Más</span>
+          <ChevronDown size={14} className={cn("transition", moreOpen && "rotate-180")} />
+        </button>
+        {(moreOpen || moreActive) &&
+          MORE.map((item) => <NavLink key={item.href} item={item} />)}
       </nav>
 
       <div className="p-4 border-t border-white/10 space-y-2">

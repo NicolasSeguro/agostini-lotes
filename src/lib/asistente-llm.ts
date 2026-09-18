@@ -1,23 +1,32 @@
+import { env } from "node:process";
 import { generateText, stepCountIs, tool } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 import { query, getSchema } from "@/lib/db";
 import { getOpsSnapshot, type OpsSnapshot } from "@/lib/ops-snapshot";
 
-const SYSTEM = `Sos el asistente operativo de Agostini Ops (ERP de fideicomisos / loteos).
-Hablás en español rioplatense, claro y concreto.
-Usás las herramientas para leer datos reales. Nunca inventes montos, cuotas ni estados.
-NO podés autorizar ventas, contabilizar, anular, cobrar ni cambiar estados.
-Si te piden autorizar o ejecutar un paso del circuito, explicá que lo tiene que hacer una persona en Ventas / Caja.
-El motor de cálculo de cuotas (Francés / Alemán / fijo) no se toca: vos solo leés operación.
-Si no hay datos, decilo.`;
+const SYSTEM = `Sos el asistente de Agostini Ops. Hablás con Laura, cajeros y vendedores: gente de operación, no de sistemas.
+
+Reglas:
+- Español rioplatense, frases cortas, sin jerga técnica.
+- Usá las herramientas para leer datos reales. Nunca inventes montos, cuotas ni estados.
+- Empezá por lo que hay que hacer hoy. Después el número.
+- Si hay mora, decí a quién llamar primero y por qué (cuotas, días, saldo).
+- NO podés autorizar ventas, contabilizar, anular, cobrar ni cambiar estados. Eso lo hace una persona en Ventas o Caja. Si te lo piden, indicá el botón / la pantalla.
+- El cálculo de cuotas no se toca: vos solo leés la operación.
+- Si no hay datos, decilo.
+- Texto plano: sin markdown, sin asteriscos, sin títulos con #.`;
 
 export function hasAnthropicKey() {
-  return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+  return Boolean(String(env.ANTHROPIC_API_KEY || "").trim());
 }
 
 function modeloAnthropic() {
-  return process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-4-5";
+  return String(env.ANTHROPIC_MODEL || "").trim() || "claude-sonnet-5";
+}
+
+function clienteAnthropic() {
+  return createAnthropic({ apiKey: String(env.ANTHROPIC_API_KEY || "") });
 }
 
 async function buscarPersonas(tenant: string, q: string) {
@@ -63,7 +72,7 @@ export async function responderConClaude(opts: {
   }
 
   const result = await generateText({
-    model: anthropic(modeloAnthropic()),
+    model: clienteAnthropic()(modeloAnthropic()),
     system: SYSTEM,
     stopWhen: stepCountIs(5),
     tools: {

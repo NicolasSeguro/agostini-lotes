@@ -2,10 +2,20 @@ import { AppShell } from "@/components/AppShell";
 import { query, getSchema, loadTenants, TENANTS } from "@/lib/db";
 import { calcularScoreMora, estadioMora } from "@/lib/mora-score";
 import { formatMoney, formatDate } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { PageHeader, opsTableWrap } from "@/components/ops-ui";
+import { PageHeader } from "@/components/ops-ui";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
+
+function iniciales(nombre: string) {
+  return nombre
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}
 
 async function getCarteraMora(tenant: string) {
   const schema = getSchema(tenant);
@@ -81,57 +91,54 @@ export default async function MoraPage({
 
   return (
     <AppShell>
-      <div className="p-6 md:p-10 max-w-6xl">
+      <div className="p-6 md:p-10 max-w-5xl">
         <PageHeader
           kicker={tenantNombre}
-          title="Mora"
-          description="Priorización de gestiones. El score replica la heurística de CuotaFacil sobre cuotas reales de Postgres."
+          title="Atrasos"
+          description="A quién llamar primero. El número grande es la prioridad (misma lógica que CuotaFácil)."
         />
         {error && (
           <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 mb-4">
             {error}
           </div>
         )}
-        <div className={`${opsTableWrap} overflow-x-auto`}>
-          <table className="min-w-full text-sm">
-            <thead className="bg-cream-50 text-left text-stone-500">
-              <tr>
-                <th className="px-4 py-3">Cliente</th>
-                <th className="px-4 py-3">Venta</th>
-                <th className="px-4 py-3">Estadio</th>
-                <th className="px-4 py-3">Score</th>
-                <th className="px-4 py-3">Dias</th>
-                <th className="px-4 py-3">Saldo est.</th>
-              </tr>
-            </thead>
-            <tbody>
-              {scored.map((row) => (
-                <tr key={row.venta_id} className="border-t border-stone-100">
-                  <td className="px-4 py-3 font-medium text-stone-800">{row.cliente}</td>
-                  <td className="px-4 py-3">#{row.nro ?? "-"}</td>
-                  <td className="px-4 py-3">
-                    <Badge tone={row.estadio >= 4 ? "danger" : row.estadio >= 2 ? "warning" : "info"}>
-                      E{row.estadio}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 font-semibold">{row.score}</td>
-                  <td className="px-4 py-3">{row.dias_max}</td>
-                  <td className="px-4 py-3">{formatMoney(row.saldo)}</td>
-                </tr>
-              ))}
-              {!error && scored.length === 0 && (
-                <tr>
-                  <td className="px-4 py-8 text-stone-500" colSpan={6}>
-                    No hay cuotas vencidas en este fideicomiso.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        {scored.length === 0 && !error && (
+          <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-10 text-center text-stone-500">
+            Nadie está en mora en este fideicomiso.
+          </div>
+        )}
+        <div className="grid sm:grid-cols-2 gap-3">
+          {scored.map((row, i) => (
+            <Link
+              key={row.venta_id}
+              href={`/ventas/${row.venta_id}?t=${tenant}`}
+              className="rounded-3xl border border-stone-200/80 bg-white/80 p-5 flex gap-4 hover:border-stone-300"
+            >
+              <div className="w-12 h-12 rounded-full bg-ink text-cream-50 text-sm flex items-center justify-center shrink-0">
+                {iniciales(row.cliente)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="text-sm font-medium text-ink">{row.cliente}</div>
+                    <div className="text-xs text-stone-500 mt-0.5">
+                      Venta #{row.nro ?? "—"} · {row.cuotas_vencidas} cuotas · {row.dias_max} días
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-serif text-2xl text-ink leading-none">{row.score}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-stone-400 mt-1">
+                      {i === 0 ? "Primero" : `E${row.estadio}`}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 text-sm text-ink">{formatMoney(row.saldo)}</div>
+              </div>
+            </Link>
+          ))}
         </div>
-        <p className="text-xs text-stone-400 mt-4">
-          Actualizado {formatDate(new Date())}. Gestiones y promesas de pago se
-          guardan en mora_gestiones cuando exista la migracion aplicada.
+        <p className="text-xs text-stone-400 mt-6">
+          Actualizado {formatDate(new Date())}. Tocá una tarjeta para abrir la venta.
         </p>
       </div>
     </AppShell>

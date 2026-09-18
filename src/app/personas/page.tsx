@@ -3,7 +3,7 @@ import { query, getSchema, TENANTS, loadTenants } from "@/lib/db";
 import Link from "next/link";
 import { Search, AlertCircle, Plus } from "lucide-react";
 import { PersonaAcciones } from "@/components/PersonaAcciones";
-import { PageHeader, opsOutlineBtn, opsPanel, opsPrimaryBtn, opsTableWrap } from "@/components/ops-ui";
+import { PageHeader, opsOutlineBtn, opsPanel, opsPrimaryBtn } from "@/components/ops-ui";
 
 export const dynamic = "force-dynamic";
 
@@ -182,149 +182,99 @@ export default async function PersonasPage({
           </form>
         </div>
 
-        <div className={opsTableWrap}>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Apellido y Nombre / Razón Social
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Tipo
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Documento
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Contacto
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Estado
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Ventas
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Acción
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {personas.map((p) => (
-                  <tr
-                    key={p.id}
-                    className={`hover:bg-slate-50 transition ${p.activo === false ? "opacity-50" : ""} ${p.tiene_mora ? "bg-red-50/30" : ""}`}
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          {personas.map((p) => {
+            const nombre =
+              p.razon_social ||
+              `${p.apellido || ""}, ${p.nombre || ""}`.trim().replace(/^,\s*|,\s*$/g, "") ||
+              "—";
+            const initials = nombre
+              .replace(/,/g, " ")
+              .split(" ")
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((w: string) => w[0])
+              .join("")
+              .toUpperCase();
+            return (
+              <div
+                key={p.id}
+                className={`rounded-3xl border border-stone-200/80 bg-white/80 p-5 ${
+                  p.activo === false ? "opacity-50" : ""
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <Link
+                    href={`/personas/${p.id}?t=${tenant}`}
+                    className="w-11 h-11 rounded-full bg-ink text-cream-50 text-xs flex items-center justify-center shrink-0"
                   >
-                    <td className="px-4 py-3">
-                      <Link
-                        href={`/personas/${p.id}?t=${tenant}`}
-                        className="block"
-                      >
-                        <div className="font-medium text-slate-900">
-                          {p.razon_social ||
-                            `${p.apellido || ""}, ${p.nombre || ""}`.trim().replace(/^,\s*|,\s*$/g, "") ||
-                            "—"}
-                        </div>
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                          p.tipo === "JURIDICA"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-slate-100 text-slate-700"
-                        }`}
-                      >
-                        {p.tipo === "JURIDICA" ? "Jurídica" : "Física"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <div className="text-slate-700">
-                        {p.cuit || p.doc_numero || "—"}
-                      </div>
-                      <div className="text-xs text-slate-500">{p.doc_tipo}</div>
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <div className="text-slate-700">{p.telefono || "—"}</div>
-                      {p.email && (
-                        <div className="text-xs text-slate-500 truncate max-w-[200px]">
-                          {p.email}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {p.activo === false ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-slate-200 text-slate-600">
-                          Inactiva
-                        </span>
-                      ) : p.tiene_mora ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-700">
-                          <AlertCircle size={12} />
+                    {initials}
+                  </Link>
+                  <div className="min-w-0 flex-1">
+                    <Link href={`/personas/${p.id}?t=${tenant}`} className="block">
+                      <div className="font-medium text-ink truncate">{nombre}</div>
+                    </Link>
+                    <div className="text-xs text-stone-500 mt-0.5">
+                      {p.cuit || p.doc_numero || "Sin documento"}
+                    </div>
+                    <div className="text-xs text-stone-500">{p.telefono || p.email || "Sin contacto"}</div>
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                      {p.tiene_mora ? (
+                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">
                           Con mora
                         </span>
-                      ) : (
-                        <span className="text-slate-300 text-xs">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
+                      ) : null}
                       {p.ventas_count > 0 ? (
-                        <span className="inline-block px-2 py-0.5 bg-brand-100 text-brand-700 rounded text-xs font-medium">
-                          {p.ventas_count}
+                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-cream-100 text-stone-700">
+                          {p.ventas_count} venta{p.ventas_count === 1 ? "" : "s"}
                         </span>
-                      ) : (
-                        <span className="text-slate-400 text-sm">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <PersonaAcciones
-                        tenant={tenant}
-                        personaId={p.id}
-                        activo={p.activo !== false}
-                        ventasCount={Number(p.ventas_count) || 0}
-                        nombre={p.razon_social || `${p.apellido || ""}, ${p.nombre || ""}`.trim().replace(/^,\s*|,\s*$/g, "") || "—"}
-                      />
-                    </td>
-                  </tr>
-                ))}
-                {personas.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
-                      No se encontraron personas
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Paginación */}
-          {totalPages > 1 && (
-            <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-              <div className="text-sm text-slate-600">
-                Página {page} de {totalPages}
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <PersonaAcciones
+                    tenant={tenant}
+                    personaId={p.id}
+                    activo={p.activo !== false}
+                    ventasCount={Number(p.ventas_count) || 0}
+                    nombre={nombre}
+                  />
+                </div>
               </div>
-              <div className="flex gap-2">
-                {page > 1 && (
-                  <Link
-                    href={buildUrl({ page: String(page - 1) })}
-                    className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg hover:bg-white"
-                  >
-                    Anterior
-                  </Link>
-                )}
-                {page < totalPages && (
-                  <Link
-                    href={buildUrl({ page: String(page + 1) })}
-                    className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg hover:bg-white"
-                  >
-                    Siguiente
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
+            );
+          })}
         </div>
+        {personas.length === 0 && (
+          <div className="rounded-3xl border border-stone-200/80 bg-white/80 p-10 text-center text-stone-500">
+            No se encontraron personas
+          </div>
+        )}
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-between text-sm text-stone-600">
+            <div>
+              Página {page} de {totalPages}
+            </div>
+            <div className="flex gap-2">
+              {page > 1 && (
+                <Link
+                  href={buildUrl({ page: String(page - 1) })}
+                  className="px-3 py-1.5 border border-stone-200 rounded-xl hover:bg-white"
+                >
+                  Anterior
+                </Link>
+              )}
+              {page < totalPages && (
+                <Link
+                  href={buildUrl({ page: String(page + 1) })}
+                  className="px-3 py-1.5 border border-stone-200 rounded-xl hover:bg-white"
+                >
+                  Siguiente
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </AppShell>
   );
